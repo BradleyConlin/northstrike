@@ -1,0 +1,32 @@
+# Python venvs & caches
+.venv/
+__pycache__/
+*.pyc
+
+# Local runs, logs, scratch
+logs/
+*.log
+instances/
+rl/out/
+scripts/*.bak.*
+scripts/gz_gui.log
+
+# Big binaries we do NOT commit
+runs/
+datasets/
+vision_datasets/
+incoming/
+raw/
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.swp
+
+# Re-include docs tree (override prior ignores)
+!docs/
+!docs/**
+
+# virtualenvs / big locals
+.venv/
+.venv_*/

@@ -1,0 +1,156 @@
+SHELL := /bin/bash
+
+# Defaults (override on CLI): make target DATASET=... EPOCHS=...
+DATASET ?= datasets/sim_2025-08-22_122259
+MAX_DEPTH ?= 20.0
+EPOCHS ?= 12
+
+CKPT := runs/depth_tinyunet/_ckpt_ep$(EPOCHS).pt
+ONNX ?= models/exported/_tinyunet_depth_e$(EPOCHS).onnx
+
+.PHONY: depth_smoke depth_offline_aug depth_train_eval depth_export_onnx \
+        depth_demo depth_live_mae depth_verify depth_hash depth_verify_hashes \
+        depth_dataset_readme depth_report depth_stamp
+
+# 1) Quick dataset smoke test (writes manifest.json)
+depth_smoke:
+	. .venv/bin/activate && python scripts/data/smoke_depth_dataset.py --dataset_root '$(DATASET)' --max_depth_m $(MAX_DEPTH) --out '$(DATASET)/manifest.json'
+
+# 2) Offline augmentation (writes $(DATASET)_aug)
+depth_offline_aug:
+	. .venv/bin/activate && python scripts/data/augment_depth_dataset.py --in '$(DATASET)' --out '$(DATASET)_aug' --copies 1 --max_depth_m $(MAX_DEPTH)
+
+# 3) Train → Eval (val+test) → Export → Report → Stamp  ✅ one command
+depth_train_eval:
+	. .venv/bin/activate && python ns_train_depth_baseline.py --data '$(DATASET)' --epochs $(EPOCHS) --size 320 240 --out runs/depth_tinyunet | tee "runs/depth_tinyunet/train_e$(EPOCHS).log"
+	. .venv/bin/activate && python ns_eval_depth.py --data '$(DATASET)' --ckpt '$(CKPT)' --max_depth_m $(MAX_DEPTH) --out runs/depth_eval | tee "runs/depth_eval/eval_e$(EPOCHS)_val.log"
+	. .venv/bin/activate && python ns_eval_depth.py --data '$(DATASET)' --ckpt '$(CKPT)' --split test --max_depth_m $(MAX_DEPTH) --out runs/depth_eval | tee "runs/depth_eval/eval_e$(EPOCHS)_test.log"
+	. .venv/bin/activate && python ns_export_onnx.py --ckpt '$(CKPT)' --out '$(ONNX)'
+	$(MAKE) depth_report DATASET='$(DATASET)' EPOCHS='$(EPOCHS)'
+	$(MAKE) depth_stamp  EPOCHS='$(EPOCHS)'
+
+# 4) Export only (when retracing a checkpoint)
+depth_export_onnx:
+	. .venv/bin/activate && python ns_export_onnx.py --ckpt '$(CKPT)' --out '$(ONNX)'
+
+# 5) Sim demo (bag + ONNX + RViz)
+depth_demo:
+	bash scripts/ns_run_depth_demo.sh
+
+# 6) Live MAE helper
+depth_live_mae:
+	bash scripts/ns_run_depth_live_mae.sh
+
+# 7) Verify dataset manifest/splits quickly
+depth_verify:
+	. .venv/bin/activate && python scripts/data/verify_depth_manifest.py --dataset_root '$(DATASET)'
+
+# 8) Hash the dataset (resume-safe)
+depth_hash:
+	. .venv/bin/activate && python scripts/data/hash_tree.py \
+	  --root '$(DATASET)' \
+	  --out  '$(DATASET)/checksums' \
+	  --workers $${WORKERS:-12} \
+	  --resume $${RESUME:-1}
+
+# 9) Verify hashes (SAMPLE=0 for full check)
+depth_verify_hashes:
+	. .venv/bin/activate && python scripts/data/verify_hashes.py \
+	  --root '$(DATASET)' \
+	  --csv  '$(DATASET)/checksums/checksums.csv' \
+	  --sample $${SAMPLE:-200}
+
+# 10) Generate dataset README (Item 41)
+depth_dataset_readme:
+	. .venv/bin/activate && python scripts/data/gen_dataset_readme.py --root '$(DATASET)'
+
+# 11) Generate the depth run report (uses scripts/report_depth_run.py)
+depth_report:
+	. .venv/bin/activate && python scripts/report_depth_run.py \
+	  --data   '$(DATASET)' \
+	  --ckpt   'runs/depth_tinyunet/_ckpt_ep$(EPOCHS).pt' \
+	  --onnx   'models/exported/_tinyunet_depth_e$(EPOCHS).onnx' \
+	  --metrics 'runs/depth_eval/metrics.txt' \
+	  --out    'runs/depth_eval/report.md'
+
+# 12) Stamp artifacts into model card (Item 41)
+depth_stamp:
+	. .venv/bin/activate && python scripts/tools/stamp_artifacts.py \
+	  --ckpt 'runs/depth_tinyunet/_ckpt_ep$(EPOCHS).pt' \
+	  --onnx 'models/exported/_tinyunet_depth_e$(EPOCHS).onnx' \
+	  --card 'runs/depth_eval/model_card.md'
+
+depth_train_eval_all:
+	. .venv/bin/activate && python ns_train_depth_baseline.py --data '$(DATASET)' --epochs $(EPOCHS) --size 320 240 --out runs/depth_tinyunet
+	. .venv/bin/activate && python ns_eval_depth.py          --data '$(DATASET)' --ckpt '$(CKPT)' --max_depth_m $(MAX_DEPTH) --out runs/depth_eval
+	. .venv/bin/activate && python ns_export_onnx.py         --ckpt '$(CKPT)' --out '$(ONNX)'
+	. .venv/bin/activate && python scripts/tools/stamp_artifacts.py --ckpt '$(CKPT)' --onnx '$(ONNX)' --card 'runs/depth_eval/model_card.md'
+	. .venv/bin/activate && python scripts/report_depth_run.py --data '$(DATASET)' --onnx '$(ONNX)' --metrics runs/depth_eval/metrics.txt --out runs/depth_eval/report.md
+.PHONY: depth_publish_docs
+depth_publish_docs:
+	@mkdir -p docs/depth_eval/e$(EPOCHS)/samples
+	@cp runs/depth_eval/report.md docs/depth_eval/e$(EPOCHS)/
+	@cp runs/depth_eval/samples/sample_*.png docs/depth_eval/e$(EPOCHS)/samples/ || true
+
+.PHONY: depth_compare
+depth_compare:
+	@mkdir -p docs/depth_eval
+	@{ \
+	  echo "# TinyUNet depth: e12 vs e24"; \
+	  echo; \
+	  echo "| Model | Split | MAE (m) | RMSE (m) |"; \
+	  echo "|---|---:|---:|---:|"; \
+	  grep -E 'e12: Eval split=' runs/depth_eval/metrics.txt | sed -E 's/.*split=([^ ]+).*MAE=([^ ]+).*RMSE=([^ ]+).*/| e12 | \1 | \2 | \3 |/'; \
+	  grep -E 'e24: Eval split=' runs/depth_eval/metrics.txt | sed -E 's/.*split=([^ ]+).*MAE=([^ ]+).*RMSE=([^ ]+).*/| e24 | \1 | \2 | \3 |/'; \
+	} > docs/depth_eval/compare_e12_e24.md
+
+.PHONY: onnx_smoke
+onnx_smoke:
+	. .venv/bin/activate && python scripts/tools/smoke_onnx.py --onnx '$(ONNX)' --size 320 240
+
+.PHONY: depth_set_default
+depth_set_default:
+	@ln -sf "$(ONNX)" "models/exported/_tinyunet_depth_default.onnx"
+	@ln -sf "$(ONNX)" "datasets/$(notdir $(DATASET))/_tinyunet_depth.onnx"
+	@echo "[ok] default -> $(ONNX)"
+
+.PHONY: lz_index lz_preview lz_train
+lz_index:
+	. .venv/bin/activate && python scripts/data/gen_lz_index.py --data '$(DATASET)'
+
+lz_preview:
+	. .venv/bin/activate && python scripts/data/viz_lz_masks.py --data '$(DATASET)' --limit $${LIMIT:-200}
+
+lz_train:
+	. .venv/bin/activate && python scripts/lz/train_lz_unet.py \
+	  --index '$(DATASET)/lz_index.csv' --root '$(DATASET)' \
+	  --size 320 240 --epochs $${EPOCHS:-2} --bs $${BS:-32} \
+	  --out runs/lz_unet
+
+.PHONY: lz_train_long lz_export
+lz_train_long:
+	. .venv/bin/activate && python scripts/lz/train_lz_unet.py \
+	  --index '$(DATASET)/lz_index.csv' --root '$(DATASET)' \
+	  --size 320 240 --epochs $${EPOCHS:-20} --bs $${BS:-64} \
+	  --out runs/lz_unet | tee runs/lz_unet/train_e$${EPOCHS:-20}.log
+
+lz_export:
+	. .venv/bin/activate && python scripts/lz/export_lz_onnx.py \
+	  --ckpt '$(CKPT)' --out '$(ONNX)'
+
+.PHONY: lz_eval
+lz_eval:
+	. .venv/bin/activate && python scripts/lz/eval_lz_onnx.py \
+	  --index '$(DATASET)/lz_index.csv' --root '$(DATASET)' \
+	  --onnx '$(ONNX)' --size 320 240 --limit $${LIMIT:-1000} \
+	  --provider $${PROVIDER:-CUDA} --out runs/lz_unet/eval.txt
+
+.PHONY: demo_view_install demo_full
+demo_view_install:
+	@sudo apt-get update && sudo apt-get install -y ros-humble-image-view
+
+# Run full pipeline (bag -> depth -> LZ -> gate). Env overrides OK:
+#   make demo_full BAG=... ONNX_DEPTH=... ONNX_LZ=... VIEW=0
+demo_full:
+	BAG='$(BAG)' ONNX_DEPTH='$(ONNX_DEPTH)' ONNX_LZ='$(ONNX_LZ)' VIEW=$${VIEW:-1} \
+	bash scripts/ns_run_full_demo.sh
