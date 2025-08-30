@@ -1,10 +1,10 @@
 {
   "control.policy": {
     "dst": "artifacts/onnx/policy_dummy.onnx",
-    "sha256": "0422cfd9d9db13f3f41fadb0f1417cb94b22fc35f16a6bc02ffe37778c6884e2",
     "src": "/home/brad/dev/northstrike/artifacts/onnx/_promote_policy.onnx",
-    "ts": 1756598204,
-    "validated_shape": "1x64"
+    "sha256": "0422cfd9d9db13f3f41fadb0f1417cb94b22fc35f16a6bc02ffe37778c6884e2",
+    "validated_shape": "1x64",
+    "ts": 1756598253
   },
   "perception.depth": {
     "dst": "artifacts/onnx/depth_e24.onnx",
