@@ -27,11 +27,11 @@ def main():
         stats=_stats(y), sha256=_sha(y.tobytes()), p50_ms=dt
     )
 
-    if args.check-against:
-        base=json.load(open(args.check-against))
+    if args.check_against:
+        base=json.load(open(args.check_against))
         dm=abs(out["stats"]["mean"]-base["stats"]["mean"])
         ds=abs(out["stats"]["std"] -base["stats"]["std"])
-        if dm>args.tol-mean or ds>args.tol-std:  # noqa
+        if dm>args.tol_mean or ds>args.tol_std:  # noqa
             print(f"[FAIL] drift mean={dm:.3e} std={ds:.3e} (tols {args.tol_mean:.1e}/{args.tol_std:.1e})")
             print(json.dumps({"current":out,"baseline":base}, indent=2))
             sys.exit(2)
