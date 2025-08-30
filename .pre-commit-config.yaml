@@ -7,3 +7,11 @@ repos:
     language: system
     pass_filenames: false
     stages: [pre-commit]
+- repo: local
+  hooks:
+  - id: onnx-normalize
+    name: onnx-normalize
+    entry: python scripts/inference/normalize_onnx.py
+    language: system
+    files: ^artifacts/onnx/.*\.onnx$
+    pass_filenames: true
