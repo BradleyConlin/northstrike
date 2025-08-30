@@ -1,5 +1,5 @@
 .RECIPEPREFIX := >
-.PHONY: onnx-check onnx-perf onnx-demos onnx-e2e onnx-all
+.PHONY: onnx-check onnx-perf onnx-e2e onnx-promote onnx-all
 
 onnx-check:
 > python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
@@ -7,11 +7,15 @@ onnx-check:
 onnx-perf:
 > python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir artifacts/perf --check
 
-onnx-demos:
-> python scripts/inference/run_policy_offline.py --model artifacts/onnx/policy_dummy.onnx --in-csv artifacts/perf/policy_inputs_demo.csv --out-csv artifacts/perf/policy_outputs_demo.csv
-> python scripts/inference/run_depth_offline.py --model artifacts/onnx/depth_e24.onnx --mode rand --out-npz artifacts/perf/depth_out_demo.npz --out-csv artifacts/perf/depth_stats_demo.csv
-
 onnx-e2e:
-> python scripts/inference/e2e_tick.py --out artifacts/perf/e2e_tick.json
+> pytest -q training/tests/inference/test_e2e_tick_smoke.py
 
-onnx-all: onnx-check onnx-perf onnx-demos onnx-e2e
+onnx-promote:
+> pytest -q training/tests/inference/test_promote_model_smoke.py
+
+onnx-all: onnx-check onnx-perf
+> pytest -q \
+>   training/tests/inference/test_depth_offline_smoke.py \
+>   training/tests/inference/test_policy_offline_smoke.py \
+>   training/tests/inference/test_e2e_tick_smoke.py \
+>   training/tests/inference/test_promote_model_smoke.py
