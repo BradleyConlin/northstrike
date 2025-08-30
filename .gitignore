@@ -1,0 +1,7 @@
+/.venv/
+/datasets/
+/runs/*/pred/
+/runs/*/overlay/*.npy
+__pycache__/
+*.pyc
+*.log
