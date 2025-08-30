@@ -6,7 +6,6 @@ import math
 import os
 import time
 from pathlib import Path
-from typing import Tuple
 
 import matplotlib.pyplot as plt
 import mlflow
@@ -28,7 +27,7 @@ def _set_mlflow() -> None:
         print("🛰️  MLflow tracking at file:./mlflow_local")
 
 
-def latlon_to_meters(lat: np.ndarray, lon: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def latlon_to_meters(lat: np.ndarray, lon: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Convert lat/lon deltas to local meters using an equirectangular approximation."""
     lat0 = float(lat[0])
     lon0 = float(lon[0])
@@ -124,12 +123,12 @@ img{{max-width:48%;}}
 </style></head><body>
 <h2>Hover KPI Report</h2>
 <table>
-<tr><th>Samples</th><td>{kpis['samples']}</td></tr>
-<tr><th>Altitude ref (m)</th><td>{kpis['alt_ref_m']:.2f}</td></tr>
-<tr><th>Altitude RMS (m)</th><td>{kpis['hover_rms_m']:.3f}</td></tr>
-<tr><th>Altitude max dev (m)</th><td>{kpis['hover_max_dev_m']:.3f}</td></tr>
-<tr><th>XY RMS (m)</th><td>{kpis['xy_rms_m']:.3f}</td></tr>
-<tr><th>XY max (m)</th><td>{kpis['xy_max_m']:.3f}</td></tr>
+<tr><th>Samples</th><td>{kpis["samples"]}</td></tr>
+<tr><th>Altitude ref (m)</th><td>{kpis["alt_ref_m"]:.2f}</td></tr>
+<tr><th>Altitude RMS (m)</th><td>{kpis["hover_rms_m"]:.3f}</td></tr>
+<tr><th>Altitude max dev (m)</th><td>{kpis["hover_max_dev_m"]:.3f}</td></tr>
+<tr><th>XY RMS (m)</th><td>{kpis["xy_rms_m"]:.3f}</td></tr>
+<tr><th>XY max (m)</th><td>{kpis["xy_max_m"]:.3f}</td></tr>
 </table>
 <div>
   <img src="{p1.name}" alt="Altitude over time">

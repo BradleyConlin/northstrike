@@ -4,7 +4,6 @@ from __future__ import annotations
 import math
 import random
 from dataclasses import dataclass
-from typing import Tuple
 
 
 @dataclass
@@ -46,5 +45,5 @@ class WindField:
         self.wy = OUWind1D(p_xy, seed=seed + 2)
         self.wz = OUWind1D(p_z, seed=seed + 3)
 
-    def sample(self, dt: float) -> Tuple[float, float, float]:
+    def sample(self, dt: float) -> tuple[float, float, float]:
         return (self.wx.step(dt), self.wy.step(dt), self.wz.step(dt))

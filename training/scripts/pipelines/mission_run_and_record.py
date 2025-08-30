@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Mission runner (PX4 SITL + MAVSDK) for Python 3.10.
 

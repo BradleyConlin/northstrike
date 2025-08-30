@@ -23,5 +23,3 @@ The core flow uses ROS 2 packages (from apt), not pip. Only optional scripts nee
 # then, whenever needed:
 source .venv/bin/activate
 pip install -r requirements.txt
-
-

@@ -1,5 +1,5 @@
 ERROR [px4] unrecognized flag
-Usage for Server/daemon process: 
+Usage for Server/daemon process:
 
     px4 [-h|-d] [-s <startup_file>] [-t <test_data_directory>] [<rootfs_directory>] [-i <instance>] [-w <working_directory>]
 
@@ -11,7 +11,7 @@ Usage for Server/daemon process:
     -h                     help/usage information
     -d                     daemon mode, don't start pxh shell
 
-Usage for client: 
+Usage for client:
 
     px4-MODULE [--instance <instance>] command using symlink.
         e.g.: px4-commander status

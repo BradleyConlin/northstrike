@@ -93,22 +93,22 @@ test	Run actions/checkout@v4	2025-08-18T20:26:29.6750338Z [command]/usr/bin/git 
 test	Run actions/checkout@v4	2025-08-18T20:26:29.6796825Z ##[group]Checking out the ref
 test	Run actions/checkout@v4	2025-08-18T20:26:29.6806605Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/13/merge
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7078255Z Note: switching to 'refs/remotes/pull/13/merge'.
-test	Run actions/checkout@v4	2025-08-18T20:26:29.7079831Z 
+test	Run actions/checkout@v4	2025-08-18T20:26:29.7079831Z
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7081246Z You are in 'detached HEAD' state. You can look around, make experimental
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7083660Z changes and commit them, and you can discard any commits you make in this
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7086245Z state without impacting any branches by switching back to a branch.
-test	Run actions/checkout@v4	2025-08-18T20:26:29.7087774Z 
+test	Run actions/checkout@v4	2025-08-18T20:26:29.7087774Z
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7088767Z If you want to create a new branch to retain commits you create, you may
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7091280Z do so (now or later) by using -c with the switch command. Example:
-test	Run actions/checkout@v4	2025-08-18T20:26:29.7092778Z 
+test	Run actions/checkout@v4	2025-08-18T20:26:29.7092778Z
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7093288Z   git switch -c <new-branch-name>
-test	Run actions/checkout@v4	2025-08-18T20:26:29.7094438Z 
+test	Run actions/checkout@v4	2025-08-18T20:26:29.7094438Z
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7094932Z Or undo this operation with:
-test	Run actions/checkout@v4	2025-08-18T20:26:29.7095959Z 
+test	Run actions/checkout@v4	2025-08-18T20:26:29.7095959Z
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7096667Z   git switch -
-test	Run actions/checkout@v4	2025-08-18T20:26:29.7102840Z 
+test	Run actions/checkout@v4	2025-08-18T20:26:29.7102840Z
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7105677Z Turn off this advice by setting config variable advice.detachedHead to false
-test	Run actions/checkout@v4	2025-08-18T20:26:29.7107637Z 
+test	Run actions/checkout@v4	2025-08-18T20:26:29.7107637Z
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7109964Z HEAD is now at 3ce3e67 Merge 5d84874e55777c3ff3c1736472517744fc83ba4c into 42a0b1f03fe40c0c272c8893be2bb93ac6e0ff3c
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7118653Z ##[endgroup]
 test	Run actions/checkout@v4	2025-08-18T20:26:29.7136534Z [command]/usr/bin/git log -1 --format=%H
@@ -251,7 +251,7 @@ test	Install deps	2025-08-18T20:26:36.6022953Z    ━━━━━━━━━━
 test	Install deps	2025-08-18T20:26:36.6068657Z Downloading distlib-0.4.0-py2.py3-none-any.whl (469 kB)
 test	Install deps	2025-08-18T20:26:36.6153172Z Downloading filelock-3.19.1-py3-none-any.whl (15 kB)
 test	Install deps	2025-08-18T20:26:36.8129802Z Installing collected packages: pytz, distlib, tzdata, typing-extensions, tomli, six, pyyaml, pygments, pyflakes, pycodestyle, pluggy, platformdirs, pathspec, packaging, numpy, nodeenv, mypy-extensions, mccabe, isort, iniconfig, identify, filelock, coverage, click, cfgv, virtualenv, python-dateutil, flake8, exceptiongroup, black, pytest, pre-commit, pandas, pytest-cov
-test	Install deps	2025-08-18T20:26:44.6808581Z 
+test	Install deps	2025-08-18T20:26:44.6808581Z
 test	Install deps	2025-08-18T20:26:44.6869177Z Successfully installed black-25.1.0 cfgv-3.4.0 click-8.2.1 coverage-7.10.4 distlib-0.4.0 exceptiongroup-1.3.0 filelock-3.19.1 flake8-7.3.0 identify-2.6.13 iniconfig-2.1.0 isort-6.0.1 mccabe-0.7.0 mypy-extensions-1.1.0 nodeenv-1.9.1 numpy-1.26.4 packaging-25.0 pandas-2.2.2 pathspec-0.12.1 platformdirs-4.3.8 pluggy-1.6.0 pre-commit-4.3.0 pycodestyle-2.14.0 pyflakes-3.4.0 pygments-2.19.2 pytest-8.4.1 pytest-cov-6.2.1 python-dateutil-2.9.0.post0 pytz-2025.2 pyyaml-6.0.2 six-1.17.0 tomli-2.2.1 typing-extensions-4.14.1 tzdata-2025.2 virtualenv-20.34.0
 test	Run tests	﻿2025-08-18T20:26:44.8233407Z ##[group]Run pytest -q
 test	Run tests	2025-08-18T20:26:44.8233676Z [36;1mpytest -q[0m
@@ -267,15 +267,15 @@ test	Run tests	2025-08-18T20:26:44.8277854Z ##[endgroup]
 test	Run tests	2025-08-18T20:26:47.0120214Z .....FF....FF......                                                      [100%]
 test	Run tests	2025-08-18T20:26:47.0120843Z =================================== FAILURES ===================================
 test	Run tests	2025-08-18T20:26:47.0121485Z ______________ test_imports[scripts.evaluation.log_dummy_metrics] ______________
-test	Run tests	2025-08-18T20:26:47.0121998Z 
+test	Run tests	2025-08-18T20:26:47.0121998Z
 test	Run tests	2025-08-18T20:26:47.0122116Z mod = 'scripts.evaluation.log_dummy_metrics'
-test	Run tests	2025-08-18T20:26:47.0122332Z 
+test	Run tests	2025-08-18T20:26:47.0122332Z
 test	Run tests	2025-08-18T20:26:47.0122449Z     @pytest.mark.parametrize("mod", SCRIPTS)
 test	Run tests	2025-08-18T20:26:47.0122716Z     def test_imports(mod):
 test	Run tests	2025-08-18T20:26:47.0122938Z >       importlib.import_module(mod)
-test	Run tests	2025-08-18T20:26:47.0123116Z 
-test	Run tests	2025-08-18T20:26:47.0123206Z tests/test_cli_smoke.py:19: 
-test	Run tests	2025-08-18T20:26:47.0123454Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test	Run tests	2025-08-18T20:26:47.0123116Z
+test	Run tests	2025-08-18T20:26:47.0123206Z tests/test_cli_smoke.py:19:
+test	Run tests	2025-08-18T20:26:47.0123454Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 test	Run tests	2025-08-18T20:26:47.0124066Z /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/importlib/__init__.py:126: in import_module
 test	Run tests	2025-08-18T20:26:47.0124593Z     return _bootstrap._gcd_import(name[level:], package, level)
 test	Run tests	2025-08-18T20:26:47.0124940Z <frozen importlib._bootstrap>:1050: in _gcd_import
@@ -290,29 +290,29 @@ test	Run tests	2025-08-18T20:26:47.0127081Z <frozen importlib._bootstrap_externa
 test	Run tests	2025-08-18T20:26:47.0127592Z     ???
 test	Run tests	2025-08-18T20:26:47.0127818Z <frozen importlib._bootstrap>:241: in _call_with_frames_removed
 test	Run tests	2025-08-18T20:26:47.0128115Z     ???
-test	Run tests	2025-08-18T20:26:47.0128306Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-test	Run tests	2025-08-18T20:26:47.0128503Z 
+test	Run tests	2025-08-18T20:26:47.0128306Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test	Run tests	2025-08-18T20:26:47.0128503Z
 test	Run tests	2025-08-18T20:26:47.0128580Z     #!/usr/bin/env python3
 test	Run tests	2025-08-18T20:26:47.0129007Z     import random
-test	Run tests	2025-08-18T20:26:47.0129186Z     
+test	Run tests	2025-08-18T20:26:47.0129186Z
 test	Run tests	2025-08-18T20:26:47.0129328Z     try:
 test	Run tests	2025-08-18T20:26:47.0129490Z         import mlflow
 test	Run tests	2025-08-18T20:26:47.0129682Z     except Exception:
 test	Run tests	2025-08-18T20:26:47.0129918Z         mlflow = None  # optional for --help/import in CI
 test	Run tests	2025-08-18T20:26:47.0130292Z >   mlflow.set_tracking_uri("http://127.0.0.1:5000")
 test	Run tests	2025-08-18T20:26:47.0130666Z E   AttributeError: 'NoneType' object has no attribute 'set_tracking_uri'
-test	Run tests	2025-08-18T20:26:47.0130937Z 
+test	Run tests	2025-08-18T20:26:47.0130937Z
 test	Run tests	2025-08-18T20:26:47.0131085Z scripts/evaluation/log_dummy_metrics.py:8: AttributeError
 test	Run tests	2025-08-18T20:26:47.0131490Z _____________ test_imports[scripts.evaluation.waypoint_kpi_report] _____________
-test	Run tests	2025-08-18T20:26:47.0131776Z 
+test	Run tests	2025-08-18T20:26:47.0131776Z
 test	Run tests	2025-08-18T20:26:47.0131889Z mod = 'scripts.evaluation.waypoint_kpi_report'
-test	Run tests	2025-08-18T20:26:47.0132077Z 
+test	Run tests	2025-08-18T20:26:47.0132077Z
 test	Run tests	2025-08-18T20:26:47.0132187Z     @pytest.mark.parametrize("mod", SCRIPTS)
 test	Run tests	2025-08-18T20:26:47.0132437Z     def test_imports(mod):
 test	Run tests	2025-08-18T20:26:47.0132657Z >       importlib.import_module(mod)
-test	Run tests	2025-08-18T20:26:47.0132819Z 
-test	Run tests	2025-08-18T20:26:47.0132902Z tests/test_cli_smoke.py:19: 
-test	Run tests	2025-08-18T20:26:47.0133146Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test	Run tests	2025-08-18T20:26:47.0132819Z
+test	Run tests	2025-08-18T20:26:47.0132902Z tests/test_cli_smoke.py:19:
+test	Run tests	2025-08-18T20:26:47.0133146Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 test	Run tests	2025-08-18T20:26:47.0133614Z /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/importlib/__init__.py:126: in import_module
 test	Run tests	2025-08-18T20:26:47.0134330Z     return _bootstrap._gcd_import(name[level:], package, level)
 test	Run tests	2025-08-18T20:26:47.0134684Z <frozen importlib._bootstrap>:1050: in _gcd_import
@@ -327,11 +327,11 @@ test	Run tests	2025-08-18T20:26:47.0136776Z <frozen importlib._bootstrap_externa
 test	Run tests	2025-08-18T20:26:47.0137055Z     ???
 test	Run tests	2025-08-18T20:26:47.0137274Z <frozen importlib._bootstrap>:241: in _call_with_frames_removed
 test	Run tests	2025-08-18T20:26:47.0137572Z     ???
-test	Run tests	2025-08-18T20:26:47.0137760Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-test	Run tests	2025-08-18T20:26:47.0137960Z 
+test	Run tests	2025-08-18T20:26:47.0137760Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test	Run tests	2025-08-18T20:26:47.0137960Z
 test	Run tests	2025-08-18T20:26:47.0138051Z     #!/usr/bin/env python3
 test	Run tests	2025-08-18T20:26:47.0138264Z     from __future__ import annotations
-test	Run tests	2025-08-18T20:26:47.0138496Z     
+test	Run tests	2025-08-18T20:26:47.0138496Z
 test	Run tests	2025-08-18T20:26:47.0138655Z     import argparse
 test	Run tests	2025-08-18T20:26:47.0138845Z     import datetime as dt
 test	Run tests	2025-08-18T20:26:47.0139039Z     import json
@@ -340,7 +340,7 @@ test	Run tests	2025-08-18T20:26:47.0139375Z     import os
 test	Run tests	2025-08-18T20:26:47.0139538Z     import subprocess
 test	Run tests	2025-08-18T20:26:47.0139761Z     from pathlib import Path
 test	Run tests	2025-08-18T20:26:47.0140067Z     from typing import List, Tuple
-test	Run tests	2025-08-18T20:26:47.0140286Z     
+test	Run tests	2025-08-18T20:26:47.0140286Z
 test	Run tests	2025-08-18T20:26:47.0140432Z     try:
 test	Run tests	2025-08-18T20:26:47.0140583Z         import mlflow
 test	Run tests	2025-08-18T20:26:47.0140772Z     except Exception:
@@ -348,62 +348,62 @@ test	Run tests	2025-08-18T20:26:47.0140999Z         mlflow = None  # optional fo
 test	Run tests	2025-08-18T20:26:47.0141285Z     import pandas as pd
 test	Run tests	2025-08-18T20:26:47.0141506Z >   from mlflow.tracking import MlflowClient
 test	Run tests	2025-08-18T20:26:47.0141802Z E   ModuleNotFoundError: No module named 'mlflow'
-test	Run tests	2025-08-18T20:26:47.0142004Z 
+test	Run tests	2025-08-18T20:26:47.0142004Z
 test	Run tests	2025-08-18T20:26:47.0142178Z scripts/evaluation/waypoint_kpi_report.py:18: ModuleNotFoundError
 test	Run tests	2025-08-18T20:26:47.0142615Z _____________ test_help_runs[scripts.evaluation.log_dummy_metrics] _____________
-test	Run tests	2025-08-18T20:26:47.0142883Z 
+test	Run tests	2025-08-18T20:26:47.0142883Z
 test	Run tests	2025-08-18T20:26:47.0142990Z mod = 'scripts.evaluation.log_dummy_metrics'
 test	Run tests	2025-08-18T20:26:47.0143506Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f69ea81a320>
-test	Run tests	2025-08-18T20:26:47.0143839Z 
+test	Run tests	2025-08-18T20:26:47.0143839Z
 test	Run tests	2025-08-18T20:26:47.0143941Z     @pytest.mark.parametrize("mod", SCRIPTS)
 test	Run tests	2025-08-18T20:26:47.0144220Z     def test_help_runs(mod, monkeypatch):
 test	Run tests	2025-08-18T20:26:47.0144559Z         # Run the module as a script with --help; argparse should exit cleanly.
 test	Run tests	2025-08-18T20:26:47.0145003Z         monkeypatch.setattr(sys, "argv", [mod.rsplit(".", 1)[-1], "--help"])
 test	Run tests	2025-08-18T20:26:47.0145601Z         with pytest.raises(SystemExit):
 test	Run tests	2025-08-18T20:26:47.0145875Z >           runpy.run_module(mod, run_name="__main__")
-test	Run tests	2025-08-18T20:26:47.0146058Z 
-test	Run tests	2025-08-18T20:26:47.0146147Z tests/test_cli_smoke.py:27: 
-test	Run tests	2025-08-18T20:26:47.0146390Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test	Run tests	2025-08-18T20:26:47.0146058Z
+test	Run tests	2025-08-18T20:26:47.0146147Z tests/test_cli_smoke.py:27:
+test	Run tests	2025-08-18T20:26:47.0146390Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 test	Run tests	2025-08-18T20:26:47.0146793Z /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:227: in run_module
 test	Run tests	2025-08-18T20:26:47.0147240Z     return _run_code(code, {}, init_globals, run_name, mod_spec)
 test	Run tests	2025-08-18T20:26:47.0147674Z /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:86: in _run_code
 test	Run tests	2025-08-18T20:26:47.0148036Z     exec(code, run_globals)
-test	Run tests	2025-08-18T20:26:47.0148273Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-test	Run tests	2025-08-18T20:26:47.0148464Z 
+test	Run tests	2025-08-18T20:26:47.0148273Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test	Run tests	2025-08-18T20:26:47.0148464Z
 test	Run tests	2025-08-18T20:26:47.0148541Z     #!/usr/bin/env python3
 test	Run tests	2025-08-18T20:26:47.0148735Z     import random
-test	Run tests	2025-08-18T20:26:47.0148896Z     
+test	Run tests	2025-08-18T20:26:47.0148896Z
 test	Run tests	2025-08-18T20:26:47.0149041Z     try:
 test	Run tests	2025-08-18T20:26:47.0149191Z         import mlflow
 test	Run tests	2025-08-18T20:26:47.0149378Z     except Exception:
 test	Run tests	2025-08-18T20:26:47.0149607Z         mlflow = None  # optional for --help/import in CI
 test	Run tests	2025-08-18T20:26:47.0150096Z >   mlflow.set_tracking_uri("http://127.0.0.1:5000")
 test	Run tests	2025-08-18T20:26:47.0150485Z E   AttributeError: 'NoneType' object has no attribute 'set_tracking_uri'
-test	Run tests	2025-08-18T20:26:47.0150747Z 
+test	Run tests	2025-08-18T20:26:47.0150747Z
 test	Run tests	2025-08-18T20:26:47.0150885Z scripts/evaluation/log_dummy_metrics.py:8: AttributeError
 test	Run tests	2025-08-18T20:26:47.0151283Z ____________ test_help_runs[scripts.evaluation.waypoint_kpi_report] ____________
-test	Run tests	2025-08-18T20:26:47.0151549Z 
+test	Run tests	2025-08-18T20:26:47.0151549Z
 test	Run tests	2025-08-18T20:26:47.0151664Z mod = 'scripts.evaluation.waypoint_kpi_report'
 test	Run tests	2025-08-18T20:26:47.0152030Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f69f95c0b20>
-test	Run tests	2025-08-18T20:26:47.0152297Z 
+test	Run tests	2025-08-18T20:26:47.0152297Z
 test	Run tests	2025-08-18T20:26:47.0152403Z     @pytest.mark.parametrize("mod", SCRIPTS)
 test	Run tests	2025-08-18T20:26:47.0152664Z     def test_help_runs(mod, monkeypatch):
 test	Run tests	2025-08-18T20:26:47.0152990Z         # Run the module as a script with --help; argparse should exit cleanly.
 test	Run tests	2025-08-18T20:26:47.0153394Z         monkeypatch.setattr(sys, "argv", [mod.rsplit(".", 1)[-1], "--help"])
 test	Run tests	2025-08-18T20:26:47.0153742Z         with pytest.raises(SystemExit):
 test	Run tests	2025-08-18T20:26:47.0154005Z >           runpy.run_module(mod, run_name="__main__")
-test	Run tests	2025-08-18T20:26:47.0154183Z 
-test	Run tests	2025-08-18T20:26:47.0154263Z tests/test_cli_smoke.py:27: 
-test	Run tests	2025-08-18T20:26:47.0154503Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test	Run tests	2025-08-18T20:26:47.0154183Z
+test	Run tests	2025-08-18T20:26:47.0154263Z tests/test_cli_smoke.py:27:
+test	Run tests	2025-08-18T20:26:47.0154503Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 test	Run tests	2025-08-18T20:26:47.0154906Z /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:227: in run_module
 test	Run tests	2025-08-18T20:26:47.0155496Z     return _run_code(code, {}, init_globals, run_name, mod_spec)
 test	Run tests	2025-08-18T20:26:47.0155911Z /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:86: in _run_code
 test	Run tests	2025-08-18T20:26:47.0156290Z     exec(code, run_globals)
-test	Run tests	2025-08-18T20:26:47.0156520Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-test	Run tests	2025-08-18T20:26:47.0156709Z 
+test	Run tests	2025-08-18T20:26:47.0156520Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+test	Run tests	2025-08-18T20:26:47.0156709Z
 test	Run tests	2025-08-18T20:26:47.0156784Z     #!/usr/bin/env python3
 test	Run tests	2025-08-18T20:26:47.0156999Z     from __future__ import annotations
-test	Run tests	2025-08-18T20:26:47.0157220Z     
+test	Run tests	2025-08-18T20:26:47.0157220Z
 test	Run tests	2025-08-18T20:26:47.0157379Z     import argparse
 test	Run tests	2025-08-18T20:26:47.0157557Z     import datetime as dt
 test	Run tests	2025-08-18T20:26:47.0157752Z     import json
@@ -412,7 +412,7 @@ test	Run tests	2025-08-18T20:26:47.0158071Z     import os
 test	Run tests	2025-08-18T20:26:47.0158239Z     import subprocess
 test	Run tests	2025-08-18T20:26:47.0158427Z     from pathlib import Path
 test	Run tests	2025-08-18T20:26:47.0158784Z     from typing import List, Tuple
-test	Run tests	2025-08-18T20:26:47.0158989Z     
+test	Run tests	2025-08-18T20:26:47.0158989Z
 test	Run tests	2025-08-18T20:26:47.0159130Z     try:
 test	Run tests	2025-08-18T20:26:47.0159277Z         import mlflow
 test	Run tests	2025-08-18T20:26:47.0159458Z     except Exception:
@@ -420,25 +420,25 @@ test	Run tests	2025-08-18T20:26:47.0159674Z         mlflow = None  # optional fo
 test	Run tests	2025-08-18T20:26:47.0159958Z     import pandas as pd
 test	Run tests	2025-08-18T20:26:47.0160177Z >   from mlflow.tracking import MlflowClient
 test	Run tests	2025-08-18T20:26:47.0160463Z E   ModuleNotFoundError: No module named 'mlflow'
-test	Run tests	2025-08-18T20:26:47.0160654Z 
+test	Run tests	2025-08-18T20:26:47.0160654Z
 test	Run tests	2025-08-18T20:26:47.0160831Z scripts/evaluation/waypoint_kpi_report.py:18: ModuleNotFoundError
 test	Run tests	2025-08-18T20:26:47.0161195Z =============================== warnings summary ===============================
 test	Run tests	2025-08-18T20:26:47.0161681Z tests/test_cli_smoke.py::test_help_runs[scripts.evaluation.assert_hover_kpis]
 test	Run tests	2025-08-18T20:26:47.0162885Z   /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:126: RuntimeWarning: 'scripts.evaluation.assert_hover_kpis' found in sys.modules after import of package 'scripts.evaluation', but prior to execution of 'scripts.evaluation.assert_hover_kpis'; this may result in unpredictable behaviour
 test	Run tests	2025-08-18T20:26:47.0163965Z     warn(RuntimeWarning(msg))
-test	Run tests	2025-08-18T20:26:47.0164109Z 
+test	Run tests	2025-08-18T20:26:47.0164109Z
 test	Run tests	2025-08-18T20:26:47.0164318Z tests/test_cli_smoke.py::test_help_runs[scripts.evaluation.assert_mission_kpis]
 test	Run tests	2025-08-18T20:26:47.0165612Z   /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:126: RuntimeWarning: 'scripts.evaluation.assert_mission_kpis' found in sys.modules after import of package 'scripts.evaluation', but prior to execution of 'scripts.evaluation.assert_mission_kpis'; this may result in unpredictable behaviour
 test	Run tests	2025-08-18T20:26:47.0166824Z     warn(RuntimeWarning(msg))
-test	Run tests	2025-08-18T20:26:47.0166965Z 
+test	Run tests	2025-08-18T20:26:47.0166965Z
 test	Run tests	2025-08-18T20:26:47.0167164Z tests/test_cli_smoke.py::test_help_runs[scripts.evaluation.eval_perception]
 test	Run tests	2025-08-18T20:26:47.0168303Z   /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:126: RuntimeWarning: 'scripts.evaluation.eval_perception' found in sys.modules after import of package 'scripts.evaluation', but prior to execution of 'scripts.evaluation.eval_perception'; this may result in unpredictable behaviour
 test	Run tests	2025-08-18T20:26:47.0169334Z     warn(RuntimeWarning(msg))
-test	Run tests	2025-08-18T20:26:47.0169471Z 
+test	Run tests	2025-08-18T20:26:47.0169471Z
 test	Run tests	2025-08-18T20:26:47.0169660Z tests/test_cli_smoke.py::test_help_runs[scripts.evaluation.hover_kpi_report]
 test	Run tests	2025-08-18T20:26:47.0170788Z   /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/runpy.py:126: RuntimeWarning: 'scripts.evaluation.hover_kpi_report' found in sys.modules after import of package 'scripts.evaluation', but prior to execution of 'scripts.evaluation.hover_kpi_report'; this may result in unpredictable behaviour
 test	Run tests	2025-08-18T20:26:47.0171818Z     warn(RuntimeWarning(msg))
-test	Run tests	2025-08-18T20:26:47.0171951Z 
+test	Run tests	2025-08-18T20:26:47.0171951Z
 test	Run tests	2025-08-18T20:26:47.0172138Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 test	Run tests	2025-08-18T20:26:47.0172534Z =========================== short test summary info ============================
 test	Run tests	2025-08-18T20:26:47.0173175Z FAILED tests/test_cli_smoke.py::test_imports[scripts.evaluation.log_dummy_metrics] - AttributeError: 'NoneType' object has no attribute 'set_tracking_uri'

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-import argparse, os, glob
+import argparse
+import glob
 from pathlib import Path
+
 import cv2
 import numpy as np
+
 
 def imread_rgb(path: str, tile_w: int, tile_h: int) -> np.ndarray:
     img = cv2.imread(path, cv2.IMREAD_COLOR)  # BGR uint8 (3ch)
@@ -10,6 +13,7 @@ def imread_rgb(path: str, tile_w: int, tile_h: int) -> np.ndarray:
         return np.full((tile_h, tile_w, 3), 0, np.uint8)
     img = cv2.resize(img, (tile_w, tile_h), interpolation=cv2.INTER_AREA)
     return img
+
 
 def imread_depth_colored(path: str, tile_w: int, tile_h: int) -> np.ndarray:
     # Load unchanged; could be 16-bit depth or already 8/3ch
@@ -35,6 +39,7 @@ def imread_depth_colored(path: str, tile_w: int, tile_h: int) -> np.ndarray:
     color = cv2.resize(color, (tile_w, tile_h), interpolation=cv2.INTER_NEAREST)
     return color
 
+
 def make_grid(imgs: list[np.ndarray], cols: int) -> np.ndarray:
     if not imgs:
         return np.zeros((1, 1, 3), np.uint8)
@@ -54,13 +59,14 @@ def make_grid(imgs: list[np.ndarray], cols: int) -> np.ndarray:
 
     rows = []
     for i in range(0, len(safe), cols):
-        row = safe[i:i+cols]
+        row = safe[i : i + cols]
         # pad short row to full width
         while len(row) < cols:
             row.append(np.full((h, w, 3), 0, np.uint8))
         rows.append(cv2.hconcat(row))  # same height/type → OK
-    grid = cv2.vconcat(rows)          # same width/type across rows → OK
+    grid = cv2.vconcat(rows)  # same width/type across rows → OK
     return grid
+
 
 def pad_to_width(img: np.ndarray, target_w: int) -> np.ndarray:
     h, w = img.shape[:2]
@@ -69,7 +75,10 @@ def pad_to_width(img: np.ndarray, target_w: int) -> np.ndarray:
     pad = target_w - w
     left = pad // 2
     right = pad - left
-    return cv2.copyMakeBorder(img, 0, 0, left, right, borderType=cv2.BORDER_CONSTANT, value=(0,0,0))
+    return cv2.copyMakeBorder(
+        img, 0, 0, left, right, borderType=cv2.BORDER_CONSTANT, value=(0, 0, 0)
+    )
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -82,8 +91,8 @@ def main():
     out = Path(args.out)
     rgb_dir = out / "rgb"
     depth_dir = out / "depth"
-    rgb_paths = sorted(glob.glob(str(rgb_dir / "*.png")))[:args.n]
-    depth_paths = sorted(glob.glob(str(depth_dir / "*.png")))[:args.n]
+    rgb_paths = sorted(glob.glob(str(rgb_dir / "*.png")))[: args.n]
+    depth_paths = sorted(glob.glob(str(depth_dir / "*.png")))[: args.n]
 
     # Build per-modality grids (each image normalized to tile x tile and 3-channel uint8)
     rgb_imgs = [imread_rgb(p, args.tile, args.tile) for p in rgb_paths]
@@ -108,13 +117,22 @@ def main():
     # optional label strip at top
     label_h = 40
     strip = np.full((label_h, canvas.shape[1], 3), 30, np.uint8)
-    cv2.putText(strip, f"RGB (top) • Depth (bottom)  |  tiles={args.n} cols={args.cols} tile={args.tile}",
-                (10, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (240,240,240), 2, cv2.LINE_AA)
+    cv2.putText(
+        strip,
+        f"RGB (top) • Depth (bottom)  |  tiles={args.n} cols={args.cols} tile={args.tile}",
+        (10, 28),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (240, 240, 240),
+        2,
+        cv2.LINE_AA,
+    )
     out_img = cv2.vconcat([strip, canvas])
 
     preview = str(out / "preview.jpg")
     cv2.imwrite(preview, out_img)
     print("Wrote", preview)
+
 
 if __name__ == "__main__":
     main()

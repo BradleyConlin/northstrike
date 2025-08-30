@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import asyncio
 import time
-from typing import Optional
 
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
@@ -78,7 +76,7 @@ async def arm_and_takeoff(drone: System, takeoff_alt_m: float = 2.5) -> None:
 
     # wait until we're in air and near target altitude
     async def _at_alt():
-        last_rel_alt: Optional[float] = None
+        last_rel_alt: float | None = None
         async for pos in drone.telemetry.position():
             last_rel_alt = pos.relative_altitude_m
             break

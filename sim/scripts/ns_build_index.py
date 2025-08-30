@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-import argparse, csv, math
+import argparse
+import csv
 from pathlib import Path
+
 
 def parse_time_from_name(p: Path):
     try:
@@ -8,14 +10,19 @@ def parse_time_from_name(p: Path):
     except Exception:
         return None
 
+
 def list_images(dirpath: Path):
-    files = sorted([p for p in dirpath.glob("*.png") if p.is_file()],
-                   key=lambda p: p.stat().st_size)  # cheap pre-sort noise filter
+    files = sorted(
+        [p for p in dirpath.glob("*.png") if p.is_file()], key=lambda p: p.stat().st_size
+    )  # cheap pre-sort noise filter
     # final sort by parsed timestamp
-    files = sorted([p for p in files if parse_time_from_name(p) is not None],
-                   key=lambda p: parse_time_from_name(p))
+    files = sorted(
+        [p for p in files if parse_time_from_name(p) is not None],
+        key=lambda p: parse_time_from_name(p),
+    )
     times = [parse_time_from_name(p) for p in files]
     return times, files
+
 
 def pair_nearest(rgb_times, rgb_files, depth_times, depth_files, max_dt):
     pairs = []
@@ -23,14 +30,14 @@ def pair_nearest(rgb_times, rgb_files, depth_times, depth_files, max_dt):
     n_depth = len(depth_times)
     for i, t in enumerate(rgb_times):
         # advance depth pointer up to just <= t
-        while j + 1 < n_depth and depth_times[j+1] <= t:
+        while j + 1 < n_depth and depth_times[j + 1] <= t:
             j += 1
         # consider j and j+1
         cand = []
         if 0 <= j < n_depth:
-            cand.append((abs(depth_times[j]-t), j))
-        if 0 <= j+1 < n_depth:
-            cand.append((abs(depth_times[j+1]-t), j+1))
+            cand.append((abs(depth_times[j] - t), j))
+        if 0 <= j + 1 < n_depth:
+            cand.append((abs(depth_times[j + 1] - t), j + 1))
         if not cand:
             continue
         _, jbest = min(cand, key=lambda x: x[0])
@@ -39,6 +46,7 @@ def pair_nearest(rgb_times, rgb_files, depth_times, depth_files, max_dt):
             pairs.append((t, rgb_files[i], depth_times[jbest], depth_files[jbest], dt))
     return pairs
 
+
 def write_csv(path: Path, rows):
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as f:
@@ -46,18 +54,23 @@ def write_csv(path: Path, rows):
         w.writerow(["t_rgb", "rgb_path", "t_depth", "depth_path", "abs_dt"])
         for t_rgb, rgb, t_d, dep, dt in rows:
             # store relative paths to dataset root
-            w.writerow([f"{t_rgb:.9f}",
-                        str(rgb.as_posix()),
-                        f"{t_d:.9f}",
-                        str(dep.as_posix()),
-                        f"{dt:.6f}"])
+            w.writerow(
+                [
+                    f"{t_rgb:.9f}",
+                    str(rgb.as_posix()),
+                    f"{t_d:.9f}",
+                    str(dep.as_posix()),
+                    f"{dt:.6f}",
+                ]
+            )
+
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True, help="Dataset root (contains rgb/ and depth/)")
     ap.add_argument("--max_dt", type=float, default=0.05, help="Max |dt| to pair (seconds)")
     ap.add_argument("--train", type=float, default=0.8, help="Train fraction")
-    ap.add_argument("--val",   type=float, default=0.1, help="Val fraction (rest is test)")
+    ap.add_argument("--val", type=float, default=0.1, help="Val fraction (rest is test)")
     args = ap.parse_args()
 
     root = Path(args.out).expanduser().resolve()
@@ -74,28 +87,35 @@ def main():
 
     # sort by RGB time and write full index
     pairs.sort(key=lambda r: r[0])
-    write_csv(root / "index.csv", [
-        (t, p.relative_to(root), td, q.relative_to(root), dt) for (t,p,td,q,dt) in pairs
-    ])
-    print(f"[index] wrote {root/'index.csv'}  pairs={len(pairs)}  hit_rate={len(pairs)/max(1,len(rgb_t)):.2%}")
+    write_csv(
+        root / "index.csv",
+        [(t, p.relative_to(root), td, q.relative_to(root), dt) for (t, p, td, q, dt) in pairs],
+    )
+    print(
+        f"[index] wrote {root/'index.csv'}  pairs={len(pairs)}  hit_rate={len(pairs)/max(1,len(rgb_t)):.2%}"
+    )
 
     # splits by chronology to avoid leakage across time (common best practice)
     n = len(pairs)
     n_train = int(n * args.train)
-    n_val   = int(n * args.val)
-    n_test  = n - n_train - n_val
+    n_val = int(n * args.val)
+    n_test = n - n_train - n_val
     splits = {
         "train.csv": pairs[:n_train],
-        "val.csv":   pairs[n_train:n_train+n_val],
-        "test.csv":  pairs[n_train+n_val:],
+        "val.csv": pairs[n_train : n_train + n_val],
+        "test.csv": pairs[n_train + n_val :],
     }
-    (root/"splits").mkdir(exist_ok=True)
+    (root / "splits").mkdir(exist_ok=True)
     for name, rows in splits.items():
-        write_csv(root / "splits" / name, [
-            (t, (root/p).relative_to(root), td, (root/q).relative_to(root), dt)
-            for (t,p,td,q,dt) in rows
-        ])
+        write_csv(
+            root / "splits" / name,
+            [
+                (t, (root / p).relative_to(root), td, (root / q).relative_to(root), dt)
+                for (t, p, td, q, dt) in rows
+            ],
+        )
         print(f"[index] wrote splits/{name}  rows={len(rows)}")
+
 
 if __name__ == "__main__":
     main()

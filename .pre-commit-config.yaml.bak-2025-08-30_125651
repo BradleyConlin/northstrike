@@ -1,0 +1,42 @@
+repos:
+  # Basic hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-yaml
+        # Temporarily exclude noisy YAML until configs are stabilized
+        exclude: |
+          ^training/(configs|benchmarks|mlops)/.*\.(ya?ml)$
+
+  # Ruff linter & formatter (primary)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.11
+    hooks:
+      - id: ruff
+        args: [--exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # Black (formatter of record; ruff-format stays in sync)
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+
+  # isort (import sorting; configured to match Black)
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+
+  # Flake8: scoped to training perception scripts only (extra signals)
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        files: ^training/scripts/perception/.*\.py$
+        args:
+          - --max-line-length=100
+          - --extend-ignore=E203,W503,F401,E501

@@ -6,15 +6,14 @@ import hashlib
 import json
 from collections import Counter
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 import yaml
 
 IMG_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"}
 
 
-def find_images(images_dir: Path) -> List[Path]:
-    imgs: List[Path] = []
+def find_images(images_dir: Path) -> list[Path]:
+    imgs: list[Path] = []
     for p in sorted(images_dir.rglob("*")):
         if p.is_file() and p.suffix.lower() in IMG_EXTS:
             imgs.append(p)
@@ -25,12 +24,12 @@ def label_path_for(image_path: Path, labels_dir: Path) -> Path:
     return labels_dir / image_path.with_suffix(".txt").name
 
 
-def parse_yolo_label_file(txt_path: Path) -> List[Tuple[int, float, float, float, float]]:
+def parse_yolo_label_file(txt_path: Path) -> list[tuple[int, float, float, float, float]]:
     """
     Returns list of (cls, cx, cy, w, h) floats.
     Ignores empty/invalid lines.
     """
-    out: List[Tuple[int, float, float, float, float]] = []
+    out: list[tuple[int, float, float, float, float]] = []
     if not txt_path.exists():
         return out
     for line in txt_path.read_text().splitlines():
@@ -60,12 +59,12 @@ def deterministic_split(key: str, p_train: float, p_val: float) -> str:
     return "test"
 
 
-def load_labelmap(path: Path) -> Dict[int, str]:
+def load_labelmap(path: Path) -> dict[int, str]:
     data = yaml.safe_load(path.read_text()) if path.exists() else {}
     # Accept either {'names': ['foo','bar']} or {0:'foo',1:'bar'} or {'0':'foo',...}
     if isinstance(data, dict) and "names" in data and isinstance(data["names"], list):
         return {i: str(n) for i, n in enumerate(data["names"])}
-    out: Dict[int, str] = {}
+    out: dict[int, str] = {}
     if isinstance(data, dict):
         for k, v in data.items():
             try:
@@ -79,7 +78,7 @@ def load_labelmap(path: Path) -> Dict[int, str]:
 def write_dataset_yaml(
     out_yaml: Path,
     splits_dir: Path,
-    class_names: Dict[int, str],
+    class_names: dict[int, str],
 ) -> None:
     names_list = [class_names[i] for i in sorted(class_names.keys())] if class_names else []
     payload = {
@@ -112,7 +111,7 @@ def make_manifest(
 
     images = find_images(images_dir)
     class_counts: Counter[int] = Counter()
-    per_split: Dict[str, List[Path]] = {"train": [], "val": [], "test": []}
+    per_split: dict[str, list[Path]] = {"train": [], "val": [], "test": []}
     labeled_count = 0
 
     for img in images:

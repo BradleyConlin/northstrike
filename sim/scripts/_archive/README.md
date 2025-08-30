@@ -5,14 +5,14 @@
   - Order: clean → Gazebo → PX4 → (optional) QGC
   - Defaults: `--headless true`, `--qgc false`
   - Examples:
-    - Headless, detached:  
+    - Headless, detached:
       `python3 scripts/run_all_linux.py --drones 2 --headless true --qgc false --detach true`
-    - With GUI + QGC:  
+    - With GUI + QGC:
       `QGC_APPIMAGE=~/dev/QGroundControl.AppImage python3 scripts/run_all_linux.py --drones 2 --headless false --qgc true`
 
 ## Launchers
 - **clean_env_linux.py** — kills PX4/GZ/QGC, clears env.
-- **launch_gazebo_world_linux.py** — launches Gazebo Harmonic using PX4’s default world.  
+- **launch_gazebo_world_linux.py** — launches Gazebo Harmonic using PX4’s default world.
   - `--headless` flag (no value) runs without GUI.
 - **launch_px4_linux.py** — spawns N PX4 SITL instances for Gazebo Harmonic.
   - Default model: `x500`

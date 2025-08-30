@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-import csv, json, random, math
+import csv
+import json
+import math
+import random
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from dataclasses import dataclass, asdict
-import numpy as np
+
 import cv2
+import numpy as np
+
 
 @dataclass
 class ImageStats:
@@ -13,6 +18,7 @@ class ImageStats:
     min_mm: int
     max_mm: int
     median_mm: float
+
 
 @dataclass
 class Summary:
@@ -26,16 +32,19 @@ class Summary:
     max_mm: int
     median_mm_over_imgs: float
 
+
 def load_pairs(out_dir: Path):
     idx = out_dir / "index.csv"
     rows = list(csv.DictReader(open(idx)))
     return rows
+
 
 def read_rgb(p: Path):
     img = cv2.imread(str(p), cv2.IMREAD_COLOR)
     if img is None:
         raise FileNotFoundError(p)
     return img
+
 
 def read_depth(p: Path):
     dep = cv2.imread(str(p), cv2.IMREAD_UNCHANGED)
@@ -44,6 +53,7 @@ def read_depth(p: Path):
     if dep.dtype != np.uint16:
         dep = dep.astype(np.uint16)
     return dep
+
 
 def depth_stats(dep_u16: np.ndarray) -> ImageStats:
     total = int(dep_u16.size)
@@ -61,12 +71,14 @@ def depth_stats(dep_u16: np.ndarray) -> ImageStats:
         median_mm=float(np.median(valid_vals)),
     )
 
+
 def make_overlay(rgb, dep_u16):
     # Normalize depth for display, colorize, resize to RGB
     d8 = (np.clip(dep_u16 / max(1, dep_u16.max()), 0, 1) * 255).astype(np.uint8)
     color = cv2.applyColorMap(d8, cv2.COLORMAP_TURBO)
     color = cv2.resize(color, (rgb.shape[1], rgb.shape[0]), interpolation=cv2.INTER_NEAREST)
     return cv2.addWeighted(rgb, 0.7, color, 0.3, 0.0)
+
 
 def grid(images, cols=6, tile_hw=(240, 320)):
     th, tw = tile_hw
@@ -76,7 +88,8 @@ def grid(images, cols=6, tile_hw=(240, 320)):
         tile = cv2.resize(img, (tw, th), interpolation=cv2.INTER_AREA)
         row.append(tile)
         if (i + 1) % cols == 0:
-            tiles.append(cv2.hconcat(row)); row = []
+            tiles.append(cv2.hconcat(row))
+            row = []
     if row:  # last partial row
         # pad with black tiles to align width
         pad = cols - len(row)
@@ -84,8 +97,10 @@ def grid(images, cols=6, tile_hw=(240, 320)):
         tiles.append(cv2.hconcat(row))
     return tiles[0] if len(tiles) == 1 else cv2.vconcat(tiles)
 
+
 def main():
     import argparse
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True, help="Dataset directory (with index.csv)")
     ap.add_argument("--samples", type=int, default=500, help="Number of pairs to sample")
@@ -133,13 +148,14 @@ def main():
     (out / "sanity_report.json").write_text(json.dumps(asdict(summary), indent=2))
 
     if overlays:
-        canvas = grid(overlays, cols=args.cols, tile_hw=(240,320))
+        canvas = grid(overlays, cols=args.cols, tile_hw=(240, 320))
         cv2.imwrite(str(out / "sanity_preview.jpg"), canvas)
 
     print(json.dumps(asdict(summary), indent=2))
     print("Wrote:", out / "sanity_report.json")
     if overlays:
         print("Preview:", out / "sanity_preview.jpg")
+
 
 if __name__ == "__main__":
     main()

@@ -1,40 +1,54 @@
 #!/usr/bin/env python3
-import argparse, csv, hashlib, json, os, random, sys
+import argparse
+import csv
+import hashlib
+import json
+import random
+import sys
 from pathlib import Path
+
 import cv2
 import numpy as np
 
-def sha1_file(p: Path, block=1<<20):
+
+def sha1_file(p: Path, block=1 << 20):
     h = hashlib.sha1()
-    with p.open('rb') as f:
+    with p.open("rb") as f:
         while True:
             b = f.read(block)
-            if not b: break
+            if not b:
+                break
             h.update(b)
     return h.hexdigest()
 
+
 def read_index(csv_path: Path):
-    with csv_path.open('r', newline='') as f:
+    with csv_path.open("r", newline="") as f:
         r = csv.DictReader(f)
         headers = [h.strip().lower() for h in r.fieldnames]
         # tolerate rgb/depth or rgb_path/depth_path
-        rgb_key = 'rgb' if 'rgb' in headers else 'rgb_path'
-        depth_key = 'depth' if 'depth' in headers else 'depth_path'
+        rgb_key = "rgb" if "rgb" in headers else "rgb_path"
+        depth_key = "depth" if "depth" in headers else "depth_path"
         if rgb_key not in headers or depth_key not in headers:
-            raise RuntimeError(f"index.csv must contain 'rgb'/'depth' (or 'rgb_path'/'depth_path'). Found: {headers}")
+            raise RuntimeError(
+                f"index.csv must contain 'rgb'/'depth' (or 'rgb_path'/'depth_path'). Found: {headers}"
+            )
         rows = []
         for row in r:
-            rgb = row.get('rgb', row.get('rgb_path', '')).strip()
-            dep = row.get('depth', row.get('depth_path', '')).strip()
+            rgb = row.get("rgb", row.get("rgb_path", "")).strip()
+            dep = row.get("depth", row.get("depth_path", "")).strip()
             rows.append((rgb, dep))
         return rows
 
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataset_root', required=True, help="Path to dataset dir containing index.csv and splits/")
-    ap.add_argument('--out', required=True, help="Where to write manifest.json")
-    ap.add_argument('--sample', type=int, default=100, help="Sample N pairs to measure depth stats")
-    ap.add_argument('--max_depth_m', type=float, default=20.0, help="Max valid depth (meters)")
+    ap.add_argument(
+        "--dataset_root", required=True, help="Path to dataset dir containing index.csv and splits/"
+    )
+    ap.add_argument("--out", required=True, help="Where to write manifest.json")
+    ap.add_argument("--sample", type=int, default=100, help="Sample N pairs to measure depth stats")
+    ap.add_argument("--max_depth_m", type=float, default=20.0, help="Max valid depth (meters)")
     args = ap.parse_args()
 
     root = Path(args.dataset_root).resolve()
@@ -60,7 +74,7 @@ def main():
     for name in ("train", "val", "test"):
         p = splits_dir / f"{name}.csv"
         if p.exists():
-            with p.open('r', newline='') as f:
+            with p.open("r", newline="") as f:
                 cnt = sum(1 for _ in f) - 1  # minus header
             splits[name] = cnt
 
@@ -105,9 +119,10 @@ def main():
 
     outp = Path(args.out)
     outp.parent.mkdir(parents=True, exist_ok=True)
-    with outp.open('w') as f:
+    with outp.open("w") as f:
         json.dump(manifest, f, indent=2)
     print(f"Wrote {outp}")
+
 
 if __name__ == "__main__":
     main()

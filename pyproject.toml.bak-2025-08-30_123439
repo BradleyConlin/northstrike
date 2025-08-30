@@ -1,0 +1,25 @@
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+src_paths = ["training", "sim"]
+
+[tool.ruff]
+# Ruff == fast linter (superset of many flake8 rules)
+line-length = 100
+target-version = "py310"
+src = ["training", "sim"]
+select = ["E", "F", "I", "B", "UP", "N", "S", "A"]
+ignore = ["E203", "W503"]  # match Black
+extend-exclude = ["**/site-packages", "**/.venv*", "training/runs", "datasets"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["training/tests", "sim/tests"]
+python_files = ["test_*.py", "*_test.py"]
+
+[build-system]
+requires = []

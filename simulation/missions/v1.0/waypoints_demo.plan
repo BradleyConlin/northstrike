@@ -1,0 +1,3 @@
+{ "fileType":"Plan", "groundStation":"QGroundControl",
+  "mission":{"cruiseSpeed":15,"hoverSpeed":5,"items":[],"vehicleType":2},
+  "geoFence":{}, "rallyPoints":{}, "version":1 }

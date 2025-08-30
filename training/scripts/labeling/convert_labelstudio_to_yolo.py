@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from typing import Dict, List
 from urllib.parse import urlparse
 
 try:
@@ -13,10 +12,10 @@ except Exception:
     yaml = None
 
 
-def load_labelmap(path: str) -> Dict:
+def load_labelmap(path: str) -> dict:
     if yaml is None:
         raise RuntimeError("PyYAML required for label map. `pip install pyyaml`")
-    with open(path, "r") as f:
+    with open(path) as f:
         lm = yaml.safe_load(f) or {}
     classes = lm.get("classes", [])
     if not classes or not isinstance(classes, list):
@@ -24,7 +23,7 @@ def load_labelmap(path: str) -> Dict:
     return {"classes": classes, "index": {c: i for i, c in enumerate(classes)}}
 
 
-def index_images(images_root: str) -> Dict[str, str]:
+def index_images(images_root: str) -> dict[str, str]:
     idx = {}
     for dp, _, files in os.walk(images_root):
         for fn in files:
@@ -34,7 +33,7 @@ def index_images(images_root: str) -> Dict[str, str]:
     return idx
 
 
-def find_image_path(task: Dict, img_index: Dict[str, str]) -> str | None:
+def find_image_path(task: dict, img_index: dict[str, str]) -> str | None:
     raw = task.get("data", {}).get("image") or ""
     if not raw:
         return None
@@ -43,7 +42,7 @@ def find_image_path(task: Dict, img_index: Dict[str, str]) -> str | None:
     return img_index.get(base)
 
 
-def write_yolo(labels_path: str, lines: List[str], overwrite=False) -> None:
+def write_yolo(labels_path: str, lines: list[str], overwrite=False) -> None:
     os.makedirs(os.path.dirname(labels_path), exist_ok=True)
     if not overwrite and os.path.exists(labels_path):
         return
@@ -52,7 +51,7 @@ def write_yolo(labels_path: str, lines: List[str], overwrite=False) -> None:
             f.write(ln + "\n")
 
 
-def rect_to_yolo(val: Dict, label_name: str, label_index: Dict[str, int]) -> str | None:
+def rect_to_yolo(val: dict, label_name: str, label_index: dict[str, int]) -> str | None:
     # Label Studio rectangles are percent of image dims (0..100)
     if label_name not in label_index:
         return None
@@ -77,7 +76,7 @@ def convert(
     lm = load_labelmap(labelmap_path)
     idx = index_images(images_root)
 
-    with open(export_json, "r") as f:
+    with open(export_json) as f:
         tasks = json.load(f)
 
     converted = 0
@@ -96,7 +95,7 @@ def convert(
         for a in annos:
             results.extend(a.get("result", []))
 
-        lines: List[str] = []
+        lines: list[str] = []
         for r in results:
             if r.get("type") not in {"rectanglelabels", "bndbox"}:
                 continue

@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
-import argparse, os, sys, glob, csv, hashlib, time
+import argparse
+import csv
+import glob
+import hashlib
+import sys
+import time
 from pathlib import Path
-import numpy as np
+
 import cv2
+import numpy as np
 import onnxruntime as ort
+
 
 def read_depth(path, scale):
     ext = Path(path).suffix.lower()
@@ -19,6 +26,7 @@ def read_depth(path, scale):
             d = raw.astype(np.float32) * scale
     return d
 
+
 def read_mask(mask_path):
     ext = Path(mask_path).suffix.lower()
     if ext == ".npy":
@@ -29,12 +37,14 @@ def read_mask(mask_path):
         return None
     if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    return (img > 0)
+    return img > 0
+
 
 def colorize_depth(d, max_depth):
     d = np.clip(d, 0, max_depth) / max_depth
     d8 = (d * 255.0).astype(np.uint8)
     return cv2.applyColorMap(d8, cv2.COLORMAP_INFERNO)
+
 
 def main():
     ap = argparse.ArgumentParser(description="ONNX depth smoke test")
@@ -101,7 +111,7 @@ def main():
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
         ih, iw = args.height, args.width
         img_rs = cv2.resize(img_rgb, (iw, ih), interpolation=cv2.INTER_AREA)
-        x = (img_rs.astype(np.float32) / 255.0).transpose(2,0,1)[None, ...]  # 1x3xH×W
+        x = (img_rs.astype(np.float32) / 255.0).transpose(2, 0, 1)[None, ...]  # 1x3xH×W
 
         pred = sess.run([out], {inp: x})[0]
         pred = np.squeeze(pred).astype(np.float32)
@@ -125,11 +135,15 @@ def main():
                     mpath = str(c)
                     break
             if mpath:
-                mext = Path(mpath).suffix.lower()
+                _mext = Path(mpath).suffix.lower()
                 m = read_mask(mpath)
                 if m is not None:
                     if m.shape != pred.shape:
-                        m = cv2.resize(m.astype(np.uint8), (pred.shape[1], pred.shape[0]), interpolation=cv2.INTER_NEAREST).astype(bool)
+                        m = cv2.resize(
+                            m.astype(np.uint8),
+                            (pred.shape[1], pred.shape[0]),
+                            interpolation=cv2.INTER_NEAREST,
+                        ).astype(bool)
                     mask = mask & m
             else:
                 print(f"[warn] mask missing for {stem}, continuing without external mask")
@@ -140,7 +154,7 @@ def main():
 
         diff = np.abs(pred - gt)[mask]
         mae = float(np.mean(diff))
-        rmse = float(np.sqrt(np.mean((pred[mask]-gt[mask])**2)))
+        rmse = float(np.sqrt(np.mean((pred[mask] - gt[mask]) ** 2)))
 
         # save artifacts
         np.save(out_dir / "pred" / f"{stem}.npy", pred.astype(np.float32))
@@ -173,9 +187,10 @@ def main():
         f"gt_scale: {args.gt_scale}\n"
         f"pred_scale: {args.pred_scale}\n"
         f"mask_dir: {args.mask_dir}\n"
-        f"elapsed_s: {time.time()-t0:.1f}\n"
+        f"elapsed_s: {time.time() - t0:.1f}\n"
     )
     print(f"Done. rows={used}  MAE={m_mae:.4f} m  RMSE={m_rmse:.4f} m  → {out_dir}")
+
 
 if __name__ == "__main__":
     main()

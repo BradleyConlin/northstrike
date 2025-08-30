@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/6f420289c8f14b1e9475ce3d83fc2b24/artifacts
+end_time: 1756576886963
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 6f420289c8f14b1e9475ce3d83fc2b24
+run_name: burly-whale-192
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756576886952
+status: 3
+tags: []
+user_id: brad

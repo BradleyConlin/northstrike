@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
-import os
-from pathlib import Path
 import csv
-from typing import Sequence
+from pathlib import Path
 
-import numpy as np
 import cv2
-
+import numpy as np
 import rclpy
-from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
-
-from sensor_msgs.msg import Image, Imu, MagneticField, NavSatFix, LaserScan
 from cv_bridge import CvBridge
-
+from rclpy.node import Node
+from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
+from sensor_msgs.msg import Image, Imu, LaserScan, MagneticField, NavSatFix
 
 # ---------- QoS (force RELIABLE on all subscriptions) ----------
 QOS_RELIABLE = QoSProfile(
@@ -35,19 +30,30 @@ class ExportNode(Node):
         (self.out / "depth").mkdir(parents=True, exist_ok=True)
 
         # CSV files
-        self._imu_f   = open(self.out / "imu.csv",   "w", newline="")
-        self._mag_f   = open(self.out / "mag.csv",   "w", newline="")
-        self._gps_f   = open(self.out / "gps.csv",   "w", newline="")
+        self._imu_f = open(self.out / "imu.csv", "w", newline="")
+        self._mag_f = open(self.out / "mag.csv", "w", newline="")
+        self._gps_f = open(self.out / "gps.csv", "w", newline="")
         self._lidar_f = open(self.out / "lidar.csv", "w", newline="")
 
-        self.imu_w   = csv.writer(self._imu_f)
-        self.mag_w   = csv.writer(self._mag_f)
-        self.gps_w   = csv.writer(self._gps_f)
+        self.imu_w = csv.writer(self._imu_f)
+        self.mag_w = csv.writer(self._mag_f)
+        self.gps_w = csv.writer(self._gps_f)
         self.lidar_w = csv.writer(self._lidar_f)
 
         self.imu_w.writerow(
-            ["t_sec", "ori_x", "ori_y", "ori_z", "ori_w",
-             "ang_x", "ang_y", "ang_z", "lin_x", "lin_y", "lin_z"]
+            [
+                "t_sec",
+                "ori_x",
+                "ori_y",
+                "ori_z",
+                "ori_w",
+                "ang_x",
+                "ang_y",
+                "ang_z",
+                "lin_x",
+                "lin_y",
+                "lin_z",
+            ]
         )
         self.mag_w.writerow(["t_sec", "mag_x", "mag_y", "mag_z"])
         self.gps_w.writerow(["t_sec", "lat", "lon", "alt", "cov_xx"])
@@ -58,12 +64,12 @@ class ExportNode(Node):
         self.depth_count = 0
 
         # Subscriptions (all RELIABLE)
-        self.create_subscription(Image,       "/ns_rgb/image",          self.cb_rgb,    QOS_RELIABLE)
-        self.create_subscription(Image,       "/ns_depth/depth_image",  self.cb_depth,  QOS_RELIABLE)
-        self.create_subscription(Imu,         "/ns/imu",                self.cb_imu,    QOS_RELIABLE)
-        self.create_subscription(MagneticField,"/ns/mag",               self.cb_mag,    QOS_RELIABLE)
-        self.create_subscription(NavSatFix,   "/ns/navsat",             self.cb_gps,    QOS_RELIABLE)
-        self.create_subscription(LaserScan,   "/ns_lidar",              self.cb_lidar,  QOS_RELIABLE)
+        self.create_subscription(Image, "/ns_rgb/image", self.cb_rgb, QOS_RELIABLE)
+        self.create_subscription(Image, "/ns_depth/depth_image", self.cb_depth, QOS_RELIABLE)
+        self.create_subscription(Imu, "/ns/imu", self.cb_imu, QOS_RELIABLE)
+        self.create_subscription(MagneticField, "/ns/mag", self.cb_mag, QOS_RELIABLE)
+        self.create_subscription(NavSatFix, "/ns/navsat", self.cb_gps, QOS_RELIABLE)
+        self.create_subscription(LaserScan, "/ns_lidar", self.cb_lidar, QOS_RELIABLE)
 
         self.get_logger().info(f"Exporting to: {self.out}")
 
@@ -91,12 +97,21 @@ class ExportNode(Node):
 
     def cb_imu(self, msg: Imu):
         t = stamp_to_sec(msg.header.stamp)
-        self.imu_w.writerow([
-            t,
-            msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w,
-            msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z,
-            msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z,
-        ])
+        self.imu_w.writerow(
+            [
+                t,
+                msg.orientation.x,
+                msg.orientation.y,
+                msg.orientation.z,
+                msg.orientation.w,
+                msg.angular_velocity.x,
+                msg.angular_velocity.y,
+                msg.angular_velocity.z,
+                msg.linear_acceleration.x,
+                msg.linear_acceleration.y,
+                msg.linear_acceleration.z,
+            ]
+        )
 
     def cb_mag(self, msg: MagneticField):
         t = stamp_to_sec(msg.header.stamp)
@@ -126,6 +141,7 @@ class ExportNode(Node):
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", required=True, help="Output dataset directory")
     args = parser.parse_args()

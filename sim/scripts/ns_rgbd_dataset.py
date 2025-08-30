@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import csv
 from pathlib import Path
-import numpy as np
+
 import cv2
+import numpy as np
 import torch
 from torch.utils.data import Dataset
+
 
 class RGBDPairDataset(Dataset):
     """
@@ -13,7 +15,10 @@ class RGBDPairDataset(Dataset):
     - Resizes depth with NEAREST (keeps values intact)
     - Normalizes RGB to [0,1], depth to [0,1] by (meters / max_depth_m)
     """
-    def __init__(self, root, split="train", size=(320, 240), max_depth_m=20.0, limit=None, augment=True):
+
+    def __init__(
+        self, root, split="train", size=(320, 240), max_depth_m=20.0, limit=None, augment=True
+    ):
         self.root = Path(root)
         self.size = tuple(size)  # (W, H)
         self.max_depth_m = float(max_depth_m)
@@ -21,7 +26,7 @@ class RGBDPairDataset(Dataset):
 
         csv_path = self.root / "splits" / f"{split}.csv"
         rows = list(csv.DictReader(open(csv_path)))
-        self.rows = rows[:int(limit)] if limit else rows
+        self.rows = rows[: int(limit)] if limit else rows
         self.rng = np.random.RandomState(1234)
 
     def __len__(self):
@@ -34,7 +39,7 @@ class RGBDPairDataset(Dataset):
             img = np.zeros((H, W, 3), np.uint8)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (W, H), interpolation=cv2.INTER_AREA)
-        img = (img.astype(np.float32) / 255.0)
+        img = img.astype(np.float32) / 255.0
         return torch.from_numpy(img).permute(2, 0, 1)  # CxHxW
 
     def _read_depth(self, rel):
@@ -59,5 +64,5 @@ class RGBDPairDataset(Dataset):
             depth = torch.flip(depth, dims=[2])
         return rgb, depth
 
-RgbdDataset = RGBDPairDataset
 
+RgbdDataset = RGBDPairDataset

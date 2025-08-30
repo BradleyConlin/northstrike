@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.domain.geo import line_of_sight_free, point_in_polygon
 
 

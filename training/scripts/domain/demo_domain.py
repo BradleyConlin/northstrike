@@ -5,7 +5,6 @@ import csv
 from pathlib import Path
 
 import numpy as np
-
 from src.domain.geo import line_of_sight_free, point_in_polygon
 from src.domain.wind import OUParams, WindField
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-
 from observability.drift_detection.drift_ks import compare_csvs
 
 

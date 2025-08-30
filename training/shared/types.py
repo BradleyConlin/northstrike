@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Tuple
 
 # Frames & units: ENU (x=east, y=north), meters, seconds.
 # See docs/adrs/ADR-0003-frames-and-units.md
@@ -22,4 +21,4 @@ class Control2D:
     vy: float  # desired body/world velocity y [m/s]
 
 
-Path2D = List[Tuple[int, int]]  # grid cells (x, y)
+Path2D = list[tuple[int, int]]  # grid cells (x, y)

@@ -5,18 +5,18 @@ import argparse
 import json
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
 
 def load_yaml(path: str) -> Any:
-    with open(path, "r") as f:
+    with open(path) as f:
         return yaml.safe_load(f)
 
 
 def basic_validate(
-    mission: Dict[str, Any], params: Dict[str, Any] | None
+    mission: dict[str, Any], params: dict[str, Any] | None
 ) -> tuple[bool, list[str], list[str]]:
     issues, warnings = [], []
     need = ["name", "frame", "takeoff_alt_m", "waypoints"]

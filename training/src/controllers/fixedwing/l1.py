@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import math
-from typing import Tuple
 
-Vec2 = Tuple[float, float]
+Vec2 = tuple[float, float]
 
 
 def _norm2(v: Vec2) -> float:

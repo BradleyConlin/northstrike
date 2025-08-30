@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/77c2f84f81254c18a17baf03509a7c19/artifacts
+end_time: 1756576985819
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 77c2f84f81254c18a17baf03509a7c19
+run_name: bouncy-owl-288
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756576985809
+status: 3
+tags: []
+user_id: brad

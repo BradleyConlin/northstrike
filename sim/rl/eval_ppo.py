@@ -1,7 +1,9 @@
 import argparse
+
+from rl.envs.px4_alt_env import Px4AltHoldEnv
 from stable_baselines3 import PPO
 from stable_baselines3.common.monitor import Monitor
-from rl.envs.px4_alt_env import Px4AltHoldEnv
+
 
 def make_env():
     return Monitor(
@@ -13,6 +15,7 @@ def make_env():
             mav_addr="udpin://0.0.0.0:14540",
         )
     )
+
 
 def main():
     p = argparse.ArgumentParser()
@@ -32,6 +35,7 @@ def main():
             done = terminated or truncated
 
     env.close()
+
 
 if __name__ == "__main__":
     main()

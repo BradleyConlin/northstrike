@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from typing import Iterable, List, Tuple
+from collections.abc import Iterable
 
-Pt = Tuple[int, int]
+Pt = tuple[int, int]
 
 
 def point_in_polygon(p: Pt, poly: Iterable[Pt]) -> bool:
@@ -24,7 +24,7 @@ def point_in_polygon(p: Pt, poly: Iterable[Pt]) -> bool:
     return inside
 
 
-def bresenham(a: Pt, b: Pt) -> List[Pt]:
+def bresenham(a: Pt, b: Pt) -> list[Pt]:
     x0, y0 = a
     x1, y1 = b
     dx = abs(x1 - x0)

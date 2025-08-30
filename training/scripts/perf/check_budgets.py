@@ -25,9 +25,9 @@ def main():
     ap.add_argument("--image", default="northstrike:latest")
     args = ap.parse_args()
 
-    with open(args.perf_json, "r") as f:
+    with open(args.perf_json) as f:
         perf = json.load(f)
-    with open(args.budgets_yaml, "r") as f:
+    with open(args.budgets_yaml) as f:
         budgets = yaml.safe_load(f)
 
     # 1) image size

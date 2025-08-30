@@ -1,6 +1,6 @@
 # Northstrike Depth — TinyUNet
 
-**When:** 2025-08-25 16:45:36  
+**When:** 2025-08-25 16:45:36
 **Commit:** 7f570d8
 
 ## Data

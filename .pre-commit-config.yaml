@@ -1,0 +1,73 @@
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.12.11
+  hooks:
+    - id: ruff
+      args: [--fix]
+      files: >-
+        ^(scripts/mlops/log_last_training\.py|
+          scripts/training/train_dummy\.py|
+          scripts/sysid/estimate_quad2d\.py|
+          training/scripts/run_waypoint_demo(_ekf)?\.py|
+          training/scripts/evaluation/(compare_planners(_sweep)?|waypoint_kpi_report)\.py|
+          hil/scripts/start_hil_session\.py|
+          simulation/domain_randomization/scripts/apply_randomization\.py)$
+    - id: ruff-format
+      files: >-
+        ^(scripts/mlops/log_last_training\.py|
+          scripts/training/train_dummy\.py|
+          scripts/sysid/estimate_quad2d\.py|
+          training/scripts/run_waypoint_demo(_ekf)?\.py|
+          training/scripts/evaluation/(compare_planners(_sweep)?|waypoint_kpi_report)\.py|
+          hil/scripts/start_hil_session\.py|
+          simulation/domain_randomization/scripts/apply_randomization\.py)$
+
+- repo: https://github.com/psf/black
+  rev: 25.1.0
+  hooks:
+    - id: black
+      files: >-
+        ^(scripts/mlops/log_last_training\.py|
+          scripts/training/train_dummy\.py|
+          scripts/sysid/estimate_quad2d\.py|
+          training/scripts/run_waypoint_demo(_ekf)?\.py|
+          training/scripts/evaluation/(compare_planners(_sweep)?|waypoint_kpi_report)\.py|
+          hil/scripts/start_hil_session\.py|
+          simulation/domain_randomization/scripts/apply_randomization\.py)$
+
+- repo: https://github.com/PyCQA/isort
+  rev: 6.0.1
+  hooks:
+    - id: isort
+      files: >-
+        ^(scripts/mlops/log_last_training\.py|
+          scripts/training/train_dummy\.py|
+          scripts/sysid/estimate_quad2d\.py|
+          training/scripts/run_waypoint_demo(_ekf)?\.py|
+          training/scripts/evaluation/(compare_planners(_sweep)?|waypoint_kpi_report)\.py|
+          hil/scripts/start_hil_session\.py|
+          simulation/domain_randomization/scripts/apply_randomization\.py)$
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+    - id: end-of-file-fixer
+      files: >-
+        ^(scripts/mlops/log_last_training\.py|
+          scripts/training/train_dummy\.py|
+          scripts/sysid/estimate_quad2d\.py|
+          training/scripts/run_waypoint_demo(_ekf)?\.py|
+          training/scripts/evaluation/(compare_planners(_sweep)?|waypoint_kpi_report)\.py|
+          hil/scripts/start_hil_session\.py|
+          simulation/domain_randomization/scripts/apply_randomization\.py|
+          pyproject\.toml|pytest\.ini|configs/.*)$
+    - id: trailing-whitespace
+      files: >-
+        ^(scripts/mlops/log_last_training\.py|
+          scripts/training/train_dummy\.py|
+          scripts/sysid/estimate_quad2d\.py|
+          training/scripts/run_waypoint_demo(_ekf)?\.py|
+          training/scripts/evaluation/(compare_planners(_sweep)?|waypoint_kpi_report)\.py|
+          hil/scripts/start_hil_session\.py|
+          simulation/domain_randomization/scripts/apply_randomization\.py|
+          pyproject\.toml|pytest\.ini|configs/.*)$

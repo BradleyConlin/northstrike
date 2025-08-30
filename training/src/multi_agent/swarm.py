@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Tuple
 
 import numpy as np
 
-Vec2 = Tuple[float, float]
+Vec2 = tuple[float, float]
 
 
 @dataclass
@@ -24,8 +23,8 @@ def _clip(v: np.ndarray, vmax: float) -> np.ndarray:
 
 def simulate_swarm(
     n_agents: int,
-    offsets: List[Vec2],
-    waypoints: List[Vec2],
+    offsets: list[Vec2],
+    waypoints: list[Vec2],
     dt: float = 0.05,
     steps: int = 400,
     vmax: float = 2.0,
@@ -122,11 +121,11 @@ def min_pairwise_distance(trace: np.ndarray) -> float:
     return 0.0 if m == float("inf") else m
 
 
-def auction_assign(agents_xy: List[Vec2], goals_xy: List[Vec2]) -> List[Tuple[int, int]]:
+def auction_assign(agents_xy: list[Vec2], goals_xy: list[Vec2]) -> list[tuple[int, int]]:
     """Greedy market-based assignment: iteratively match closest (agent, goal)."""
     A = list(range(len(agents_xy)))
     G = list(range(len(goals_xy)))
-    pairs: List[Tuple[int, int]] = []
+    pairs: list[tuple[int, int]] = []
     while A and G:
         best = None
         best_cost = 1e18

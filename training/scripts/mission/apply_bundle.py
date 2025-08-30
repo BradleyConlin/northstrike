@@ -6,7 +6,7 @@ import asyncio
 import json
 import math
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import yaml
 from mavsdk import System
@@ -15,13 +15,13 @@ from mavsdk.mission import MissionItem, MissionPlan
 
 # ---------- utils ----------
 def load_yaml(p: str):
-    with open(p, "r") as f:
+    with open(p) as f:
         return yaml.safe_load(f)
 
 
 def meters_to_latlon(
     lat0: float, lon0: float, north_m: float, east_m: float
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     dlat = north_m / 111_320.0
     dlon = east_m / (111_320.0 * math.cos(math.radians(lat0)) + 1e-9)
     return lat0 + dlat, lon0 + dlon
@@ -43,7 +43,7 @@ async def get_home(drone: System):
         return home
 
 
-async def set_params(drone: System, params: Dict[str, Any] | None):
+async def set_params(drone: System, params: dict[str, Any] | None):
     if not params:
         return
     await asyncio.sleep(0.5)
@@ -97,9 +97,9 @@ def make_mission_item(lat: float, lon: float, alt: float, speed: float) -> Missi
     raise TypeError(f"MissionItem signature mismatch for this MAVSDK build: {last_err}")
 
 
-def build_plan_from_home(mission: Dict[str, Any], home_lat: float, home_lon: float) -> MissionPlan:
+def build_plan_from_home(mission: dict[str, Any], home_lat: float, home_lon: float) -> MissionPlan:
     speed = float(mission.get("speed_m_s", 5.0))
-    items: List[MissionItem] = []
+    items: list[MissionItem] = []
     for wp in mission["waypoints"]:
         lat, lon = meters_to_latlon(home_lat, home_lon, float(wp["north_m"]), float(wp["east_m"]))
         alt = float(wp["alt_m"])

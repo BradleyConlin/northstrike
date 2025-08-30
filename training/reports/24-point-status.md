@@ -28,4 +28,3 @@
 | 22 | CI/CD & Release Engineering | 🟢 |
 | 23 | Architecture Decision Records (ADRs) | 🟢 |
 | 24 | Mission & Parameter Bundles | 🟡 |
-

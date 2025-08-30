@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/bed93ecd0eb44a88a58c20a0cc52ab0f/artifacts
+end_time: 1756576497315
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: bed93ecd0eb44a88a58c20a0cc52ab0f
+run_name: learned-owl-640
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756576497304
+status: 3
+tags: []
+user_id: brad

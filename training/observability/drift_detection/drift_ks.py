@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import math
-from typing import Dict, List, Tuple
 
 import numpy as np
 
 
-def _load_numeric_table(csv_path: str) -> Dict[str, np.ndarray]:
+def _load_numeric_table(csv_path: str) -> dict[str, np.ndarray]:
     rows = []
-    with open(csv_path, "r") as f:
+    with open(csv_path) as f:
         hdr = f.readline().strip().split(",")
         for line in f:
             parts = line.strip().split(",")
@@ -17,9 +16,9 @@ def _load_numeric_table(csv_path: str) -> Dict[str, np.ndarray]:
             rows.append(parts)
     if not rows:
         return {}
-    cols: Dict[str, List[float]] = {h: [] for h in hdr}
+    cols: dict[str, list[float]] = {h: [] for h in hdr}
     for r in rows:
-        for h, v in zip(hdr, r):
+        for h, v in zip(hdr, r, strict=False):
             try:
                 cols[h].append(float(v))
             except ValueError:
@@ -51,7 +50,7 @@ def ks_stat(a: np.ndarray, b: np.ndarray) -> float:
 
 def compare_csvs(
     baseline_csv: str, current_csv: str, max_p95: float = 0.20
-) -> Tuple[float, Dict[str, float]]:
+) -> tuple[float, dict[str, float]]:
     base = _load_numeric_table(baseline_csv)
     curr = _load_numeric_table(current_csv)
     keys = sorted(set(base) & set(curr))

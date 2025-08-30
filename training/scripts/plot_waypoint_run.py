@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import argparse
 import os
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import pandas as pd
 
@@ -20,7 +20,7 @@ def _unique_waypoints(tx: pd.Series, ty: pd.Series) -> list[tuple[float, float]]
     """Deduplicate consecutive (tx,ty) entries into a waypoint list."""
     pts: list[tuple[float, float]] = []
     last = (None, None)
-    for x, y in zip(tx, ty):
+    for x, y in zip(tx, ty, strict=False):
         cur = (float(x), float(y))
         if cur != last:
             pts.append(cur)
@@ -44,7 +44,7 @@ def plot_xy(df: pd.DataFrame) -> None:
         plt.plot(df["px_est"], df["py_est"], label="EKF (px,py)")
     wps = _unique_waypoints(df["tx"], df["ty"])
     if wps:
-        xs, ys = zip(*wps)
+        xs, ys = zip(*wps, strict=False)
         plt.scatter(xs, ys, marker="x", label="waypoints")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")

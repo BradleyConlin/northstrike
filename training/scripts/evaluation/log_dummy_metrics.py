@@ -7,6 +7,7 @@ Safe for CI:
 - All MLflow usage is behind `main()` and the __main__ guard.
 - If MLflow is missing or a tracking server is unavailable, we exit 0.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -43,7 +44,7 @@ def main(argv: list[str] | None = None) -> int:
         mlflow.set_tracking_uri(args.tracking_uri)
         mlflow.set_experiment(args.experiment)
         for i in range(int(args.runs)):
-            with mlflow.start_run(run_name=f"dummy-{i+1}"):
+            with mlflow.start_run(run_name=f"dummy-{i + 1}"):
                 mlflow.log_metric("accuracy", random.random())
                 mlflow.log_metric("loss", random.random())
     except (Exception, KeyboardInterrupt):

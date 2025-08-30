@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import asyncio
+
 from mavsdk import System
 
 # SITL exposes an onboard link on udp:14540 (PX4 prints this in your console)
 CONN = "udp://127.0.0.1:14540"
-ALT  = 10.0
+ALT = 10.0
+
 
 async def main():
     drone = System()
@@ -42,6 +44,7 @@ async def main():
         if not in_air:
             print("Landed & disarmed")
             break
+
 
 if __name__ == "__main__":
     asyncio.run(main())

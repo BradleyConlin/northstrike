@@ -1,5 +1,4 @@
 import numpy as np
-
 from src.estimators.ekf_cv import EKFCV
 
 

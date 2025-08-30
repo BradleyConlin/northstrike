@@ -5,3 +5,13 @@
 __pycache__/
 *.pyc
 *.log
+.venv/
+__pycache__/
+*.pyc
+*.pid
+*.log
+
+# Big, generated, or local-only
+datasets/
+sim/logs/
+training/runs/

@@ -6,7 +6,6 @@ import json
 import os
 import subprocess
 import sys
-from typing import Dict, List, Tuple
 
 try:
     import yaml  # type: ignore
@@ -19,7 +18,7 @@ YELLOW = "🟡"
 RED = "🔴"
 
 # Keep AREAS as list of PAIRS so the render loop `for idx, name in AREAS` works.
-AREAS: List[Tuple[int, str]] = [
+AREAS: list[tuple[int, str]] = [
     (1, "Simulation & Data-Generation Tools"),
     (2, "Path-Planning Algorithms"),
     (3, "Flight-Control Algorithms"),
@@ -47,7 +46,7 @@ AREAS: List[Tuple[int, str]] = [
 ]
 
 # Baseline (matches what you've been seeing)
-BASELINE: Dict[int, str] = {
+BASELINE: dict[int, str] = {
     1: GREEN,
     2: GREEN,
     3: GREEN,
@@ -79,7 +78,7 @@ def _load_yaml(path: str) -> dict:
     if not os.path.exists(path) or yaml is None:
         return {}
     try:
-        with open(path, "r") as f:
+        with open(path) as f:
             return yaml.safe_load(f) or {}
     except Exception:
         return {}
@@ -104,7 +103,7 @@ def _load_perf(perf_json_path: str) -> dict:
     if not os.path.exists(perf_json_path):
         return {}
     try:
-        with open(perf_json_path, "r") as f:
+        with open(perf_json_path) as f:
             return json.load(f) or {}
     except Exception:
         return {}
@@ -112,7 +111,7 @@ def _load_perf(perf_json_path: str) -> dict:
 
 def _check_edge_budgets(
     budgets_path: str, perf_json_path: str, image: str
-) -> tuple[bool, List[str]]:
+) -> tuple[bool, list[str]]:
     # Defaults if budgets.yaml missing
     b = _load_yaml(budgets_path) or {}
     b = b.get("budgets", b) or {}
@@ -130,7 +129,7 @@ def _check_edge_budgets(
     if image_mb is None:
         image_mb = _docker_image_size_mb(image)
 
-    notes: List[str] = []
+    notes: list[str] = []
     ok = True
 
     def line(label: str, val: float | None, bound: float, cmp: str) -> str:
@@ -160,12 +159,12 @@ def _check_edge_budgets(
     return bool(ok), notes
 
 
-def render(status: Dict[int, str]) -> str:
+def render(status: dict[int, str]) -> str:
     greens = sum(1 for v in status.values() if v == GREEN)
     yellows = sum(1 for v in status.values() if v == YELLOW)
     reds = sum(1 for v in status.values() if v == RED)
 
-    lines: List[str] = []
+    lines: list[str] = []
     lines.append("# 24-Point Status Snapshot\n")
     lines.append(f"**Totals:** {GREEN} {greens} · {YELLOW} {yellows} · {RED} {reds}\n")
     lines.append("")

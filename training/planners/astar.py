@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import heapq
 import math
-from typing import Iterable, List, Tuple
+from collections.abc import Iterable
 
-Grid = List[List[int]]  # 0 = free, 1 = obstacle
+Grid = list[list[int]]  # 0 = free, 1 = obstacle
 
 
-def _neighbors(x: int, y: int, w: int, h: int, allow_diag: bool) -> Iterable[Tuple[int, int]]:
+def _neighbors(x: int, y: int, w: int, h: int, allow_diag: bool) -> Iterable[tuple[int, int]]:
     if x > 0:
         yield x - 1, y
     if x + 1 < w:
@@ -28,16 +28,16 @@ def _neighbors(x: int, y: int, w: int, h: int, allow_diag: bool) -> Iterable[Tup
         yield x + 1, y + 1
 
 
-def _octile(a: Tuple[int, int], b: Tuple[int, int]) -> float:
+def _octile(a: tuple[int, int], b: tuple[int, int]) -> float:
     dx, dy = abs(a[0] - b[0]), abs(a[1] - b[1])
     return dx + dy + (math.sqrt(2.0) - 2.0) * min(dx, dy)
 
 
-def _manhattan(a: Tuple[int, int], b: Tuple[int, int]) -> int:
+def _manhattan(a: tuple[int, int], b: tuple[int, int]) -> int:
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def _line_clear(grid: Grid, a: Tuple[int, int], b: Tuple[int, int]) -> bool:
+def _line_clear(grid: Grid, a: tuple[int, int], b: tuple[int, int]) -> bool:
     # Bresenham LOS between cells a->b (inclusive)
     (x0, y0), (x1, y1) = a, b
     dx = abs(x1 - x0)
@@ -60,7 +60,7 @@ def _line_clear(grid: Grid, a: Tuple[int, int], b: Tuple[int, int]) -> bool:
             y += sy
 
 
-def _simplify_path(grid: Grid, path: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
+def _simplify_path(grid: Grid, path: list[tuple[int, int]]) -> list[tuple[int, int]]:
     if len(path) <= 2:
         return path
     out = [path[0]]
@@ -76,12 +76,12 @@ def _simplify_path(grid: Grid, path: List[Tuple[int, int]]) -> List[Tuple[int, i
 
 def plan_on_grid(
     grid: Grid,
-    start: Tuple[int, int],
-    goal: Tuple[int, int],
+    start: tuple[int, int],
+    goal: tuple[int, int],
     *,
     allow_diag: bool = False,
     simplify: bool = False,
-) -> List[Tuple[int, int]]:
+) -> list[tuple[int, int]]:
     """A* on a grid; optional 8-connected neighbors and LOS smoothing."""
     sx, sy = start
     gx, gy = goal

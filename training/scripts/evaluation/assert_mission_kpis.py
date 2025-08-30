@@ -74,7 +74,9 @@ def compute_kpis(
 
     dists = []
     for lat_wp, lon_wp in waypoints:
-        dmin = min(haversine_m(lat_wp, lon_wp, lat, lon) for lat, lon in zip(lats, lons))
+        dmin = min(
+            haversine_m(lat_wp, lon_wp, lat, lon) for lat, lon in zip(lats, lons, strict=False)
+        )
         dists.append(dmin)
 
     visited = sum(d <= visit_radius_m for d in dists)

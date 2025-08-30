@@ -1,29 +1,29 @@
 # rl/envs/px4_alt_env.py
-import os
-import sys
-import time
-import math
 import asyncio
-import signal
+import math
+import os
 import shutil
+import signal
 import socket
 import stat
 import subprocess
+import sys
+import time
 from pathlib import Path
-from typing import Optional, Tuple
 
 # --- Gym / Gymnasium compatibility ---
 try:
     import gymnasium as gym
     from gymnasium import spaces
+
     _GYMNASIUM = True
 except Exception:
     import gym
     from gym import spaces
+
     _GYMNASIUM = False
 
 import numpy as np
-
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
 
@@ -39,7 +39,7 @@ def _tcp_listen_on(port: int) -> bool:
             return False
 
 
-def _find_mavsdk_server() -> Optional[str]:
+def _find_mavsdk_server() -> str | None:
     """Locate mavsdk_server via PATH, venv/bin, or site-packages bundle."""
     p = shutil.which("mavsdk_server")
     if p and os.path.isfile(p):
@@ -51,6 +51,7 @@ def _find_mavsdk_server() -> Optional[str]:
 
     try:
         import mavsdk as mavsdk_pkg  # type: ignore
+
         site_bin = Path(mavsdk_pkg.__file__).parent / "bin" / "mavsdk_server"
         if site_bin.exists():
             return str(site_bin)
@@ -83,7 +84,7 @@ class Px4AltHoldEnv(gym.Env):
         step_dt: float = 0.10,
         max_vz_mps: float = 1.0,
         mav_addr: str = "udp://0.0.0.0:14540",
-        grpc_port: Optional[int] = None,
+        grpc_port: int | None = None,
     ):
         super().__init__()
         self.target_alt_m = float(target_alt_m)
@@ -103,21 +104,21 @@ class Px4AltHoldEnv(gym.Env):
 
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
-        self._drone: Optional[System] = None
-        self._mavsdk_proc: Optional[subprocess.Popen] = None
+        self._drone: System | None = None
+        self._mavsdk_proc: subprocess.Popen | None = None
         self._steps = 0
         self._t_last = time.time()
         self._seed = 0
 
     # ---------- Gym/Gymnasium ----------
-    def seed(self, seed: Optional[int] = None):
+    def seed(self, seed: int | None = None):
         if seed is None:
             seed = int(time.time() * 1e3) & 0xFFFF
         self._seed = int(seed)
         np.random.seed(self._seed)
         return [self._seed]
 
-    def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None):
+    def reset(self, *, seed: int | None = None, options: dict | None = None):
         if seed is not None:
             self.seed(seed)
         self._safe_shutdown()
@@ -222,7 +223,7 @@ class Px4AltHoldEnv(gym.Env):
         cmd = VelocityNedYaw(0.0, 0.0, -vz_mps, 0.0)
         await self._drone.offboard.set_velocity_ned(cmd)
 
-    async def _async_state(self) -> Tuple[float, float, float]:
+    async def _async_state(self) -> tuple[float, float, float]:
         assert self._drone is not None
         pos = await self._drone.telemetry.position().__anext__()
         vel = await self._drone.telemetry.velocity_ned().__anext__()

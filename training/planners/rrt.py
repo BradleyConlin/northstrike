@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import random
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable, List, Tuple
 
-Grid = List[List[int]]  # 0 = free, 1 = obstacle
-Pt = Tuple[int, int]
+Grid = list[list[int]]  # 0 = free, 1 = obstacle
+Pt = tuple[int, int]
 
 
 def _neighbors8(x: int, y: int, w: int, h: int) -> Iterable[Pt]:
@@ -43,7 +43,7 @@ def _los_clear(grid: Grid, a: Pt, b: Pt) -> bool:
             y += sy
 
 
-def _simplify(grid: Grid, path: List[Pt]) -> List[Pt]:
+def _simplify(grid: Grid, path: list[Pt]) -> list[Pt]:
     if len(path) < 3:
         return path
     out = [path[0]]
@@ -65,7 +65,7 @@ class _Node:
     parent: int | None
 
 
-def _nearest(nodes: List[_Node], q: Pt) -> int:
+def _nearest(nodes: list[_Node], q: Pt) -> int:
     qx, qy = q
     best_i = 0
     best_d = 1e9
@@ -87,7 +87,7 @@ def plan_on_grid_rrt(
     allow_diag: bool = True,
     simplify: bool = True,
     seed: int | None = None,
-) -> List[Pt]:
+) -> list[Pt]:
     """Very small RRT on a grid (8-connected step), with optional LOS simplify."""
     w = len(grid[0])
     h = len(grid)
@@ -99,7 +99,7 @@ def plan_on_grid_rrt(
         raise ValueError("start/goal on obstacle")
 
     rng = random.Random(seed)
-    nodes: List[_Node] = [_Node(sx, sy, None)]
+    nodes: list[_Node] = [_Node(sx, sy, None)]
 
     for _ in range(max_iters):
         if rng.random() < goal_bias:
@@ -130,7 +130,7 @@ def plan_on_grid_rrt(
 
         if (cx, cy) == (gx, gy):
             # backtrack
-            path: List[Pt] = []
+            path: list[Pt] = []
             k = len(nodes) - 1
             while k is not None:
                 n = nodes[k]

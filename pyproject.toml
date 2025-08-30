@@ -1,0 +1,20 @@
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["datasets", "sim/logs", "training/runs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E203"]  # Black compatibility
+
+[tool.pytest.ini_options]
+testpaths = ["training/tests"]
+pythonpath = ["training","sim"]
+addopts = "-q"

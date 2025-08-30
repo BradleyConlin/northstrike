@@ -1,10 +1,10 @@
 # Labeling Guidelines (Northstrike)
 
 ## Classes (IDs)
-0: drone  
-1: person  
-2: vehicle  
-3: obstacle  
+0: drone
+1: person
+2: vehicle
+3: obstacle
 4: landing_pad
 
 - Use tight boxes around visible object extent.

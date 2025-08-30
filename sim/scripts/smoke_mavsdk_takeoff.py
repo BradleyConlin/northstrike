@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-import asyncio, sys
+import asyncio
+import sys
+
 from mavsdk import System
 
 CONNECT_URL = "udpin://0.0.0.0:14540"  # PX4 SITL sends MAVLink to 14540 by default
+
 
 async def wait_connected(drone, timeout=30):
     print("Connecting to PX4 on", CONNECT_URL)
@@ -11,18 +14,23 @@ async def wait_connected(drone, timeout=30):
     except asyncio.TimeoutError:
         raise TimeoutError("No MAVLink connection on :14540 (check SITL is running)")
 
+
 async def _wait_connected(drone):
     async for state in drone.core.connection_state():
         if state.is_connected:
             print("Connected")
             return
 
+
 async def wait_position_ok(drone, timeout=30):
     print("Waiting for home + global position…")
     try:
         await asyncio.wait_for(_wait_position_ok(drone), timeout)
     except asyncio.TimeoutError:
-        raise TimeoutError("EKF not ready (no position). Make sure mag is enabled and EKF is green.")
+        raise TimeoutError(
+            "EKF not ready (no position). Make sure mag is enabled and EKF is green."
+        )
+
 
 async def _wait_position_ok(drone):
     async for h in drone.telemetry.health():
@@ -30,16 +38,19 @@ async def _wait_position_ok(drone):
             print("Position OK")
             return
 
+
 async def wait_altitude(drone, min_rel_alt=2.0, timeout=45):
     try:
         await asyncio.wait_for(_wait_altitude(drone, min_rel_alt), timeout)
     except asyncio.TimeoutError:
         raise TimeoutError("Never reached target altitude (check arming/takeoff).")
 
+
 async def _wait_altitude(drone, min_rel_alt):
     async for p in drone.telemetry.position():
         if p.relative_altitude_m >= min_rel_alt:
             return
+
 
 async def wait_landed(drone, timeout=60):
     try:
@@ -47,10 +58,12 @@ async def wait_landed(drone, timeout=60):
     except asyncio.TimeoutError:
         raise TimeoutError("Landing did not complete in time.")
 
+
 async def _wait_landed(drone):
     async for in_air in drone.telemetry.in_air():
         if not in_air:
             return
+
 
 async def main():
     drone = System()
@@ -78,6 +91,7 @@ async def main():
     await wait_landed(drone)
 
     print("SMOKE TEST PASS ✅  (takeoff/hover/land)")
+
 
 if __name__ == "__main__":
     try:

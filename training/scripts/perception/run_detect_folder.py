@@ -5,7 +5,6 @@ import csv
 from pathlib import Path
 
 import cv2
-
 from src.perception.color_target import detect_color_targets, draw_boxes
 
 IN_DIR = Path("artifacts/perception_in")

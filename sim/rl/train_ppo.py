@@ -1,19 +1,17 @@
 # rl/train_ppo.py
-import os
 import argparse
-from typing import List
+import os
 
 import torch
-from stable_baselines3 import PPO
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import DummyVecEnv
-from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
-from stable_baselines3.common.utils import set_random_seed
-
 from rl.envs.px4_alt_env import Px4AltHoldEnv
+from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.utils import set_random_seed
+from stable_baselines3.common.vec_env import DummyVecEnv
 
 
-def parse_list(n: int, csv: str, base: int, step: int) -> List[int]:
+def parse_list(n: int, csv: str, base: int, step: int) -> list[int]:
     if csv:
         vals = [int(x.strip()) for x in csv.split(",") if x.strip()]
     else:
@@ -38,6 +36,7 @@ def make_env_fn(px4_port: int, grpc_port: int, seed: int):
         except Exception:
             pass
         return Monitor(env)
+
     return _thunk
 
 
@@ -46,11 +45,15 @@ def main():
     p.add_argument("--steps", type=int, default=12_000_000)
     p.add_argument("--num-envs", type=int, default=4)
 
-    p.add_argument("--ports", type=str, default="", help="CSV PX4 MAVLink ports (e.g., 14540,14541,...)")
+    p.add_argument(
+        "--ports", type=str, default="", help="CSV PX4 MAVLink ports (e.g., 14540,14541,...)"
+    )
     p.add_argument("--base-port", type=int, default=14540)
     p.add_argument("--port-step", type=int, default=1)
 
-    p.add_argument("--grpc-ports", type=str, default="", help="CSV MAVSDK gRPC ports (e.g., 50060,50061,...)")
+    p.add_argument(
+        "--grpc-ports", type=str, default="", help="CSV MAVSDK gRPC ports (e.g., 50060,50061,...)"
+    )
     p.add_argument("--grpc-base", type=int, default=50060)
     p.add_argument("--grpc-step", type=int, default=1)
 
@@ -76,7 +79,9 @@ def main():
 
     set_random_seed(args.seed)
 
-    env_fns = [make_env_fn(px4_ports[i], grpc_ports[i], args.seed + i) for i in range(args.num_envs)]
+    env_fns = [
+        make_env_fn(px4_ports[i], grpc_ports[i], args.seed + i) for i in range(args.num_envs)
+    ]
     vec_env = DummyVecEnv(env_fns)
 
     policy_kwargs = dict(net_arch=[256, 256])
@@ -84,7 +89,7 @@ def main():
         "MlpPolicy",
         vec_env,
         device=device,
-        n_steps=1024,          # quicker first TB write; adjust later
+        n_steps=1024,  # quicker first TB write; adjust later
         batch_size=2048,
         n_epochs=5,
         learning_rate=3e-4,
@@ -107,8 +112,12 @@ def main():
         save_replay_buffer=False,
         save_vecnormalize=False,
     )
-    model.learn(total_timesteps=args.steps, tb_log_name=args.tb_name, reset_num_timesteps=False,
-                callback=CallbackList([ckpt_cb]))
+    model.learn(
+        total_timesteps=args.steps,
+        tb_log_name=args.tb_name,
+        reset_num_timesteps=False,
+        callback=CallbackList([ckpt_cb]),
+    )
     model.save(os.path.join(args.checkpoint_dir, "model_final.zip"))
     vec_env.close()
 

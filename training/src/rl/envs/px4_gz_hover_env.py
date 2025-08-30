@@ -1,6 +1,5 @@
 import asyncio
 import threading
-from typing import Optional, Tuple
 
 import numpy as np
 from mavsdk import System
@@ -29,14 +28,14 @@ class _MavsdkClient:
         self._keepalive_hz = float(keepalive_hz)
         self._debug = debug
 
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
-        self._loop_thread: Optional[threading.Thread] = None
-        self._sys: Optional[System] = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._loop_thread: threading.Thread | None = None
+        self._sys: System | None = None
         self._connected = False
         self._offboard = False
         self._keepalive_task = None
 
-        self._last_pvn: Optional[PositionVelocityNed] = None
+        self._last_pvn: PositionVelocityNed | None = None
         self._lock = threading.Lock()
 
     async def _wait_for(self, coro, timeout_s: float, what: str):
@@ -179,7 +178,7 @@ class _MavsdkClient:
         fut = asyncio.run_coroutine_threadsafe(self._sys.offboard.set_velocity_ned(cmd), self._loop)
         fut.result(timeout=1.0)
 
-    def get_state(self) -> Tuple[np.ndarray, np.ndarray]:
+    def get_state(self) -> tuple[np.ndarray, np.ndarray]:
         with self._lock:
             pvn = self._last_pvn
         if pvn is None:

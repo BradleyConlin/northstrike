@@ -5,17 +5,16 @@ import argparse
 import json
 import os
 import sys
-from typing import Dict, List, Tuple
 
 import yaml
 
 
 def load_yaml(path: str) -> dict:
-    with open(path, "r") as f:
+    with open(path) as f:
         return yaml.safe_load(f) or {}
 
 
-def point_in_bbox(lat: float, lon: float, poly: List[Dict[str, float]]) -> bool:
+def point_in_bbox(lat: float, lon: float, poly: list[dict[str, float]]) -> bool:
     if not poly:
         return True  # no geofence configured -> skip
     lats = [p["lat"] for p in poly]
@@ -23,7 +22,7 @@ def point_in_bbox(lat: float, lon: float, poly: List[Dict[str, float]]) -> bool:
     return (min(lats) <= lat <= max(lats)) and (min(lons) <= lon <= max(lons))
 
 
-def check(plan: dict, limits: dict) -> Tuple[bool, List[str], List[str]]:
+def check(plan: dict, limits: dict) -> tuple[bool, list[str], list[str]]:
     issues, warns = [], []
     alt_max = float(limits.get("altitude_max_m", 120))
     wind_max = float(limits.get("wind_max_mps", 10))

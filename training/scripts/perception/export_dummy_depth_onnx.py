@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-import argparse, torch, os
+import argparse
+import os
+
+import torch
+
 
 class RGB2Depth(torch.nn.Module):
     def __init__(self):
@@ -10,8 +14,9 @@ class RGB2Depth(torch.nn.Module):
             self.conv.weight.copy_(w)
 
     def forward(self, x):
-        y = self.conv(x)         # (N,1,H,W), roughly 0..1
+        y = self.conv(x)  # (N,1,H,W), roughly 0..1
         return torch.clamp(y, 0.0, 1.0)
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -25,11 +30,18 @@ def main():
     m = RGB2Depth().eval()
     x = torch.randn(1, 3, args.height, args.width)
     torch.onnx.export(
-        m, x, args.out, export_params=True, opset_version=args.opset,
-        do_constant_folding=True, input_names=["images"], output_names=["depth"],
-        dynamic_axes={"images": {0: "N", 2: "H", 3: "W"}, "depth": {0: "N", 2: "H", 3: "W"}}
+        m,
+        x,
+        args.out,
+        export_params=True,
+        opset_version=args.opset,
+        do_constant_folding=True,
+        input_names=["images"],
+        output_names=["depth"],
+        dynamic_axes={"images": {0: "N", 2: "H", 3: "W"}, "depth": {0: "N", 2: "H", 3: "W"}},
     )
     print("Exported →", args.out)
+
 
 if __name__ == "__main__":
     main()

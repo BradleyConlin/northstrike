@@ -1,23 +1,28 @@
+import asyncio
 import os
 import sys
-import asyncio
+
 from mavsdk import System
 from mavsdk.action import ActionError
 
 DEFAULT_URL = "udpin://0.0.0.0:14540"
 
+
 async def wait_connected(drone, timeout_s=20):
     print("[INFO] Waiting for MAVSDK connection…", flush=True)
+
     async def _wait():
         async for s in drone.core.connection_state():
             if s.is_connected:
                 print("[INFO] MAVSDK connected.", flush=True)
                 return
+
     try:
         await asyncio.wait_for(_wait(), timeout=timeout_s)
     except asyncio.TimeoutError:
         print("[ERROR] Timed out waiting for MAVSDK connection.", file=sys.stderr)
         sys.exit(2)
+
 
 async def wait_health(drone, timeout_s=60):
     """
@@ -26,17 +31,22 @@ async def wait_health(drone, timeout_s=60):
       - local OR global position available
     """
     print("[INFO] Waiting for vehicle health…", flush=True)
+
     async def _wait():
         async for h in drone.telemetry.health():
-            if (h.is_gyrometer_calibration_ok and
-                h.is_accelerometer_calibration_ok and
-                (h.is_local_position_ok or h.is_global_position_ok)):
+            if (
+                h.is_gyrometer_calibration_ok
+                and h.is_accelerometer_calibration_ok
+                and (h.is_local_position_ok or h.is_global_position_ok)
+            ):
                 print("[INFO] Vehicle health OK.", flush=True)
                 return
+
     try:
         await asyncio.wait_for(_wait(), timeout=timeout_s)
     except asyncio.TimeoutError:
         print("[WARN] Health not OK after timeout; proceeding anyway.", flush=True)
+
 
 async def main():
     url = os.getenv("MAVSDK_URL", DEFAULT_URL)
@@ -81,6 +91,7 @@ async def main():
     except ActionError as e:
         print(f"[ERROR] Action failed: {e}", file=sys.stderr)
         sys.exit(3)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

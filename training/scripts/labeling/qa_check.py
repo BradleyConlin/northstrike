@@ -4,12 +4,11 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 
-def read_labelmap(path: Path) -> Dict[str, int]:
+def read_labelmap(path: Path) -> dict[str, int]:
     # supports simple YAML or plain text (one class per line)
-    name_to_id: Dict[str, int] = {}
+    name_to_id: dict[str, int] = {}
     if not path.exists():
         return name_to_id
     txt = path.read_text().strip()
@@ -31,7 +30,7 @@ def read_labelmap(path: Path) -> Dict[str, int]:
     return name_to_id
 
 
-def parse_yolo_label_file(p: Path) -> List[Tuple[int, float, float, float, float]]:
+def parse_yolo_label_file(p: Path) -> list[tuple[int, float, float, float, float]]:
     out = []
     if not p.exists():
         return out
@@ -51,7 +50,7 @@ def parse_yolo_label_file(p: Path) -> List[Tuple[int, float, float, float, float
     return out
 
 
-def run_qa(images_dir: Path, labels_dir: Path, labelmap_path: Path) -> Dict:
+def run_qa(images_dir: Path, labels_dir: Path, labelmap_path: Path) -> dict:
     images = sorted(
         [p for p in images_dir.glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png"}]
     )
@@ -62,8 +61,8 @@ def run_qa(images_dir: Path, labels_dir: Path, labelmap_path: Path) -> Dict:
     n_imgs = len(images)
     n_with = 0
     n_empty = 0
-    class_counts: Dict[str, int] = {}
-    issues: List[str] = []
+    class_counts: dict[str, int] = {}
+    issues: list[str] = []
 
     for img in images:
         lab = labels.get(img.stem)
@@ -85,7 +84,7 @@ def run_qa(images_dir: Path, labels_dir: Path, labelmap_path: Path) -> Dict:
     for lab in labels.values():
         if not lab.exists():
             continue
-        for cls, cx, cy, w, h in parse_yolo_label_file(lab):
+        for _cls, cx, cy, w, h in parse_yolo_label_file(lab):
             if not (0.0 <= cx <= 1.0 and 0.0 <= cy <= 1.0 and 0.0 < w <= 1.0 and 0.0 < h <= 1.0):
                 issues.append(f"bad_box:{lab.name}")
 

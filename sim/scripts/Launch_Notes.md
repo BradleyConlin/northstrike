@@ -150,4 +150,3 @@ ss -u -na | grep :14550 should show QGC listening
 XRCE-DDS “create entities failed” spam
 
 This is the ROS 2 bridge being chatty. It doesn’t block arming. Keep the Agent running for ROS 2 work; if you want a quiet console during basic flights, you can run uxrce_dds_client stop at pxh> and start it again later.
-

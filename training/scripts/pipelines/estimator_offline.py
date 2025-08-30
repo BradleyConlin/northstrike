@@ -7,7 +7,6 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-
 from src.estimators.ekf_cv import EKFCV, geodetic_to_local_xy
 
 """
@@ -102,7 +101,7 @@ def main(in_path: str):
     xs = []
     ys = []
     zs = []
-    for d, xm, ym, zm in zip(rows, x_meas, y_meas, z_meas):
+    for d, xm, ym, zm in zip(rows, x_meas, y_meas, z_meas, strict=False):
         t = fnum(d, "t", 0.0)
         dt = max(1e-3, t - t_prev)
         t_prev = t

@@ -13,7 +13,7 @@ def test_astar_finds_path_around_wall():
     assert path[0] == (0, 0)
     assert path[-1] == (5, 5)
     # Path should only move in 4-connected steps and never hit obstacles
-    for (x1, y1), (x2, y2) in zip(path, path[1:]):
+    for (x1, y1), (x2, y2) in zip(path, path[1:], strict=False):
         assert abs(x1 - x2) + abs(y1 - y2) == 1
         assert grid[y2][x2] == 0
 

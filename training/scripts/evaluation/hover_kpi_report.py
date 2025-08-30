@@ -9,14 +9,14 @@ from __future__ import annotations
 
 import json
 import math
-from typing import Dict, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
 
 
 # ---------- Helpers ----------
-def _find_col(df: pd.DataFrame, candidates: Sequence[str]) -> Optional[str]:
+def _find_col(df: pd.DataFrame, candidates: Sequence[str]) -> str | None:
     cols = {c.lower(): c for c in df.columns}
     for name in candidates:
         if name.lower() in cols:
@@ -24,11 +24,11 @@ def _find_col(df: pd.DataFrame, candidates: Sequence[str]) -> Optional[str]:
     return None
 
 
-def _time_col(df: pd.DataFrame) -> Optional[str]:
+def _time_col(df: pd.DataFrame) -> str | None:
     return _find_col(df, ["time_s", "t", "time", "timestamp", "sec", "secs"])
 
 
-def _alt_col(df: pd.DataFrame) -> Optional[str]:
+def _alt_col(df: pd.DataFrame) -> str | None:
     # Common altitude/vertical-position names used in logs/tests
     return _find_col(
         df,
@@ -45,7 +45,7 @@ def _alt_col(df: pd.DataFrame) -> Optional[str]:
     )
 
 
-def _sp_alt_col(df: pd.DataFrame) -> Optional[str]:
+def _sp_alt_col(df: pd.DataFrame) -> str | None:
     # Common setpoint names for altitude
     return _find_col(
         df,
@@ -62,7 +62,7 @@ def _sp_alt_col(df: pd.DataFrame) -> Optional[str]:
     )
 
 
-def _xy_cols(df: pd.DataFrame) -> Tuple[Optional[str], Optional[str]]:
+def _xy_cols(df: pd.DataFrame) -> tuple[str | None, str | None]:
     x = _find_col(df, ["x", "pos_x", "x_m"])
     y = _find_col(df, ["y", "pos_y", "y_m"])
     return x, y
@@ -76,12 +76,12 @@ def _valid_numeric(series: pd.Series) -> pd.Series:
 
 
 def compute_hover_kpis(
-    data: Optional[pd.DataFrame] = None,
+    data: pd.DataFrame | None = None,
     *,
-    df: Optional[pd.DataFrame] = None,
-    csv_path: Optional[str] = None,
-    sampling_hz: Optional[float] = None,
-) -> Dict[str, Union[int, float, None]]:
+    df: pd.DataFrame | None = None,
+    csv_path: str | None = None,
+    sampling_hz: float | None = None,
+) -> dict[str, int | float | None]:
     """
     Compute basic hover KPIs from a DataFrame or CSV.
 
@@ -140,8 +140,8 @@ def compute_hover_kpis(
 
     alt_mean = float("nan")
     alt_std = float("nan")
-    alt_rmse: Optional[float] = None
-    max_alt_dev: Optional[float] = None
+    alt_rmse: float | None = None
+    max_alt_dev: float | None = None
 
     if z_col and df[z_col].notna().any():
         z = df[z_col].dropna().astype(float)
@@ -160,13 +160,13 @@ def compute_hover_kpis(
             max_alt_dev = float(np.max(np.abs(z - z.mean()))) if len(z) else None
 
     # hover_rms_m is RMSE vs setpoint when available; otherwise RMS around mean (= alt_std)
-    hover_rms_m: Optional[float] = (
+    hover_rms_m: float | None = (
         alt_rmse
         if alt_rmse is not None
         else (alt_std if not (isinstance(alt_std, float) and np.isnan(alt_std)) else None)
     )
 
-    xy_std: Optional[float] = None
+    xy_std: float | None = None
     if x_col and y_col and df[x_col].notna().any() and df[y_col].notna().any():
         xs = df[x_col].dropna().to_numpy(dtype=float)
         ys = df[y_col].dropna().to_numpy(dtype=float)
@@ -174,10 +174,10 @@ def compute_hover_kpis(
         xy_std = float(r.std(ddof=0)) if r.size > 0 else None
 
     # xy_rms_m: RMS horizontal deviation (m); if XY not available, treat as 0.0 (stationary)
-    xy_rms_m: Optional[float] = xy_std if xy_std is not None else 0.0
+    xy_rms_m: float | None = xy_std if xy_std is not None else 0.0
 
     # Composite score (0..1), higher is better
-    def _score(val: Optional[float], good: float, bad: float) -> Optional[float]:
+    def _score(val: float | None, good: float, bad: float) -> float | None:
         if val is None or (isinstance(val, float) and math.isnan(val)):
             return None
         if val <= good:
@@ -209,7 +209,7 @@ def compute_hover_kpis(
 def render_hover_plot(
     df: pd.DataFrame,
     *,
-    save_path: Optional[str] = None,
+    save_path: str | None = None,
     title: str = "Hover Altitude",
 ) -> None:
     """No-op if matplotlib is unavailable."""

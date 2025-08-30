@@ -5,7 +5,6 @@ import csv
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-
 from src.multi_agent.swarm import min_pairwise_distance, simulate_swarm
 
 OUTDIR = Path("artifacts/swarm")
@@ -49,7 +48,7 @@ def main():
 
     mind = min_pairwise_distance(trace)
     print(f"min_pairwise_distance={mind:.2f} m")
-    print(f"Wrote: {OUTDIR/'swarm_trace.csv'} and {OUTDIR/'swarm_plot.png'}")
+    print(f"Wrote: {OUTDIR / 'swarm_trace.csv'} and {OUTDIR / 'swarm_plot.png'}")
 
 
 if __name__ == "__main__":
