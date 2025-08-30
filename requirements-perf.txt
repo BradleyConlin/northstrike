@@ -1,0 +1,4 @@
+onnxruntime>=1.17
+onnx>=1.15
+PyYAML>=6.0
+numpy>=1.24

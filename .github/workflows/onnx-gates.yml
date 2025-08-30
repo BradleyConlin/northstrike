@@ -1,0 +1,46 @@
+name: ONNX Gates
+on:
+  push:
+  pull_request:
+
+jobs:
+  onnx-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install perf deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements-perf.txt
+      - name: Ensure artifacts dirs
+        run: mkdir -p artifacts/perf artifacts/onnx
+      - name: Ensure placeholder models exist
+        run: |
+          python scripts/inference/make_dummy_policy_onnx.py --out artifacts/onnx/policy_dummy.onnx || true
+          if [ ! -f artifacts/onnx/depth_e24.onnx ]; then
+            python - <<'PY'
+import onnx
+from onnx import helper, TensorProto
+X = helper.make_tensor_value_info("input", TensorProto.FLOAT, [1,3,384,640])
+Y = helper.make_tensor_value_info("output", TensorProto.FLOAT, [1,1,384,640])
+node = helper.make_node("Identity", ["input"], ["output"])
+m = helper.make_model(helper.make_graph([node], "identity", [X], [Y]))
+m.ir_version = 10
+if not m.opset_import:
+    m.opset_import.add(domain="", version=13)
+else:
+    m.opset_import[0].version = 13
+onnx.save(m, "artifacts/onnx/depth_e24.onnx")
+PY
+          fi
+      - name: Contracts
+        run: python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
+      - name: Profile
+        run: python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir artifacts/perf --check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: perf-artifacts
+          path: artifacts/perf
