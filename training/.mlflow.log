@@ -1,0 +1,7 @@
+[2025-08-15 18:46:22 -0400] [6602] [INFO] Starting gunicorn 23.0.0
+[2025-08-15 18:46:22 -0400] [6602] [INFO] Listening at: http://127.0.0.1:5000 (6602)
+[2025-08-15 18:46:22 -0400] [6602] [INFO] Using worker: sync
+[2025-08-15 18:46:22 -0400] [6603] [INFO] Booting worker with pid: 6603
+[2025-08-15 18:46:22 -0400] [6604] [INFO] Booting worker with pid: 6604
+[2025-08-15 18:46:22 -0400] [6605] [INFO] Booting worker with pid: 6605
+[2025-08-15 18:46:22 -0400] [6606] [INFO] Booting worker with pid: 6606

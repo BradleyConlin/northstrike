@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.cache/
+dist/
+build/
+
+# Editors
+.vscode/
+.idea/
+
+# Data/artifacts/logs
+artifacts/
+logs/
+log/
+*.ulg
+*.ulg.raw
+*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# local runs & artifacts
+mlflow_server/
+mlruns/
+data/
+datasets/
+models/
+benchmarks/reports/
+*.log
+job_logs.zip
+run_logs.zip

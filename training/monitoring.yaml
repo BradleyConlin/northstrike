@@ -1,0 +1,216 @@
+items:
+- id: 1
+  name: Simulation & Data-Generation Tools
+  seed: yellow
+  green_globs:
+  - sim/**
+  - scripts/sim*
+- id: 2
+  name: Path-Planning Algorithms
+  seed: yellow
+  green_globs:
+  - planning/**
+  - scripts/**/plan*
+  - planners/*.py
+  - tests/test_plan_*.py
+  - scripts/planning/*.py
+  - artifacts/compare_*
+  - artifacts/sweep_*
+- id: 3
+  name: Flight-Control Algorithms
+  seed: yellow
+  green_globs:
+  - control/**
+  - scripts/**/control*
+- id: 4
+  name: Sensor Fusion & State Estimation
+  seed: red
+  green_globs:
+  - state_estimation/**
+  - fusion/**
+  - src/estimators/*.py
+  - scripts/pipelines/*estimator*.py
+  - artifacts/waypoint_run_ekf.csv
+  - artifacts/waypoint_plot_ekf.png
+  - scripts/pipelines/estimator_offline.py
+  - tests/estimators/*.py
+- id: 5
+  name: Perception & Computer Vision
+  seed: yellow
+  green_globs:
+  - perception/**
+  - cv/**
+  - models/**
+  - src/perception/*.py
+  - scripts/perception/*.py
+  - artifacts/perception_out/detections.csv
+  - tests/perception/*.py
+- id: 6
+  name: Multi-Agent Coordination & Swarm Behaviour
+  seed: red
+  green_globs:
+  - swarm/**
+  - multi_agent/**
+  - src/multi_agent/*.py
+  - scripts/multi_agent/*.py
+  - tests/multi_agent/*.py
+  - artifacts/swarm/swarm_plot.png
+- id: 7
+  name: Domain-Specific Models & Tools
+  seed: red
+  green_globs:
+  - aero/**
+  - terrain/**
+  - wind/**
+  - src/domain/*.py
+  - scripts/domain/*.py
+  - tests/domain/*.py
+  - artifacts/domain/wind_log.csv
+  - artifacts/domain/domain_checks.csv
+- id: 8
+  name: Training Infrastructure & Tools
+  seed: yellow
+  green_globs:
+  - train.py
+  - training/**
+  - configs/training/*.yaml
+  - scripts/training/*.py
+  - tests/training/*.py
+  - artifacts/training/metrics.csv
+  - artifacts/training/model_dummy.npz
+  - artifacts/training/summary.json
+- id: 9
+  name: Compatibility Considerations
+  seed: yellow
+  green_globs:
+  - .tool-versions
+  - .python-version
+  - tox.ini
+  - noxfile.py
+  - .github/workflows/compat_matrix.yml
+  - docs/compatibility/*.md
+  - scripts/compat/*.py
+- id: 10
+  name: MLOps & Experiment Tracking
+  seed: green
+  green_globs:
+  - scripts/evaluation/log_dummy_metrics.py
+  - mlflow.yaml
+  - configs/mlops/*.yaml
+  - scripts/mlops/*.py
+  - tests/mlops/*.py
+- id: 11
+  name: RL Stack & Safety-Aware Training
+  seed: red
+  green_globs:
+  - rl/**
+  - scripts/**/train_rl*
+  - src/rl/*.py
+  - scripts/rl/*.py
+  - tests/rl/*.py
+  - artifacts/rl/summary.json
+  - artifacts/rl/eval_traj.csv
+- id: 12
+  name: SysID & Flight-Model Calibration
+  seed: red
+  green_globs:
+  - sysid/**
+  - scripts/**/fit_*
+  - data/sysid/**
+  - scripts/sysid/*.py
+  - tests/sysid/*.py
+  - artifacts/sysid/est_params.json
+  - artifacts/sysid/est_diagnostics.csv
+- id: 13
+  name: Fixed-Wing Control (TECS & L1)
+  seed: red
+  green_globs:
+  - control/tecs/**
+  - control/l1/**
+  - src/controllers/fixedwing/*.py
+  - scripts/fixedwing/*.py
+  - tests/fixedwing/*.py
+  - artifacts/fixedwing/fw_metrics.json
+  - artifacts/fixedwing/fw_traj.csv
+- id: 14
+  name: Hardware-in-the-Loop (HIL) & Bench Testing
+  seed: red
+  green_globs:
+  - hil/**
+  - bench/**
+  - hil/scripts/*.py
+  - tests/hil/*.py
+  - artifacts/hil/session_metrics.json
+  - artifacts/hil/hil_log.csv
+- id: 15
+  name: Domain Randomization & Sim-to-Real
+  seed: red
+  green_globs:
+  - randomization/**
+  - sim2real/**
+  - simulation/domain_randomization/*.yaml
+  - simulation/domain_randomization/scripts/*.py
+  - tests/sim_randomization/*.py
+  - artifacts/randomization/last_profile.json
+- id: 16
+  name: Evaluation Benchmarks & KPIs
+  seed: green
+  green_globs:
+  - scripts/evaluation/**
+  - tests/**/assert_*
+- id: 17
+  name: Post-Deployment Observability & Drift
+  seed: red
+  green_globs:
+  - postdeploy/**
+  - monitoring/**
+  - observability/drift_detection/*.py
+  - scripts/observability/*.py
+  - tests/observability/*.py
+  - artifacts/drift/last_drift.json
+  - artifacts/drift/drift_log.csv
+  - artifacts/drift/baseline.csv
+- id: 18
+  name: Edge Packaging & Performance Budgets
+  seed: red
+  green_globs:
+  - edge/**
+  - packaging/**
+- id: 19
+  name: Data Labeling, QA & Governance
+  seed: red
+  green_globs:
+  - datasets/**/manifest.*
+  - scripts/**/validate_dataset*
+- id: 20
+  name: Safety, Compliance & SOPs (Transport Canada)
+  seed: red
+  green_globs:
+  - docs/safety/**
+  - docs/compliance/**
+- id: 21
+  name: Secrets & Config Hygiene
+  seed: green
+  green_globs:
+  - .pre-commit-config.yaml
+  - .env.sample
+  - config/**
+- id: 22
+  name: CI/CD & Release Engineering
+  seed: green
+  green_globs:
+  - .github/workflows/*.yml
+  - .github/workflows/*.yaml
+- id: 23
+  name: Architecture Decision Records (ADRs)
+  seed: yellow
+  green_globs:
+  - docs/adr/**
+  - docs/adrs/**
+- id: 24
+  name: Mission & Parameter Bundles
+  seed: yellow
+  green_globs:
+  - missions/**
+  - '*.bundle.yaml'
+  - '**/mission*.yaml'

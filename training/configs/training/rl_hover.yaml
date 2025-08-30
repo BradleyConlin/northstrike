@@ -1,0 +1,5 @@
+# Placeholder for future hyperparams. The training script currently uses CLI args.
+algo: PPO
+env: Px4GzHoverEnv-v0
+total_steps: 10000
+udp_url: "udp://:14540"
