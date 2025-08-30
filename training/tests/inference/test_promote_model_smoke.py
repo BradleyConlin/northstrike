@@ -25,7 +25,7 @@ def _target_path(cfg: dict, dotted: str) -> Path:
     return Path(f[dotted]["path"])
 
 def test_promote_policy_symlink_and_manifest(tmp_path):
-    src = Path("artifacts/onnx/policy_copy.onnx")
+    src = tmp_path / "policy_copy.onnx"
     shutil.copyfile("artifacts/onnx/policy_dummy.onnx", src)
     _run([sys.executable, "scripts/inference/promote_model.py",
           "--config", CFG, "--target", "control.policy", "--model", str(src)])
