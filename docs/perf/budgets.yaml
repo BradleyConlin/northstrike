@@ -1,0 +1,17 @@
+version: 1
+targets:
+  # Depth model (RGB -> depth)
+  perception.depth:
+    path: artifacts/onnx/depth_e24.onnx
+    shape: 1x3x384x640
+    budget_ms: 12.0
+
+  # Control policy (state -> action). Start with a tiny dummy policy to wire the pipeline.
+  control.policy:
+    path: artifacts/onnx/policy_dummy.onnx
+    shape: 1x64
+    budget_ms: 1.5
+
+  # Whole-loop budget target (CPU-only placeholder; refine on Jetson/HIL)
+  full_loop:
+    budget_ms: 33.0

@@ -1,0 +1,17 @@
+{
+  "name": "targets.control.policy",
+  "path": "artifacts/onnx/policy_dummy.onnx",
+  "expected_input_shape": [
+    1,
+    64
+  ],
+  "input_shape": [
+    1,
+    64
+  ],
+  "input_dtype": 1,
+  "outputs": [
+    "output"
+  ],
+  "pass": true
+}

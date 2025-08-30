@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/1c2785b292dd411a847705c979b99fde/artifacts
+end_time: 1756580474716
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 1c2785b292dd411a847705c979b99fde
+run_name: salty-cat-642
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756580474704
+status: 3
+tags: []
+user_id: brad

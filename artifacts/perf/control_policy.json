@@ -1,0 +1,12 @@
+{
+  "name": "control.policy",
+  "path": "artifacts/onnx/policy_dummy.onnx",
+  "provider": "CPUExecutionProvider",
+  "iters": 200,
+  "warmup": 30,
+  "p50_ms": 0.008705999789526686,
+  "p90_ms": 0.008947998139774427,
+  "p99_ms": 0.01487493987951891,
+  "mean_ms": 0.019055605225730687,
+  "fps": 51885.84285149352
+}
