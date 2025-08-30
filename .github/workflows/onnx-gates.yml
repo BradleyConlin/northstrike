@@ -15,7 +15,7 @@ jobs:
         run: |
           python -m pip install -U pip
           pip install -r requirements-perf.txt
-      - name: Ensure artifacts dirs
+      - name: Ensure artifacts
         run: mkdir -p artifacts/perf artifacts/onnx
       - name: Ensure placeholder models exist
         run: |
@@ -40,6 +40,8 @@ PY
         run: python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
       - name: Profile
         run: python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir artifacts/perf --check
+      - name: Depth offline smoke
+        run: python scripts/inference/run_depth_offline.py --model artifacts/onnx/depth_e24.onnx --mode rand --out-npz artifacts/perf/depth_ci_out.npz --out-csv artifacts/perf/depth_ci_stats.csv
       - uses: actions/upload-artifact@v4
         with:
           name: perf-artifacts
