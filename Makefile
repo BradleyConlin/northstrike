@@ -28,3 +28,11 @@ data-diff:
 
 stack-smoke:
 > python scripts/inference/stack_demo.py
+
+ci:
+ > $(MAKE) onnx-all
+ > $(MAKE) onnx-verify
+ > $(MAKE) onnx-deploy-smoke
+ > $(MAKE) stack-smoke
+ > $(MAKE) data-verify
+ > $(MAKE) data-diff
