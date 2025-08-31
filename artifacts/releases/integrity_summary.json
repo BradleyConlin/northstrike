@@ -2,7 +2,7 @@
   "meta": {
     "manifest": "deploy/models/manifest.json",
     "tool": "scripts/inference/integrity_summary.py",
-    "ts": 1756612474
+    "ts": 1756614740
   },
   "models": {
     "control.policy": {
@@ -17,7 +17,7 @@
           ]
         }
       ],
-      "mtime": 1756611908,
+      "mtime": 1756614739,
       "opset": 13,
       "outputs": [
         {
@@ -68,13 +68,13 @@
   },
   "perf": {
     "control_policy_profile": {
-      "fps": 106738.62269821006,
+      "fps": 108930.91927347406,
       "iters": 200,
-      "mean_ms": 0.009128294768743217,
+      "mean_ms": 0.008964545413618907,
       "name": "control.policy",
-      "p50_ms": 0.008996998076327145,
-      "p90_ms": 0.00933000264922157,
-      "p99_ms": 0.013519700805773024,
+      "p50_ms": 0.00886599809746258,
+      "p90_ms": 0.009158003376796842,
+      "p99_ms": 0.010000760521506861,
       "path": "artifacts/onnx/policy_dummy.onnx",
       "provider": "CPUExecutionProvider",
       "warmup": 30
@@ -92,9 +92,9 @@
         384,
         640
       ],
-      "iters": 3,
-      "p50_depth_ms": 9.108805008232594,
-      "p50_policy_ms": 0.8848049938678741,
+      "iters": 2,
+      "p50_depth_ms": 4.389662507921457,
+      "p50_policy_ms": 0.8750969991087914,
       "policy_input_shape": [
         1,
         64
@@ -105,13 +105,13 @@
       ]
     },
     "perception_depth_profile": {
-      "fps": 6507.488296551962,
+      "fps": 9071.454944069133,
       "iters": 200,
-      "mean_ms": 0.15334407999034738,
+      "mean_ms": 0.10994932486937614,
       "name": "perception.depth",
-      "p50_ms": 0.09970850078389049,
-      "p90_ms": 0.15393320136354302,
-      "p99_ms": 1.2855662685615126,
+      "p50_ms": 0.09753999984241091,
+      "p90_ms": 0.1065809978172183,
+      "p99_ms": 0.35525279927241915,
       "path": "artifacts/onnx/depth_e24.onnx",
       "provider": "CPUExecutionProvider",
       "warmup": 30
