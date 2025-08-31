@@ -75,6 +75,13 @@ def main():
     tgt = flat[args.target]
     want_shape = str(tgt["shape"]).lower().replace(" ", "")
     dst = Path(str(tgt["path"]))
+    import os
+    # refuse self-promotion (src == dst) to avoid symlink loops
+    src_abs = os.path.normcase(os.path.abspath(str(Path(args.model))))
+    dst_abs = os.path.normcase(os.path.abspath(str(dst)))
+    if src_abs == dst_abs:
+        print(f"[error] refusing self-promotion: src==dst ({dst}). Use a temp copy like artifacts/onnx/_promote_<name>.onnx")
+        raise SystemExit(2)
     src = Path(args.model).resolve()
 
     if not src.is_file():
