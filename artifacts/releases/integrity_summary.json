@@ -2,7 +2,7 @@
   "meta": {
     "manifest": "deploy/models/manifest.json",
     "tool": "scripts/inference/integrity_summary.py",
-    "ts": 1756645311
+    "ts": 1756681625
   },
   "models": {
     "control.policy": {
@@ -17,7 +17,7 @@
           ]
         }
       ],
-      "mtime": 1756645310,
+      "mtime": 1756681624,
       "opset": 13,
       "outputs": [
         {
@@ -47,7 +47,7 @@
           ]
         }
       ],
-      "mtime": 1756644860,
+      "mtime": 1756681623,
       "opset": 18,
       "outputs": [
         {
@@ -68,13 +68,13 @@
   },
   "perf": {
     "control_policy_profile": {
-      "fps": 108597.14747951008,
+      "fps": 112182.20191143983,
       "iters": 200,
-      "mean_ms": 0.008978824771475047,
+      "mean_ms": 0.008668974978718325,
       "name": "control.policy",
-      "p50_ms": 0.008857008651830256,
-      "p90_ms": 0.009097998554352671,
-      "p99_ms": 0.010819680610438772,
+      "p50_ms": 0.008597000487498008,
+      "p90_ms": 0.008826100201986264,
+      "p99_ms": 0.009167499010800384,
       "path": "artifacts/onnx/policy_dummy.onnx",
       "provider": "CPUExecutionProvider",
       "warmup": 30
@@ -93,8 +93,8 @@
         640
       ],
       "iters": 2,
-      "p50_depth_ms": 0.20786649733781815,
-      "p50_policy_ms": 0.848643496632576,
+      "p50_depth_ms": 2.2172314999625087,
+      "p50_policy_ms": 0.8705925000831485,
       "policy_input_shape": [
         1,
         64
@@ -105,13 +105,13 @@
       ]
     },
     "perception_depth_profile": {
-      "fps": 6440.372789665937,
+      "fps": 10158.343690211079,
       "iters": 200,
-      "mean_ms": 0.15494537059566937,
+      "mean_ms": 0.09813725498133863,
       "name": "perception.depth",
-      "p50_ms": 0.10062949149869382,
-      "p90_ms": 0.10368708899477497,
-      "p99_ms": 3.2163594788289553,
+      "p50_ms": 0.09654800032876665,
+      "p90_ms": 0.10031390047515742,
+      "p99_ms": 0.10490475955521103,
       "path": "artifacts/onnx/depth_e24.onnx",
       "provider": "CPUExecutionProvider",
       "warmup": 30

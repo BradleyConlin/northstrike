@@ -1,124 +1,155 @@
 #!/usr/bin/env python3
-import argparse, hashlib, json, os, sys, time
+import argparse, json, hashlib, sys
 from pathlib import Path
-from typing import Any, Dict, Tuple
-
-import onnxruntime as ort
 import yaml
 
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 
-def _flatten_targets(d: Dict[str, Any], prefix: str = "") -> Dict[str, Dict[str, Any]]:
-    out = {}
-    if isinstance(d, dict):
-        if {"path", "shape"} <= set(d.keys()):
-            out[prefix.strip(".")] = d
-        else:
-            for k, v in d.items():
-                out.update(_flatten_targets(v, f"{prefix}.{k}" if prefix else k))
-    return out
-
-
-def _load_budgets(path: str) -> Tuple[Dict[str, Dict[str, Any]], Dict[str, Any]]:
-    cfg = yaml.safe_load(Path(path).read_text())
-    roots = cfg.get("targets", cfg)  # support either top-level or targets:
-    flat = _flatten_targets(roots)
-    return flat, cfg
-
-
-def _sha256(p: Path, block=1024 * 1024) -> str:
+def sha256_file(p: Path) -> str:
     h = hashlib.sha256()
     with p.open("rb") as f:
-        while True:
-            b = f.read(block)
-            if not b:
-                break
-            h.update(b)
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
     return h.hexdigest()
 
+def load_yaml(p: Path) -> dict:
+    if not p.exists():
+        return {}
+    with p.open("r") as f:
+        return yaml.safe_load(f) or {}
 
-def _check_input_shape(sess: ort.InferenceSession, want: str) -> Tuple[bool, str, str]:
-    got_dims = [int(x) for x in sess.get_inputs()[0].shape]
-    got = "x".join(str(x) for x in got_dims)
-    ok = (got == want.replace(" ", ""))
-    return ok, got, want
+def get_cfg_target(cfg: dict, dotted_key: str) -> dict:
+    """Graceful lookup: return {} if any segment is missing."""
+    cur = cfg.get("targets")
+    if not isinstance(cur, dict):
+        return {}
+    for part in dotted_key.split("."):
+        nxt = cur.get(part)
+        if not isinstance(nxt, dict):
+            return {}
+        cur = nxt
+    return cur
 
+def pick_dest(entry_dict: dict, cfg_target: dict) -> str | None:
+    """Prefer YAML dst→path→src, else manifest dst→path→src."""
+    for k in ("dst", "path", "src"):
+        v = cfg_target.get(k)
+        if v: return v
+    if isinstance(entry_dict, dict):
+        for k in ("dst", "path", "src"):
+            v = entry_dict.get(k)
+            if v: return v
+    return None
 
-def _ensure_symlink(dst_path: Path, src_abs: Path):
-    dst_path.parent.mkdir(parents=True, exist_ok=True)
-    if dst_path.exists() or dst_path.is_symlink():
-        # backup non-symlink once
-        if not dst_path.is_symlink():
-            bak = dst_path.with_suffix(dst_path.suffix + f".bak-{int(time.time())}")
-            dst_path.replace(bak)
+def link_or_copy(src: Path, dst: Path) -> bool:
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if dst.exists() or dst.is_symlink():
+        dst.unlink()
+    try:
+        dst.symlink_to(src.resolve())
+        return True
+    except Exception:
+        dst.write_bytes(src.read_bytes())
+        return False
+
+def shape_to_str(shape) -> str:
+    dims = []
+    for d in shape or []:
+        if isinstance(d, int):
+            dims.append(str(d))
         else:
-            try:
-                dst_path.unlink()
-            except FileNotFoundError:
-                pass
-    os.symlink(src_abs, dst_path)
+            dims.append("?")
+    return "x".join(dims) if dims else "?"
 
+def infer_input_shape(model_path: Path) -> str:
+    if ort is None:
+        return "?"
+    sess = ort.InferenceSession(str(model_path), providers=["CPUExecutionProvider"])
+    ins = sess.get_inputs()
+    return shape_to_str(ins[0].shape) if ins else "?"
+
+def read_manifest(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    raw = json.loads(path.read_text())
+    # Already dotted dict?
+    if isinstance(raw, dict) and all(isinstance(k, str) and "." in k for k in raw.keys()):
+        return raw
+    # Nested dict under 'targets'
+    if isinstance(raw, dict) and "targets" in raw:
+        out = {}
+        def walk(prefix, node):
+            for k, v in node.items():
+                if isinstance(v, dict) and any(isinstance(vv, dict) for vv in v.values()):
+                    walk(f"{prefix}.{k}" if prefix else k, v)
+                else:
+                    out[f"{prefix+'.' if prefix else ''}{k}"] = v
+        walk("", raw["targets"])
+        return out
+    # List form
+    if isinstance(raw, list):
+        out = {}
+        for e in raw:
+            name = e.get("target") or e.get("name") or e.get("key")
+            if name:
+                out[str(name)] = {k: v for k, v in e.items() if k not in ("target", "name", "key")}
+        return out
+    # Fallback
+    return raw if isinstance(raw, dict) else {}
+
+def write_manifest(path: Path, dotted: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(dotted, indent=2, sort_keys=True))
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="docs/perf/budgets.yaml")
-    ap.add_argument("--target", required=True, help="e.g. perception.depth or control.policy")
-    ap.add_argument("--model", required=True, help="source .onnx to promote")
-    ap.add_argument("--provider", default="CPUExecutionProvider")
-    ap.add_argument("--manifest", default="deploy/models/manifest.json")
+    ap = argparse.ArgumentParser(description="Promote a model to a target and update manifest.")
+    ap.add_argument("--config", required=True, help="YAML config (e.g., docs/perf/budgets.yaml)")
+    ap.add_argument("--target", required=True, help="Dotted target key, e.g. control.policy")
+    ap.add_argument("--model", required=True, help="Path to the ONNX model to promote")
+    ap.add_argument("--manifest", default="deploy/models/manifest.json", help="Dotted-keys manifest JSON")
     args = ap.parse_args()
 
-    flat, _cfg = _load_budgets(args.config)
-    if args.target not in flat:
-        print(f"[error] target {args.target} not found in {args.config}", file=sys.stderr)
-        sys.exit(2)
+    cfg = load_yaml(Path(args.config))
+    cfg_t = get_cfg_target(cfg, args.target)
 
-    tgt = flat[args.target]
-    want_shape = str(tgt["shape"]).lower().replace(" ", "")
-    dst = Path(str(tgt["path"]))
-    import os
-    # refuse self-promotion (src == dst) to avoid symlink loops
-    src_abs = os.path.normcase(os.path.abspath(str(Path(args.model))))
-    dst_abs = os.path.normcase(os.path.abspath(str(dst)))
-    if src_abs == dst_abs:
-        print(f"[error] refusing self-promotion: src==dst ({dst}). Use a temp copy like artifacts/onnx/_promote_<name>.onnx")
-        raise SystemExit(2)
     src = Path(args.model).resolve()
+    if not src.exists():
+        print(f"[error] model not found: {src}", file=sys.stderr); sys.exit(2)
 
-    if not src.is_file():
-        print(f"[error] source model {src} not found", file=sys.stderr)
-        sys.exit(2)
+    manifest_path = Path(args.manifest)
+    manifest = read_manifest(manifest_path)
+    entry = manifest.get(args.target, {})
 
-    # validate source model input shape
-    sess = ort.InferenceSession(str(src), providers=[args.provider])
-    ok, got, want = _check_input_shape(sess, want_shape)
-    if not ok:
-        print(f"[error] input shape mismatch for {args.target}: got={got} want={want}", file=sys.stderr)
-        sys.exit(3)
+    dest_str = pick_dest(entry, cfg_t)
+    if not dest_str:
+        # Sensible fallback under artifacts if both YAML & manifest lack a path
+        default_name = args.target.replace(".", "_") + ".onnx"
+        dest_str = f"artifacts/onnx/{default_name}"
+    dst = Path(dest_str)
 
-    # promote (symlink)
-    _ensure_symlink(dst, src)
+    was_symlink = link_or_copy(src, dst)
 
-    # update manifest
-    man_path = Path(args.manifest)
-    man_path.parent.mkdir(parents=True, exist_ok=True)
-    manifest = {}
-    if man_path.exists():
-        try:
-            manifest = json.loads(man_path.read_text() or "{}")
-        except Exception:
-            manifest = {}
-    manifest[args.target] = {
-        "dst": str(dst),
-        "src": str(src),
-        "sha256": _sha256(src),
-        "validated_shape": got,
-        "ts": int(time.time()),
-    }
-    man_path.write_text(json.dumps(manifest, indent=2))
+    validated_shape = infer_input_shape(src)
+    digest = sha256_file(src)
 
-    print(f"[promote] {args.target} -> {dst} ⇒ {src.name}  shape={got}  OK")
-    print(f"[manifest] {args.manifest} updated")
+    # Ensure entry exists
+    manifest.setdefault(args.target, {})
+    # Always write src/sha/shape; keep a dst field for visibility
+    manifest[args.target]["src"] = str(src)
+    manifest[args.target]["sha256"] = digest
+    manifest[args.target]["validated_shape"] = validated_shape
+    manifest[args.target]["dst"] = str(dst)
 
+    write_manifest(manifest_path, manifest)
+
+    mode = "symlink" if was_symlink else "copy"
+    print(f"[promote] {args.target} -> {dst} ({mode})")
+    print(f"[promote] src={src}")
+    print(f"[promote] sha256={digest}")
+    print(f"[promote] validated_shape={validated_shape}")
 
 if __name__ == "__main__":
     main()

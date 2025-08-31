@@ -1,0 +1,10 @@
+device: jetson_orin
+targets:
+  perception.depth:
+    budget_ms_p50: 5.0
+    budget_ms_p90: 7.0
+  control.policy:
+    budget_ms_p50: 0.3
+    budget_ms_p90: 0.5
+notes: >
+  Baseline budgets for ORT/TRT on Orin. Adjust after first on-device profile.

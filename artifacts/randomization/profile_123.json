@@ -1,0 +1,20 @@
+{
+  "seed": 123,
+  "ts": "2025-08-31 19:25:43",
+  "wind": {
+    "speed": 0.42,
+    "direction_deg": 44
+  },
+  "lighting": {
+    "sun_elev_deg": 57,
+    "cloud": 0.27
+  },
+  "textures": {
+    "variant": "a"
+  },
+  "sensors": {
+    "imu_bias": -0.0048,
+    "gnss_bias_m": 0.37,
+    "noise": 0.0034
+  }
+}

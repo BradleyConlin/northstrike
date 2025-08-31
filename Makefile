@@ -49,3 +49,7 @@ ci:
 > $(MAKE) data-verify
 > $(MAKE) data-diff
 > $(MAKE) integrity-summary
+
+.PHONY: data-smoke
+data-smoke:
+> python scripts/datasets/checksums.py --root datasets --out artifacts/datasets/checksums.json
