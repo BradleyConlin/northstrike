@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/de561a9037ae405689e333017f2609ca/artifacts
+end_time: 1756613705593
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: de561a9037ae405689e333017f2609ca
+run_name: languid-cow-41
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756613705582
+status: 3
+tags: []
+user_id: brad

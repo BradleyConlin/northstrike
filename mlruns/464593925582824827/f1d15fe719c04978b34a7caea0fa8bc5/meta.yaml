@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/f1d15fe719c04978b34a7caea0fa8bc5/artifacts
+end_time: 1756614489514
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: f1d15fe719c04978b34a7caea0fa8bc5
+run_name: chill-grouse-499
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756614489502
+status: 3
+tags: []
+user_id: brad

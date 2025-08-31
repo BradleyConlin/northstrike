@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/8313ccaa024d4fbdb1626cbd64f3de6c/artifacts
+end_time: 1756614490396
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 8313ccaa024d4fbdb1626cbd64f3de6c
+run_name: receptive-sponge-830
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756614490385
+status: 3
+tags: []
+user_id: brad

@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/efb7a62c3e6840e3b67c63adfbc9edc3/artifacts
+end_time: 1756613706438
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: efb7a62c3e6840e3b67c63adfbc9edc3
+run_name: welcoming-finch-9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1756613706427
+status: 3
+tags: []
+user_id: brad
