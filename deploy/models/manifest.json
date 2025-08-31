@@ -1,16 +1,16 @@
 {
   "control.policy": {
     "dst": "artifacts/onnx/policy_dummy.onnx",
-    "src": "/tmp/pytest-of-brad/pytest-26/test_promote_policy_symlink_an0/policy_copy.onnx",
+    "src": "/tmp/pytest-of-brad/pytest-27/test_promote_policy_symlink_an0/policy_copy.onnx",
     "sha256": "e19983efa3a37c1f531e3f9450a1b65a51c5b08bca1a6826feb0f5abdeded587",
     "validated_shape": "1x64",
-    "ts": 1756610415
+    "ts": 1756611533
   },
   "perception.depth": {
     "dst": "artifacts/onnx/depth_e24.onnx",
-    "sha256": "46e0e319e07beebac8ff3b523adaa85f16b2ab2b769829b0f89c984b68319882",
-    "src": "/home/brad/dev/northstrike/artifacts/onnx/depth_new.onnx",
-    "ts": 1756596576,
-    "validated_shape": "1x3x384x640"
+    "src": "/home/brad/dev/northstrike/artifacts/onnx/_promote_depth.onnx",
+    "sha256": "313bc82b2befd3f4d39446d00c34e3ce45df760d59835fdf9a8500099c42ef65",
+    "validated_shape": "1x3x384x640",
+    "ts": 1756611900
   }
 }
