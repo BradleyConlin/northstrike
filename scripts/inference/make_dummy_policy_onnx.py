@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-import argparse, numpy as np, onnx
-from onnx import helper, TensorProto
+import argparse
+
+import numpy as np
+import onnx
+from onnx import TensorProto, helper
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--in-dim", type=int, default=64)
@@ -9,8 +12,10 @@ ap.add_argument("--out-dim", type=int, default=4)
 ap.add_argument("--out", type=str, required=True)
 args = ap.parse_args()
 
+
 def const(name, arr):
     return helper.make_tensor(name, TensorProto.FLOAT, arr.shape, arr.flatten().tolist())
+
 
 X = helper.make_tensor_value_info("input", TensorProto.FLOAT, [1, args.in_dim])
 Y = helper.make_tensor_value_info("output", TensorProto.FLOAT, [1, args.out_dim])

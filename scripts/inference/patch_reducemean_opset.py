@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-import sys, onnx
+import sys
+
+import onnx
 from onnx import helper
+
 
 def patch(path):
     m = onnx.load(path)
@@ -19,6 +22,7 @@ def patch(path):
     onnx.checker.check_model(m)
     onnx.save(m, path)
     print(f"[patch] bumped main opset to 18 for {path}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

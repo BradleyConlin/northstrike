@@ -1,22 +1,34 @@
 #!/usr/bin/env python3
-import argparse, json, os, time, statistics, yaml, pathlib
+import argparse
+import json
+import os
+import pathlib
+import statistics
+import time
+
 import numpy as np
 import onnxruntime as ort
+import yaml
 
-def _parse_shape(s): return [int(x) for x in s.lower().replace("x", " ").split() if x.strip()]
+
+def _parse_shape(s):
+    return [int(x) for x in s.lower().replace("x", " ").split() if x.strip()]
+
 
 def profile_one(name, path, shape, iters=200, warmup=30, provider="CPUExecutionProvider"):
     assert os.path.isfile(path), f"missing model: {path}"
     sess = ort.InferenceSession(path, providers=[provider])
     in0 = sess.get_inputs()[0]
     shp = _parse_shape(shape)
-    assert all(isinstance(d,int) for d in shp), "shape must be concrete ints, e.g. 1x3x384x640"
+    assert all(isinstance(d, int) for d in shp), "shape must be concrete ints, e.g. 1x3x384x640"
     x = np.random.rand(*shp).astype(np.float32)  # default float32
-    if in0.type == "tensor(int64)": x = x.astype(np.int64)
+    if in0.type == "tensor(int64)":
+        x = x.astype(np.int64)
     feed = {in0.name: x}
 
     # warmup
-    for _ in range(warmup): sess.run(None, feed)
+    for _ in range(warmup):
+        sess.run(None, feed)
 
     times = []
     t0 = time.perf_counter()
@@ -40,6 +52,7 @@ def profile_one(name, path, shape, iters=200, warmup=30, provider="CPUExecutionP
         "fps": float(fps),
     }
     return stats
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -70,11 +83,14 @@ def main():
         if args.check and budget > 0 and p["p50_ms"] > budget:
             verdict = f"FAIL (p50 {p['p50_ms']:.2f}ms > budget {budget:.2f}ms)"
             failed.append(name)
-        print(f"[perf] {name:18s} p50={p['p50_ms']:.2f}ms p90={p['p90_ms']:.2f}ms fps={p['fps']:.1f}  {verdict}")
+        print(
+            f"[perf] {name:18s} p50={p['p50_ms']:.2f}ms p90={p['p90_ms']:.2f}ms fps={p['fps']:.1f}  {verdict}"
+        )
 
     if args.check and failed:
         print(f"[perf] Failed budgets: {', '.join(failed)}")
         raise SystemExit(2)
+
 
 if __name__ == "__main__":
     main()

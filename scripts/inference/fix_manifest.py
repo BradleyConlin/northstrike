@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-import json, os, hashlib, sys
+import hashlib
+import json
+import os
+import sys
 
 MANIFEST = "deploy/models/manifest.json"
 DEPTH_NAME = "perception.depth"
@@ -7,9 +10,11 @@ DEPTH_PATH = "artifacts/onnx/depth_e24.onnx"
 POLICY_NAME = "control.policy"
 POLICY_PATH = "artifacts/onnx/policy_dummy.onnx"
 
+
 def sha256(path):
     with open(path, "rb") as f:
         return hashlib.sha256(f.read()).hexdigest()
+
 
 def ensure_list_entry(lst, name, path):
     e = next((e for e in lst if e.get("name") == name), None)
@@ -21,6 +26,7 @@ def ensure_list_entry(lst, name, path):
         e["sha256"] = sha256(path)
     return lst
 
+
 def ensure_nested_entry(dct, dotted, path):
     parts = dotted.split(".")
     cur = dct
@@ -31,6 +37,7 @@ def ensure_nested_entry(dct, dotted, path):
     leaf["path"] = path
     leaf["sha256"] = sha256(path)
     return dct
+
 
 def main():
     if not os.path.exists(MANIFEST):
@@ -51,9 +58,12 @@ def main():
 
     with open(MANIFEST, "w") as f:
         json.dump(data, f, indent=2, sort_keys=True)
-    print("[OK] manifest repaired:",
-          f"\n  {DEPTH_NAME} -> {DEPTH_PATH}",
-          f"\n  {POLICY_NAME} -> {POLICY_PATH}")
+    print(
+        "[OK] manifest repaired:",
+        f"\n  {DEPTH_NAME} -> {DEPTH_PATH}",
+        f"\n  {POLICY_NAME} -> {POLICY_PATH}",
+    )
+
 
 if __name__ == "__main__":
     main()

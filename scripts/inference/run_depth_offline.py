@@ -14,6 +14,7 @@ def _get_io(model_path: str) -> Tuple[Tuple[str, Tuple[int, ...]], Tuple[str, Tu
     sess = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
     iv = sess.get_inputs()[0]
     ov = sess.get_outputs()[0]
+
     def _shape(s):
         out = []
         for d in s:
@@ -25,6 +26,7 @@ def _get_io(model_path: str) -> Tuple[Tuple[str, Tuple[int, ...]], Tuple[str, Tu
                 # symbolic -> treat as dynamic
                 out.append(-1)
         return tuple(out)
+
     return (iv.name, tuple(iv.shape)), (ov.name, _shape(ov.shape))
 
 
@@ -66,7 +68,7 @@ def _make_input(shape_1x3xHxW: Tuple[int, ...], mode: str, npy: Optional[str]) -
     x0 = (w - ws) // 2
     y1 = (h0 - hs) // 2
     x1 = (w0 - ws) // 2
-    out[:, :, y0:y0+hs, x0:x0+ws] = arr[:, :, y1:y1+hs, x1:x1+ws]
+    out[:, :, y0 : y0 + hs, x0 : x0 + ws] = arr[:, :, y1 : y1 + hs, x1 : x1 + ws]
     # normalize 0..1 if not already
     if out.max() > 1.0:
         out = out / 255.0
@@ -76,7 +78,9 @@ def _make_input(shape_1x3xHxW: Tuple[int, ...], mode: str, npy: Optional[str]) -
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True, help="ONNX depth model (expects 1x3xHxW input)")
-    ap.add_argument("--mode", choices=["rand", "npy"], default="rand", help="random input or load .npy")
+    ap.add_argument(
+        "--mode", choices=["rand", "npy"], default="rand", help="random input or load .npy"
+    )
     ap.add_argument("--npy", default=None, help="path to .npy if --mode npy")
     ap.add_argument("--out-npz", required=True, help="npz to save raw output and stats")
     ap.add_argument("--out-csv", required=True, help="csv to save summary stats")

@@ -3,8 +3,10 @@ import argparse
 import csv
 import os
 from typing import List
+
 import numpy as np
 import onnxruntime as ort
+
 
 def _read_features(csv_path: str) -> tuple[np.ndarray, List[float]]:
     rows, ts = [], []
@@ -17,6 +19,7 @@ def _read_features(csv_path: str) -> tuple[np.ndarray, List[float]]:
             rows.append([float(row.get(c, 0.0)) for c in feat_cols])
     X = np.asarray(rows, dtype=np.float32)
     return X, ts
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -58,7 +61,7 @@ def main():
         outs.append(Y0)
     else:
         for i in range(X.shape[0]):
-            Y = sess.run(None, {in_name: X[i:i+1, :]})
+            Y = sess.run(None, {in_name: X[i : i + 1, :]})
             Y0 = np.array(Y[0])
             if Y0.ndim == 1:
                 Y0 = Y0[:, None]
@@ -78,6 +81,7 @@ def main():
         f"[policy-offline] wrote {args.out_csv}  rows={Y0.shape[0]} dims={act_dim} "
         f"(csv_cols={X_raw.shape[1]} -> model_feats={F})"
     )
+
 
 if __name__ == "__main__":
     main()

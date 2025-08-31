@@ -8,17 +8,29 @@ Normalize ONNX models for CI:
 This makes pre-commit robust for both legacy and newer models.
 """
 from __future__ import annotations
-import sys, glob, pathlib
+
+import glob
+import pathlib
+import sys
+
 import onnx
 from onnx import helper
 
 REDUCE_OPS = {
-    "ReduceMean", "ReduceSum", "ReduceMax", "ReduceMin",
-    "ReduceProd", "ReduceL1", "ReduceL2", "ReduceLogSum", "ReduceLogSumExp"
+    "ReduceMean",
+    "ReduceSum",
+    "ReduceMax",
+    "ReduceMin",
+    "ReduceProd",
+    "ReduceL1",
+    "ReduceL2",
+    "ReduceLogSum",
+    "ReduceLogSumExp",
 }
 IR_TARGET = 10
 OPSET_BASELINE = 13
 OPSET_WITH_AXES_INPUT = 18
+
 
 def uses_axes_input(m: onnx.ModelProto) -> bool:
     for n in m.graph.node:
@@ -26,11 +38,13 @@ def uses_axes_input(m: onnx.ModelProto) -> bool:
             return True
     return False
 
+
 def get_ai_onnx_opset(m: onnx.ModelProto) -> int | None:
     for imp in m.opset_import:
         if imp.domain in ("", "ai.onnx"):
             return int(imp.version)
     return None
+
 
 def set_ai_onnx_opset(m: onnx.ModelProto, version: int) -> None:
     for imp in m.opset_import:
@@ -38,6 +52,7 @@ def set_ai_onnx_opset(m: onnx.ModelProto, version: int) -> None:
             imp.version = version
             return
     m.opset_import.extend([helper.make_operatorsetid("", version)])
+
 
 def normalize_one(path: str) -> None:
     p = pathlib.Path(path)
@@ -60,6 +75,7 @@ def normalize_one(path: str) -> None:
     onnx.save(m, str(p))
     print(f"[onnx-normalize] {p} opset={get_ai_onnx_opset(m)} ir={m.ir_version}")
 
+
 def main():
     args = sys.argv[1:] or glob.glob("artifacts/onnx/*.onnx")
     if not args:
@@ -67,6 +83,7 @@ def main():
         return
     for a in args:
         normalize_one(a)
+
 
 if __name__ == "__main__":
     main()
