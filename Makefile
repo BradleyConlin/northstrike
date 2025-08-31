@@ -20,3 +20,6 @@ data-scan:
 
 data-verify:
  > python scripts/datasets/verify_manifest.py --root datasets --manifest datasets/manifest.json
+
+data-diff:
+ > python scripts/datasets/diff_manifest.py --old docs/perf/baselines/datasets_manifest_baseline.json --new datasets/manifest.json || true
