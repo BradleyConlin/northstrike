@@ -13,3 +13,10 @@ policy-regress:
 
 onnx-verify:
 >python scripts/inference/verify_manifest_hashes.py --manifest deploy/models/manifest.json --check
+
+# --- Dataset integrity ---
+data-scan:
+ > python scripts/datasets/manifest.py --root datasets --out datasets/manifest.json
+
+data-verify:
+ > python scripts/datasets/verify_manifest.py --root datasets --manifest datasets/manifest.json
