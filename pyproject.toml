@@ -4,6 +4,18 @@ target-version = ["py310"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
-lint.select = ["E","F","I","UP","B"]
-lint.ignore = ["E203","W503"]
+# Let Ruff handle lint + format (we still run Black for legacy harmony)
+extend-exclude = ["datasets", "training/runs", "sim/logs", "artifacts", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E203", "W503"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+skip = ["datasets", "training/runs", "artifacts", ".venv"]
+
+[tool.pytest.ini_options]
+testpaths = ["training/tests", "training", "sim"]
+pythonpath = ["training", "sim"]
