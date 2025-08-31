@@ -15,3 +15,8 @@ __pycache__/
 datasets/
 sim/logs/
 training/runs/
+
+# Track dataset tooling and smoke manifest
+!scripts/datasets/
+!training/tests/data/
+!datasets/manifest.json
