@@ -1,15 +1,22 @@
 {
   "control": {
     "policy": {
+      "path": "artifacts/onnx/policy_dummy.onnx",
       "sha256": "e19983efa3a37c1f531e3f9450a1b65a51c5b08bca1a6826feb0f5abdeded587"
     }
   },
   "control.policy": {
     "dst": "artifacts/onnx/policy_dummy.onnx",
     "sha256": "e19983efa3a37c1f531e3f9450a1b65a51c5b08bca1a6826feb0f5abdeded587",
-    "src": "/tmp/pytest-of-brad/pytest-32/test_promote_policy_symlink_an0/policy_copy.onnx",
-    "ts": 1756645310,
+    "src": "/tmp/pytest-of-brad/pytest-0/test_promote_policy_symlink_an0/policy_copy.onnx",
+    "ts": 1756678390,
     "validated_shape": "1x64"
+  },
+  "perception": {
+    "depth": {
+      "path": "artifacts/onnx/depth_e24.onnx",
+      "sha256": "313bc82b2befd3f4d39446d00c34e3ce45df760d59835fdf9a8500099c42ef65"
+    }
   },
   "perception.depth": {
     "dst": "artifacts/onnx/depth_e24.onnx",
