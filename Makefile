@@ -25,3 +25,6 @@ data-verify:
 data-diff:
 > python scripts/datasets/manifest.py --root datasets --out datasets/manifest.json
 > python scripts/datasets/diff_manifest.py --old docs/perf/baselines/datasets_manifest_baseline.json --new datasets/manifest.json
+
+stack-smoke:
+	python scripts/inference/stack_demo.py
