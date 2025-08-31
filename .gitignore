@@ -20,3 +20,9 @@ training/runs/
 !scripts/datasets/
 !training/tests/data/
 !datasets/manifest.json
+
+# Unignore dataset tests
+!training/
+!training/tests/
+!training/tests/data/
+!training/tests/data/test_dataset_diff_smoke.py
