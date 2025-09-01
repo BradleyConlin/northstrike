@@ -2,19 +2,28 @@
 line-length = 100
 target-version = ["py310"]
 
-[tool.isort]
-profile = "black"
-
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = ["datasets", "sim/logs", "training/runs"]
+fix = true
+unsafe-fixes = false
+include = ["scripts/**", "training/**", "sim/rl/**"]
+exclude = [
+  "artifacts/**", "mlruns/**", "datasets/**", "deploy/models/**",
+  "docs/perf/baselines/**", "sim/scripts/_archive/**"
+]
+force-exclude = true
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
-ignore = ["E203"]  # Black compatibility
+select = ["E", "F", "B", "UP"]  # core errors + bugbear + pyupgrade
+ignore = ["E203"]                # Black compatibility
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/**" = ["E501"]
+"training/tests/**" = ["E501", "B011", "B904", "UP038"]
+"sim/rl/**" = ["E501"]
+"sim/scripts/_archive/**" = ["ALL"]
 
 [tool.pytest.ini_options]
 testpaths = ["training/tests"]
-pythonpath = ["training","sim"]
-addopts = "-q"
+pythonpath = ["training", "sim"]
