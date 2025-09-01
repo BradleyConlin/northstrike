@@ -40,13 +40,13 @@ def main():
 
     pathlib.Path(args.out_json).parent.mkdir(parents=True, exist_ok=True)
     if args.check_against:
-        base = json.load(open(args.check_against, "r"))
+        base = json.load(open(args.check_against))
         dmean = abs(outp["mean"] - base["mean"])
         dstd = abs(outp["std"] - base["std"])
         ok = (dmean <= args.tol_mean) and (dstd <= args.tol_std)
         print(
             f"[policy-regress] mean={outp['mean']:.6f} (Δ={dmean:.6g}) "
-            f"std={outp['std']:.6f} (Δ={dstd:.6g}) { 'OK' if ok else 'FAIL'}"
+            f"std={outp['std']:.6f} (Δ={dstd:.6g}) {'OK' if ok else 'FAIL'}"
         )
         json.dump(outp, open(args.out_json, "w"), indent=2)
         sys.exit(0 if ok else 2)

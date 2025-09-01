@@ -4,7 +4,8 @@ import json
 import os
 import re
 import sys
-from typing import Any, Dict, Iterable, List, Tuple
+from collections.abc import Iterable
+from typing import Any
 
 import onnx
 import yaml
@@ -18,14 +19,14 @@ def _dims(vi) -> list[int]:
     return out
 
 
-def _fmt_shape(xs: List[int]) -> str:
+def _fmt_shape(xs: list[int]) -> str:
     def one(x):
         return "*" if x in (-1, None) else str(int(x))
 
     return "x".join(one(x) for x in xs)
 
 
-def _parse_shape(obj) -> List[int]:
+def _parse_shape(obj) -> list[int]:
     # Accept [1,3,384,640] OR "1x3x384x640" OR "1,3,384,640"
     if isinstance(obj, list):
         return [int(x) if str(x).isdigit() else -1 for x in obj]
@@ -42,7 +43,7 @@ def _parse_shape(obj) -> List[int]:
     raise TypeError(f"Unsupported shape type: {type(obj)}")
 
 
-def _iter_tasks(node: Any, prefix: str = "") -> Iterable[Tuple[str, Dict[str, Any]]]:
+def _iter_tasks(node: Any, prefix: str = "") -> Iterable[tuple[str, dict[str, Any]]]:
     if isinstance(node, dict):
         if "path" in node and "shape" in node:
             yield prefix or "model", node
@@ -55,7 +56,7 @@ def _iter_tasks(node: Any, prefix: str = "") -> Iterable[Tuple[str, Dict[str, An
 def _ok_shape(expected: list[int], got: list[int]) -> bool:
     if len(expected) != len(got):
         return False
-    for e, g in zip(expected, got):
+    for e, g in zip(expected, got, strict=False):
         if e != -1 and e != g:
             return False
     return True

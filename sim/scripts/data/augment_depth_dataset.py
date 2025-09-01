@@ -132,7 +132,7 @@ def main():
             shutil.copy2(dp, dep_out)
         new_rows.append((f"rgb/{rgb_name}", f"depth/{dep_name}"))
         if (i + 1) % 5000 == 0:
-            print(f"[copy] originals {i+1}/{len(rows)}")
+            print(f"[copy] originals {i + 1}/{len(rows)}")
 
     # Augment *train* only
     mm_max = int(args.max_depth_m * 1000.0)
@@ -204,10 +204,10 @@ def main():
         write_split("test", test_remap)
 
     print(
-        f"[done] originals={len(new_rows)} aug_added={len(aug_rows)} total={len(new_rows)+len(aug_rows)}"
+        f"[done] originals={len(new_rows)} aug_added={len(aug_rows)} total={len(new_rows) + len(aug_rows)}"
     )
     print(f"[done] out={dst}  index.csv and splits written")
-    print(f"[time] {(time.time()-t0):.1f}s")
+    print(f"[time] {(time.time() - t0):.1f}s")
 
 
 if __name__ == "__main__":

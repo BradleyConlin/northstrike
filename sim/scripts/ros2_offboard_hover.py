@@ -54,13 +54,13 @@ class OffboardHover(Node):
         mreq = SetMode.Request()
         mreq.custom_mode = "OFFBOARD"
         mres = self._call_sync(self.mode_cli, mreq)
-        self.get_logger().info(f'set_mode OFFBOARD -> {getattr(mres, "mode_sent", False)}')
+        self.get_logger().info(f"set_mode OFFBOARD -> {getattr(mres, 'mode_sent', False)}")
 
         # Arm
         areq = CommandBool.Request()
         areq.value = True
         ares = self._call_sync(self.arm_cli, areq)
-        self.get_logger().info(f'arm -> {getattr(ares, "success", False)}')
+        self.get_logger().info(f"arm -> {getattr(ares, 'success', False)}")
 
         # Hold position
         t0 = time.time()

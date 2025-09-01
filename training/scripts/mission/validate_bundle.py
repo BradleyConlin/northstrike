@@ -35,7 +35,7 @@ def basic_validate(
         for k, v in params.items():
             if not isinstance(k, str) or not k.isupper():
                 warnings.append(f"param key looks odd: {k}")
-            if not isinstance(v, (int, float)):
+            if not isinstance(v, int | float):
                 issues.append(f"param {k} must be number")
     return (len(issues) == 0, issues, warnings)
 

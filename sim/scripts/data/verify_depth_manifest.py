@@ -117,7 +117,7 @@ def main():
     }
     with open(os.path.join(root, "integrity_summary.json"), "w") as f:
         json.dump(summary, f, indent=2)
-    print(f"[write] {os.path.join(root,'integrity_summary.json')}")
+    print(f"[write] {os.path.join(root, 'integrity_summary.json')}")
     print("[DONE] verify_depth_manifest OK")
 
 

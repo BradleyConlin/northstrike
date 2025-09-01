@@ -2,7 +2,6 @@
 import argparse
 import json
 import math
-import pathlib
 import sys
 
 

@@ -2,13 +2,12 @@
 import argparse
 import csv
 import os
-from typing import List
 
 import numpy as np
 import onnxruntime as ort
 
 
-def _read_features(csv_path: str) -> tuple[np.ndarray, List[float]]:
+def _read_features(csv_path: str) -> tuple[np.ndarray, list[float]]:
     rows, ts = [], []
     with open(csv_path, newline="") as f:
         r = csv.DictReader(f)

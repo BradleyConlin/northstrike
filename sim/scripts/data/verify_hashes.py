@@ -50,7 +50,7 @@ def main():
             bad += 1
         done += 1
         if done % 200 == 0:
-            print(f"[verify] {done}/{len(rows)} in {time.time()-t0:.1f}s")
+            print(f"[verify] {done}/{len(rows)} in {time.time() - t0:.1f}s")
     print(f"[DONE] checked={len(rows)} miss={miss} bad={bad}")
     sys.exit(1 if (miss or bad) else 0)
 

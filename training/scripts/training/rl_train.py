@@ -2,11 +2,11 @@ import argparse
 import os
 
 import gymnasium as gym
+from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import DummyVecEnv
 
 # Import registers the env id "Px4GzHoverEnv-v0"
 import rl.envs  # noqa: F401
-from stable_baselines3 import PPO
-from stable_baselines3.common.vec_env import DummyVecEnv
 
 
 def make_env(env_id: str, **env_kwargs):

@@ -65,7 +65,7 @@ def main():
     args = ap.parse_args()
 
     os.makedirs(args.outdir, exist_ok=True)
-    cfg = yaml.safe_load(open(args.config, "r"))
+    cfg = yaml.safe_load(open(args.config))
     targets = cfg.get("targets", {})
     failed = []
 
@@ -74,7 +74,7 @@ def main():
             # skip non-model entries like 'full_loop'
             continue
         p = profile_one(name, t["path"], t["shape"], args.iters, args.warmup, args.provider)
-        out_json = os.path.join(args.outdir, f"{name.replace('.','_')}.json")
+        out_json = os.path.join(args.outdir, f"{name.replace('.', '_')}.json")
         pathlib.Path(out_json).parent.mkdir(parents=True, exist_ok=True)
         json.dump(p, open(out_json, "w"), indent=2)
 

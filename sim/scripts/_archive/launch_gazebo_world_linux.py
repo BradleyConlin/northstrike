@@ -46,7 +46,7 @@ def main():
     px4_root = Path(env.get("PX4_ROOT", os.path.expanduser("~/dev/px4-autopilot-harmonic")))
     gz_res = (px4_root / "Tools" / "simulation" / "gz").as_posix()
     env["GZ_SIM_RESOURCE_PATH"] = (
-        f"{env.get('GZ_SIM_RESOURCE_PATH','')}:{gz_res}"
+        f"{env.get('GZ_SIM_RESOURCE_PATH', '')}:{gz_res}"
         if env.get("GZ_SIM_RESOURCE_PATH")
         else gz_res
     )

@@ -26,7 +26,7 @@ def main():
     env = make_env()
     model = PPO.load(args.model)
 
-    for ep in range(args.episodes):
+    for _ep in range(args.episodes):
         obs, info = env.reset()
         done = False
         while not done:

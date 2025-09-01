@@ -101,7 +101,7 @@ def read_manifest(path: Path) -> dict:
                 if isinstance(v, dict) and any(isinstance(vv, dict) for vv in v.values()):
                     walk(f"{prefix}.{k}" if prefix else k, v)
                 else:
-                    out[f"{prefix+'.' if prefix else ''}{k}"] = v
+                    out[f"{prefix + '.' if prefix else ''}{k}"] = v
 
         walk("", raw["targets"])
         return out

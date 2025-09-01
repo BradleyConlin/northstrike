@@ -3,7 +3,6 @@ import argparse
 import json
 import pathlib
 import zipfile
-from typing import List
 
 
 def _load_manifest(p: pathlib.Path):
@@ -11,7 +10,7 @@ def _load_manifest(p: pathlib.Path):
     return list(m.values()) if isinstance(m, dict) else m
 
 
-def _model_paths(items) -> List[pathlib.Path]:
+def _model_paths(items) -> list[pathlib.Path]:
     out = []
     for it in items:
         p = it.get("dst") or it.get("path")

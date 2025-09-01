@@ -135,7 +135,7 @@ def main():
                     mpath = str(c)
                     break
             if mpath:
-                _mext = Path(mpath).suffix.lower()
+                _mext = Path(mpath).suffix.lower()  # noqa: F841
                 m = read_mask(mpath)
                 if m is not None:
                     if m.shape != pred.shape:

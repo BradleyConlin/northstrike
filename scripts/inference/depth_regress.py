@@ -35,7 +35,7 @@ def main():
 
     sess = ort.InferenceSession(args.model, providers=["CPUExecutionProvider"])
     in_name = sess.get_inputs()[0].name
-    out_name = sess.get_outputs()[0].name
+    sess.get_outputs()[0].name
     t0 = time.perf_counter()
     y = sess.run(None, {in_name: x})[0]
     dt = (time.perf_counter() - t0) * 1e3

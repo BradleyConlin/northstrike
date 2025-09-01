@@ -50,7 +50,7 @@ def run_mock(secs: float = 6.0, imu_hz: int = 400, gps_hz: int = 10, seed: int =
                     lat_ms = random.uniform(5.0, 20.0)
                     gps_latency_ms.append(lat_ms)
                     gps_fix = 1
-                    gps_ts = f"{(t + lat_ms/1000.0):.6f}"
+                    gps_ts = f"{(t + lat_ms / 1000.0):.6f}"
                 next_gps += t_gps
 
             f.write(f"{t:.6f},{ax:.5f},{ay:.5f},{az:.5f},{gps_fix},{gps_ts}\n")

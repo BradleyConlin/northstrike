@@ -43,7 +43,7 @@ def main():
     if not os.path.exists(MANIFEST):
         print(f"[ERR] missing {MANIFEST}", file=sys.stderr)
         sys.exit(2)
-    with open(MANIFEST, "r") as f:
+    with open(MANIFEST) as f:
         data = json.load(f)
 
     if isinstance(data, list):

@@ -2,14 +2,12 @@
 import argparse
 import csv
 import os
-from typing import Optional, Tuple
 
 import numpy as np
-import onnx
 import onnxruntime as ort
 
 
-def _get_io(model_path: str) -> Tuple[Tuple[str, Tuple[int, ...]], Tuple[str, Tuple[int, ...]]]:
+def _get_io(model_path: str) -> tuple[tuple[str, tuple[int, ...]], tuple[str, tuple[int, ...]]]:
     """Return ((in_name, in_shape), (out_name, out_shape)) from ONNX metadata."""
     sess = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
     iv = sess.get_inputs()[0]
@@ -30,7 +28,7 @@ def _get_io(model_path: str) -> Tuple[Tuple[str, Tuple[int, ...]], Tuple[str, Tu
     return (iv.name, tuple(iv.shape)), (ov.name, _shape(ov.shape))
 
 
-def _make_input(shape_1x3xHxW: Tuple[int, ...], mode: str, npy: Optional[str]) -> np.ndarray:
+def _make_input(shape_1x3xHxW: tuple[int, ...], mode: str, npy: str | None) -> np.ndarray:
     """Create or load input tensor shaped (1,3,H,W) float32, normalized 0..1."""
     b, c, h, w = shape_1x3xHxW
     c = 3 if c in (-1, None) else c

@@ -39,7 +39,7 @@ def load_existing(csv_path):
     m = {}
     with open(csv_path, newline="", encoding="utf-8") as f:
         r = csv.reader(f)
-        header = next(r, None)
+        next(r, None)
         for row in r:
             if len(row) < 3:
                 continue
@@ -110,7 +110,9 @@ def main():
             done += 1
             if done % 2000 == 0 or done == len(todo):
                 dt = time.time() - t0
-                print(f"[hash] {done}/{len(todo)} (+{2000 if done%2000==0 else 0} in {dt:.1f}s)")
+                print(
+                    f"[hash] {done}/{len(todo)} (+{2000 if done % 2000 == 0 else 0} in {dt:.1f}s)"
+                )
 
     # Merge kept + new, sort stable
     merged = kept + results

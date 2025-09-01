@@ -28,7 +28,7 @@ def read_index_map(index_csv):
 def read_split_rgb_list(split_csv):
     lst = []
     with open(split_csv, newline="") as f:
-        r = csv.reader(f)
+        csv.reader(f)
         for row in f:
             row = row.strip()
             if not row:
@@ -167,9 +167,9 @@ def main():
             pass
     lines.append("## Samples (RGB | Pred | GT)\n")
     for i in range(a.num_samples):
-        p = os.path.join("samples", f"sample_{i+1}.png")
+        p = os.path.join("samples", f"sample_{i + 1}.png")
         if os.path.exists(os.path.join(os.path.dirname(a.out), p)):
-            lines.append(f"![sample {i+1}]({p})")
+            lines.append(f"![sample {i + 1}]({p})")
     pathlib.Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     open(a.out, "w", encoding="utf-8").write("\n".join(lines) + "\n")
     print(f"[write] {a.out}\n[write] {samples_dir}/*.png")

@@ -45,7 +45,7 @@ def main():
     lines.append(f"- root: `{root}`")
     lines.append(f"- index: `{idx}`")
     lines.append(f"- splits: `{splits}`")
-    lines.append(f"- files: rgb+depth = {integ.get('index_rows','n/a')}")
+    lines.append(f"- files: rgb+depth = {integ.get('index_rows', 'n/a')}")
     lines.append(f"- split counts: {counts}")
     lines.append(f"- total size (from checksums): {sz}\n")
     lines.append("## Integrity")

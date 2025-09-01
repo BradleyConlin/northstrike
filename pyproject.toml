@@ -5,10 +5,22 @@ target-version = ['py310']
 [tool.isort]
 profile = "black"
 line_length = 100
+py_version = 310
 
 [tool.ruff]
+target-version = "py310"
 line-length = 100
+extend-exclude = [
+  ".venv", "datasets", "training/runs", "mlruns", "logs", "tmp", "artifacts",
+  "sim/scripts/_archive"
+]
+
+[tool.ruff.lint]
+# pycodestyle (E/W), pyflakes (F), import sort (I), pyupgrade (UP), bugbear (B)
 select = ["E", "F", "I", "UP", "B"]
-ignore = ["E203"]
-# Exclude heavy directories from linting (optional)
-exclude = ["sim", "training", ".venv", "datasets"]
+# Black vs lint: Black wins. Also park two bugbear nits for now.
+ignore = ["E203", "E501", "B904", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"sim/*" = ["E402", "F401"]
+"training/*" = ["E402", "F401"]

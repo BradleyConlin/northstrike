@@ -1,0 +1,33 @@
+repos:
+- repo: local
+  hooks:
+  - id: ruff-format
+    name: ruff (format)
+    entry: ruff format .
+    language: system
+    pass_filenames: false
+
+  - id: black
+    name: black
+    entry: black .
+    language: system
+    pass_filenames: false
+
+  - id: isort
+    name: isort
+    entry: isort .
+    language: system
+    pass_filenames: false
+
+  - id: ruff-lint
+    name: ruff (lint)
+    entry: ruff check .
+    language: system
+    pass_filenames: false
+
+  # Flake8 is intentionally *scoped*, per the project instructions
+  - id: flake8-perception
+    name: flake8 (perception-only)
+    entry: bash -c 'flake8 training/scripts/perception || exit 1'
+    language: system
+    pass_filenames: false

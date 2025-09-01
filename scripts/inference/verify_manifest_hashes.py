@@ -22,7 +22,7 @@ def flatten(man):
     elif isinstance(man, dict):
         # dotted-keys dict (preferred by tests): {"a.b":{"path":...,"sha256":...}}
         leaf_like = True
-        for k, v in man.items():
+        for _k, v in man.items():
             if isinstance(v, dict) and not {"path", "dst", "src"} & set(v.keys()):
                 leaf_like = False
                 break

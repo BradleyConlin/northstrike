@@ -92,14 +92,14 @@ def main():
         [(t, p.relative_to(root), td, q.relative_to(root), dt) for (t, p, td, q, dt) in pairs],
     )
     print(
-        f"[index] wrote {root/'index.csv'}  pairs={len(pairs)}  hit_rate={len(pairs)/max(1,len(rgb_t)):.2%}"
+        f"[index] wrote {root / 'index.csv'}  pairs={len(pairs)}  hit_rate={len(pairs) / max(1, len(rgb_t)):.2%}"
     )
 
     # splits by chronology to avoid leakage across time (common best practice)
     n = len(pairs)
     n_train = int(n * args.train)
     n_val = int(n * args.val)
-    n_test = n - n_train - n_val
+    n - n_train - n_val
     splits = {
         "train.csv": pairs[:n_train],
         "val.csv": pairs[n_train : n_train + n_val],

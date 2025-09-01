@@ -5,4 +5,3 @@ exclude = .venv, mlruns, datasets, training/runs, logs, tmp, artifacts, build, d
 per-file-ignores =
     sim/*:E402,F401
     training/*:E402,F401
-    training/scripts/perception/depth_onnx_smoke.py:F841

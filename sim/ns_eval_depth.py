@@ -150,7 +150,7 @@ def main():
     total_sq = 0.0
     total_cnt = 0
     with torch.no_grad():
-        for rgb, dep_n, dep_m in dl:
+        for rgb, _dep_n, dep_m in dl:
             rgb = rgb.to(dev)
             pred_n = model(rgb).cpu().squeeze(1).numpy()  # [B,H,W] 0..1
             gt_m = dep_m.numpy()

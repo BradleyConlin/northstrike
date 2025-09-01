@@ -7,6 +7,7 @@ Normalize ONNX models for CI:
     * Otherwise normalize to opset 13 for maximum compatibility
 This makes pre-commit robust for both legacy and newer models.
 """
+
 from __future__ import annotations
 
 import glob

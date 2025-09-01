@@ -77,7 +77,7 @@ def build_px4_command(
     # Ensure Gazebo can find PX4 worlds/models
     gz_dir = (px4_root / "Tools" / "simulation" / "gz").as_posix()
     env["GZ_SIM_RESOURCE_PATH"] = (
-        f"{env.get('GZ_SIM_RESOURCE_PATH','')}:{gz_dir}"
+        f"{env.get('GZ_SIM_RESOURCE_PATH', '')}:{gz_dir}"
         if env.get("GZ_SIM_RESOURCE_PATH")
         else gz_dir
     )
