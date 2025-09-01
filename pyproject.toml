@@ -2,19 +2,17 @@
 line-length = 100
 target-version = ["py310"]
 
-[tool.isort]
-profile = "black"
+[tool.pytest.ini_options]
+testpaths = ["training/tests"]
+pythonpath = ["training", "sim"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = ["datasets", "sim/logs", "training/runs"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-ignore = ["E203"]  # Black compatibility
+ignore = ["E203"]
 
-[tool.pytest.ini_options]
-testpaths = ["training/tests"]
-pythonpath = ["training","sim"]
-addopts = "-q"
+[tool.ruff.lint.per-file-ignores]
+"scripts/inference/*.py" = ["E501"]  # allow long prints in CLI scripts
