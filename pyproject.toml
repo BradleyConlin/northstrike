@@ -7,23 +7,12 @@ line-length = 100
 target-version = "py310"
 fix = true
 unsafe-fixes = false
-include = ["scripts/**", "training/**", "sim/rl/**"]
-exclude = [
-  "artifacts/**", "mlruns/**", "datasets/**", "deploy/models/**",
-  "docs/perf/baselines/**", "sim/scripts/_archive/**"
-]
-force-exclude = true
 
 [tool.ruff.lint]
-select = ["E", "F", "B", "UP"]  # core errors + bugbear + pyupgrade
-ignore = ["E203"]                # Black compatibility
+select = ["E", "F", "B", "UP", "I"]
+ignore = ["E203"]  # Black compat
 
 [tool.ruff.lint.per-file-ignores]
-"scripts/**" = ["E501"]
-"training/tests/**" = ["E501", "B011", "B904", "UP038"]
-"sim/rl/**" = ["E501"]
-"sim/scripts/_archive/**" = ["ALL"]
-
-[tool.pytest.ini_options]
-testpaths = ["training/tests"]
-pythonpath = ["training", "sim"]
+"training/tests/**" = ["E501"]      # long lines okay in tests
+"scripts/**"        = ["E501"]      # long CLI strings okay in scripts
+"sim/scripts/**"    = ["E501"]

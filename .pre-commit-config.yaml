@@ -1,36 +1,32 @@
 repos:
+  # General fixers, but only for source files; skip generated dirs
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
+        files: ^(training|sim|scripts|hil|docs)/.*\.(py|sh|md|ya?ml|toml|json)$
+        exclude: ^(artifacts/|mlruns/|datasets/|deploy/|docs/perf/baselines/)
       - id: end-of-file-fixer
+        files: ^(training|sim|scripts|hil|docs)/.*\.(py|sh|md|ya?ml|toml|json)$
+        exclude: ^(artifacts/|mlruns/|datasets/|deploy/|docs/perf/baselines/)
 
+  # Black on real source only
   - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
       - id: black
-        args: [--line-length=100]
-        # lint only our curated paths
-        files: >
-          ^(scripts/(inference|datasets)/
-          |training/scripts/
-          |training/tests/
-          |sim/rl/
-          |training/src/rl/envs/px4_gz_hover_env\.py)$
+        files: ^(training|sim|scripts)/.*\.py$
 
+  # Ruff on real source only (Ruff owns imports, so no isort hook)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.11
+    rev: v0.4.10
     hooks:
       - id: ruff
         args: [--fix]
-        files: >
-          ^(scripts/(inference|datasets)/
-          |training/scripts/
-          |training/tests/
-          |sim/rl/
-          |training/src/rl/envs/px4_gz_hover_env\.py)$
+        files: ^(training|sim|scripts)/.*\.py$
+        exclude: ^(sim/scripts/_archive/|training/tests/|sim/scripts/data/)
 
-  # Local ONNX gates
+  # ONNX gates — write perf/contract JSON, but don’t scan the whole repo
   - repo: local
     hooks:
       - id: onnx-contracts
@@ -38,12 +34,11 @@ repos:
         entry: python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
         language: system
         pass_filenames: false
+        always_run: true
+        stages: [commit]
         files: ^artifacts/onnx/.*\.onnx$
-        exclude: ^artifacts/onnx/_promote_.*\.onnx$
-
       - id: onnx-normalize
         name: onnx-normalize
         entry: python scripts/inference/normalize_onnx.py
         language: system
         files: ^artifacts/onnx/.*\.onnx$
-        exclude: ^artifacts/onnx/_promote_.*\.onnx$
