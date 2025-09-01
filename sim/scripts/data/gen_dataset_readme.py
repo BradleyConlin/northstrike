@@ -8,7 +8,7 @@ import time
 def read_json(p):
     try:
         return json.load(open(p))
-    except:
+    except Exception:
         return {}
 
 

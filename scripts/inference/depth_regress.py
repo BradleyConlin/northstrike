@@ -30,12 +30,12 @@ def main():
     ap.add_argument("--shape", default="1x3x384x640")
     args = ap.parse_args()
 
-    n, c, h, w = [int(x) for x in args.shape.lower().split("x")]
+    n, c, h, w = (int(x) for x in args.shape.lower().split("x"))
     x = np.linspace(0.0, 1.0, num=n * c * h * w, dtype=np.float32).reshape(n, c, h, w)
 
     sess = ort.InferenceSession(args.model, providers=["CPUExecutionProvider"])
     in_name = sess.get_inputs()[0].name
-    sess.get_outputs()[0].name
+    _ = sess.get_outputs()[0].name
     t0 = time.perf_counter()
     y = sess.run(None, {in_name: x})[0]
     dt = (time.perf_counter() - t0) * 1e3

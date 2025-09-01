@@ -74,7 +74,7 @@ def main():
     log.info("Gazebo started (PID %s).  Press Ctrl+C to stop.", proc.pid)
 
     try:
-        proc
+        _ = proc
     except KeyboardInterrupt:
         log.info("Interrupted; terminating Gazebo…")
         proc.terminate()

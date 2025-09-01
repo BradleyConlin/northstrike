@@ -3,12 +3,13 @@ import argparse
 import os
 
 import torch
-from rl.envs.px4_alt_env import Px4AltHoldEnv
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import DummyVecEnv
+
+from rl.envs.px4_alt_env import Px4AltHoldEnv
 
 
 def parse_list(n: int, csv: str, base: int, step: int) -> list[int]:

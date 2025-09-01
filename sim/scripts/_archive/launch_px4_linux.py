@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# ruff: noqa
 """
 Launch PX4 SITL instances for Gazebo Harmonic on native Linux (Gazebo Harmonic / Ignition).
 

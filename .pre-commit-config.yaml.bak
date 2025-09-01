@@ -1,0 +1,25 @@
+repos:
+- repo: local
+  hooks:
+  - id: isort
+    name: isort
+    entry: isort
+    language: system
+    types: [python]
+
+  - id: black
+    name: black
+    entry: black
+    language: system
+    types: [python]
+- id: ruff-lint
+  name: ruff (lint + fix)
+  entry: ruff check .
+  language: system
+  pass_filenames: false
+  args: [--fix]
+  - id: flake8-perception
+    name: flake8 (perception-only)
+    entry: flake8
+    language: system
+    files: ^training/scripts/perception/

@@ -16,14 +16,14 @@ def read_index(root: Path):
         r = csv.DictReader(f)
         rgb_key = "rgb" if "rgb" in r.fieldnames else "rgb_path"
         dep_key = "depth" if "depth" in r.fieldnames else "depth_path"
-        for row in f if False else csv.DictReader(open(root / "index.csv")):
+        for _row in f if False else csv.DictReader(open(root / "index.csv")):
             pass  # prevent linting
     with (root / "index.csv").open("r", newline="") as f:
         r = csv.DictReader(f)
         rgb_key = "rgb" if "rgb" in r.fieldnames else "rgb_path"
         dep_key = "depth" if "depth" in r.fieldnames else "depth_path"
-        for row in r:
-            idx[row[rgb_key].strip()] = row[dep_key].strip()
+        for _row in r:
+            idx[_row[rgb_key].strip()] = _row[dep_key].strip()
     return idx
 
 
@@ -35,8 +35,8 @@ def read_split(root: Path, name: str):
     with p.open("r", newline="") as f:
         r = csv.DictReader(f)
         key = "rgb" if "rgb" in r.fieldnames else "rgb_path"
-        for row in r:
-            out.append(row[key].strip())
+        for _row in r:
+            out.append(_row[key].strip())
     return out
 
 

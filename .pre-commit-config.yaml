@@ -1,33 +1,20 @@
 repos:
-- repo: local
-  hooks:
-  - id: ruff-format
-    name: ruff (format)
-    entry: ruff format
-    language: system
-    types: [python]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '^(mlruns/|artifacts/|datasets/|logs/|tmp/)'
+      - id: end-of-file-fixer
+        exclude: '^(mlruns/|artifacts/|datasets/|logs/|tmp/)'
 
-  - id: isort
-    name: isort
-    entry: isort
-    language: system
-    types: [python]
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        args: ["--line-length=100"]
 
-  - id: black
-    name: black
-    entry: black
-    language: system
-    types: [python]
-
-  - id: ruff-lint
-    name: ruff (lint + fix)
-    entry: ruff check --fix --unsafe-fixes
-    language: system
-    types: [python]
-
-  # Scope flake8 to perception folder only
-  - id: flake8-perception
-    name: flake8 (perception-only)
-    entry: flake8
-    language: system
-    files: ^training/scripts/perception/
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.8
+    hooks:
+      - id: ruff
+        args: ["--fix", "--exit-non-zero-on-fix"]

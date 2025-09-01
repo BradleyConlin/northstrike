@@ -62,9 +62,9 @@ def main():
     missing_rgb = []
     missing_depth = []
 
-    for rgb_rel, dep_rel in pairs:
-        if not (root / rgb_rel).exists():
-            missing_rgb.append(rgb_rel)
+    for _rgb_rel, dep_rel in pairs:
+        if not (root / _rgb_rel).exists():
+            missing_rgb.append(_rgb_rel)
         if not (root / dep_rel).exists():
             missing_depth.append(dep_rel)
 
@@ -86,7 +86,7 @@ def main():
     over_max = 0
     mm_max = int(args.max_depth_m * 1000.0)
 
-    for rgb_rel, dep_rel in sample_pairs:
+    for _rgb_rel, dep_rel in sample_pairs:
         dep_path = root / dep_rel
         img = cv2.imread(str(dep_path), cv2.IMREAD_UNCHANGED)
         if img is None:

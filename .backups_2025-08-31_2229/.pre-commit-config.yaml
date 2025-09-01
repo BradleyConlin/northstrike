@@ -1,0 +1,18 @@
+repos:
+- repo: local
+  hooks:
+  - id: isort
+    entry: isort .
+    language: system
+    pass_filenames: false
+    args: ["--profile=black"]
+  - id: black
+    entry: black .
+    language: system
+    pass_filenames: false
+  - id: ruff
+    entry: ruff check .
+    language: system
+    pass_filenames: false
+    args: ["--fix"]
+    exclude: ^sim/scripts/_archive/

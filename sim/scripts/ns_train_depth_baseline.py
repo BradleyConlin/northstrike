@@ -103,7 +103,7 @@ def main():
         # quick val + preview frame
         model.eval()
         with torch.no_grad():
-            for rgb, dep in val_ld:
+            for rgb, _dep in val_ld:
                 pred = model(rgb.to(device))
                 out_jpg = root / "_pred_preview.jpg"
                 save_preview(rgb, pred, out_jpg, args.max_depth_m)

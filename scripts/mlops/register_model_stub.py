@@ -24,7 +24,7 @@ def main():
     if Path(a.out).exists():
         try:
             db = json.load(open(a.out))
-        except:
+        except Exception:
             db = []
     db.append(rec)
     json.dump(db, open(a.out, "w"), indent=2)

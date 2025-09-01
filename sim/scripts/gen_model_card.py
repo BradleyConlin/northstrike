@@ -18,7 +18,7 @@ def read_metrics(p):
 def sh(cmd):
     try:
         return subprocess.check_output(cmd, shell=True, text=True).strip()
-    except:
+    except Exception:
         return "unknown"
 
 

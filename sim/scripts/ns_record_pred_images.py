@@ -74,11 +74,11 @@ def main():
     finally:
         try:
             node.destroy_node()
-        except:
+        except Exception:
             pass
         try:
             rclpy.shutdown()
-        except:
+        except Exception:
             pass
 
 

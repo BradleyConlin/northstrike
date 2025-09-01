@@ -1,8 +1,9 @@
 import argparse
 
-from rl.envs.px4_alt_env import Px4AltHoldEnv
 from stable_baselines3 import PPO
 from stable_baselines3.common.monitor import Monitor
+
+from rl.envs.px4_alt_env import Px4AltHoldEnv
 
 
 def make_env():

@@ -163,7 +163,7 @@ def main():
             txt = open(a.metrics).read().strip()
             if txt:
                 lines.append("## Metrics\n```\n" + txt + "\n```\n")
-        except:
+        except Exception:
             pass
     lines.append("## Samples (RGB | Pred | GT)\n")
     for i in range(a.num_samples):

@@ -6,7 +6,6 @@ import sys
 
 import numpy as np
 from planners.astar import plan_on_grid as astar_plan
-
 from src.perception.color_target import detect_color_targets
 
 VERS: dict[str, str] = {}

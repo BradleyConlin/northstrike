@@ -121,7 +121,7 @@ def main():
         gz_cmd = [sys.executable, str(GAZEBO)]
         if HEADLESS:
             gz_cmd += ["--headless"]  # flag-only
-        gz_proc = start_proc(gz_cmd)
+        start_proc(gz_cmd)
         # Give Gazebo a moment to bring up the world before injecting models
         time.sleep(max(2.0, args.sleep_between))
 
