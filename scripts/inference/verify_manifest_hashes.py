@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
-import argparse, json, hashlib, sys, pathlib
+import argparse
+import hashlib
+import json
+import pathlib
+import sys
 
-def sha256_path(p: pathlib.Path, chunk=1<<20) -> str:
+
+def sha256_path(p: pathlib.Path, chunk=1 << 20) -> str:
     h = hashlib.sha256()
     with p.open("rb") as f:
         while True:
             b = f.read(chunk)
-            if not b: break
+            if not b:
+                break
             h.update(b)
     return h.hexdigest()
+
 
 def iter_entries(manifest):
     # supports dict-of-entries or list-of-entries
@@ -22,12 +29,14 @@ def iter_entries(manifest):
     else:
         raise TypeError("manifest must be dict or list")
 
+
 def get_model_path(entry) -> pathlib.Path:
     # prefer dst, else path, else src
     p = entry.get("dst") or entry.get("path") or entry.get("src")
     if not p:
         raise ValueError("entry missing 'dst'/'path'/'src'")
     return pathlib.Path(p)
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -37,7 +46,7 @@ def main():
     args = ap.parse_args()
 
     manifest_path = pathlib.Path(args.manifest)
-    m = json.load(open(manifest_path, "r"))
+    m = json.load(open(manifest_path))
     changed = False
     failures = []
 
@@ -73,6 +82,7 @@ def main():
     if not args.check and not args.write:
         # default to check behavior if neither flag given
         sys.exit(0 if not failures else 2)
+
 
 if __name__ == "__main__":
     main()

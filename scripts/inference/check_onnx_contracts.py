@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
-import argparse, json, os, sys, re
-from typing import Any, Dict, Iterable, Tuple, List
+import argparse
+import json
+import os
+import re
+import sys
+from collections.abc import Iterable
+from typing import Any
+
 import onnx
 import yaml
+
 
 def _dims(vi) -> list[int]:
     t = vi.type.tensor_type
@@ -11,11 +18,15 @@ def _dims(vi) -> list[int]:
         out.append(d.dim_value if d.HasField("dim_value") else -1)
     return out
 
-def _fmt_shape(xs: List[int]) -> str:
-    def one(x): return "*" if x in (-1, None) else str(int(x))
+
+def _fmt_shape(xs: list[int]) -> str:
+    def one(x):
+        return "*" if x in (-1, None) else str(int(x))
+
     return "x".join(one(x) for x in xs)
 
-def _parse_shape(obj) -> List[int]:
+
+def _parse_shape(obj) -> list[int]:
     # Accept [1,3,384,640] OR "1x3x384x640" OR "1,3,384,640"
     if isinstance(obj, list):
         return [int(x) if str(x).isdigit() else -1 for x in obj]
@@ -31,7 +42,8 @@ def _parse_shape(obj) -> List[int]:
         return out
     raise TypeError(f"Unsupported shape type: {type(obj)}")
 
-def _iter_tasks(node: Any, prefix: str = "") -> Iterable[Tuple[str, Dict[str, Any]]]:
+
+def _iter_tasks(node: Any, prefix: str = "") -> Iterable[tuple[str, dict[str, Any]]]:
     if isinstance(node, dict):
         if "path" in node and "shape" in node:
             yield prefix or "model", node
@@ -40,13 +52,15 @@ def _iter_tasks(node: Any, prefix: str = "") -> Iterable[Tuple[str, Dict[str, An
             if isinstance(v, dict):
                 yield from _iter_tasks(v, child)
 
+
 def _ok_shape(expected: list[int], got: list[int]) -> bool:
     if len(expected) != len(got):
         return False
-    for e, g in zip(expected, got):
+    for e, g in zip(expected, got, strict=False):
         if e != -1 and e != g:
             return False
     return True
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -89,10 +103,13 @@ def main():
         if ok:
             print(f"[contract] {name:20s} shape={_fmt_shape(first_in)}  OK")
         else:
-            print(f"[contract] {name:20s} shape={_fmt_shape(first_in)}  EXPECTED={_fmt_shape(exp_list)}  FAIL")
+            print(
+                f"[contract] {name:20s} shape={_fmt_shape(first_in)}  EXPECTED={_fmt_shape(exp_list)}  FAIL"
+            )
             failures += 1
 
     sys.exit(1 if failures else 0)
+
 
 if __name__ == "__main__":
     main()

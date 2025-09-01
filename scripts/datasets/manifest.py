@@ -22,7 +22,7 @@ def main():
             p = (pathlib.Path(dp)/fn).resolve()
             if p == out_abs:  # skip the output manifest itself
                 continue
-            if args.exts and p.suffix.lower() not in set(args.exts): 
+            if args.exts and p.suffix.lower() not in set(args.exts):
                 continue
             total+=1
             sz=p.stat().st_size

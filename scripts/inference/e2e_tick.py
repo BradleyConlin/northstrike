@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-import argparse, json, time
+import argparse
+import json
+import time
 from pathlib import Path
+
 import numpy as np
 import onnxruntime as ort
 
@@ -87,7 +90,9 @@ def main():
         "iters": args.iters,
     }
     Path(args.out).write_text(json.dumps(report, indent=2))
-    print(f"[e2e] wrote {args.out}  p50: depth={report['p50_depth_ms']:.3f}ms policy={report['p50_policy_ms']:.3f}ms  OK")
+    print(
+        f"[e2e] wrote {args.out}  p50: depth={report['p50_depth_ms']:.3f}ms policy={report['p50_policy_ms']:.3f}ms  OK"
+    )
 
 
 if __name__ == "__main__":

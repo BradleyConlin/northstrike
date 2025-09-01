@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
-import argparse, hashlib, json, os, sys, time
+import argparse
+import hashlib
+import json
+import os
+import sys
+import time
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any
 
 import onnxruntime as ort
 import yaml
 
 
-def _flatten_targets(d: Dict[str, Any], prefix: str = "") -> Dict[str, Dict[str, Any]]:
+def _flatten_targets(d: dict[str, Any], prefix: str = "") -> dict[str, dict[str, Any]]:
     out = {}
     if isinstance(d, dict):
         if {"path", "shape"} <= set(d.keys()):
@@ -18,7 +23,7 @@ def _flatten_targets(d: Dict[str, Any], prefix: str = "") -> Dict[str, Dict[str,
     return out
 
 
-def _load_budgets(path: str) -> Tuple[Dict[str, Dict[str, Any]], Dict[str, Any]]:
+def _load_budgets(path: str) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
     cfg = yaml.safe_load(Path(path).read_text())
     roots = cfg.get("targets", cfg)  # support either top-level or targets:
     flat = _flatten_targets(roots)
@@ -36,10 +41,10 @@ def _sha256(p: Path, block=1024 * 1024) -> str:
     return h.hexdigest()
 
 
-def _check_input_shape(sess: ort.InferenceSession, want: str) -> Tuple[bool, str, str]:
+def _check_input_shape(sess: ort.InferenceSession, want: str) -> tuple[bool, str, str]:
     got_dims = [int(x) for x in sess.get_inputs()[0].shape]
     got = "x".join(str(x) for x in got_dims)
-    ok = (got == want.replace(" ", ""))
+    ok = got == want.replace(" ", "")
     return ok, got, want
 
 
@@ -76,11 +81,14 @@ def main():
     want_shape = str(tgt["shape"]).lower().replace(" ", "")
     dst = Path(str(tgt["path"]))
     import os
+
     # refuse self-promotion (src == dst) to avoid symlink loops
     src_abs = os.path.normcase(os.path.abspath(str(Path(args.model))))
     dst_abs = os.path.normcase(os.path.abspath(str(dst)))
     if src_abs == dst_abs:
-        print(f"[error] refusing self-promotion: src==dst ({dst}). Use a temp copy like artifacts/onnx/_promote_<name>.onnx")
+        print(
+            f"[error] refusing self-promotion: src==dst ({dst}). Use a temp copy like artifacts/onnx/_promote_<name>.onnx"
+        )
         raise SystemExit(2)
     src = Path(args.model).resolve()
 
@@ -92,7 +100,10 @@ def main():
     sess = ort.InferenceSession(str(src), providers=[args.provider])
     ok, got, want = _check_input_shape(sess, want_shape)
     if not ok:
-        print(f"[error] input shape mismatch for {args.target}: got={got} want={want}", file=sys.stderr)
+        print(
+            f"[error] input shape mismatch for {args.target}: got={got} want={want}",
+            file=sys.stderr,
+        )
         sys.exit(3)
 
     # promote (symlink)
