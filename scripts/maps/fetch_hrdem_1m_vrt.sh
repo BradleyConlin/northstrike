@@ -37,7 +37,7 @@ echo "[i] Final out: $OUT_TIF"
 
 # Stage 1: crop to bbox in WGS84 into a small VRT (no big write yet)
 # Note: -te expects minX minY maxX maxY; -te_srs ensures those are EPSG:4326
-gdalwarp -of VRT \
+gdalwarp -overwrite -of VRT \
   -t_srs EPSG:4326 \
   -te_srs EPSG:4326 -te "$W" "$S" "$E" "$N" \
   -r bilinear \

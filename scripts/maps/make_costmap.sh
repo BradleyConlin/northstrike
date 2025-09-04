@@ -25,13 +25,16 @@ fi
 # 1) Slope (%)
 gdaldem slope -p "$DEM_PATH" "$SLOPE" -compute_edges
 
-# 2) Mask scaffold: explicit zero image (Byte, NoData=0) so there’s no nodata propagation
-gdal_calc.py --overwrite --calc="0" --type=Byte --NoDataValue=0 --outfile "$MSK" -A "$DEM_PATH"
+# 2) Mask scaffold: explicit zero image (Byte, no NoData)
+gdal_calc.py --overwrite --calc="0" --type=Byte --outfile "$MSK" -A "$DEM_PATH"
 
-# 2b) Burn buildings=1 if we have GeoJSON
+# 2b) Burn buildings=1 if we have GeoJSON, then clamp to 0/1 and remove NoData
 if [ -f "$GJ" ]; then
   gdal_rasterize -burn 1 -at "$GJ" "$MSK"
-  # Drop any stale aux stats file so gdalinfo recomputes properly
+  # Force binary 0/1 (some builds can leave 255s); then drop any NoData flag
+  gdal_calc.py --overwrite -A "$MSK" --calc="(A>0)" --type=Byte --outfile "${MSK}.tmp.tif"
+  mv "${MSK}.tmp.tif" "$MSK"
+  gdal_edit.py -unsetnodata "$MSK"
   rm -f "${MSK}.aux.xml" || true
 else
   echo "[warn] No buildings GeoJSON at $GJ; leaving mask at zeros."
