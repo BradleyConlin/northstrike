@@ -61,3 +61,18 @@ data-checksums:
 > mkdir -p artifacts/datasets
 > python sim/scripts/data/hash_tree.py datasets > artifacts/datasets/artifacts.sha256 || true
 > test -s artifacts/datasets/artifacts.sha256 && echo "Checksums written"
+
+# === Domain Randomization ===
+.PHONY: rand-sweep
+rand-sweep:
+> mkdir -p artifacts/domain_randomization
+> python simulation/domain_randomization/scripts/apply_randomization.py \
+>   --profile sim/simulation/domain_randomization/profiles/$(PROFILE).yaml \
+>   --out artifacts/domain_randomization/$(PROFILE).json \
+>   --jsonl artifacts/domain_randomization/$(PROFILE)-samples.jsonl
+
+
+# === Maps/Costmaps ===
+.PHONY: maps-costmap
+maps-costmap:
+> AREA=$(AREA) ./scripts/maps/make_costmap.sh
