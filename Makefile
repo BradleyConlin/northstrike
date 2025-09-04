@@ -12,6 +12,14 @@ help:
 > @echo "  data-verify        dataset manifest verify"
 > @echo "  data-diff          dataset manifest diff vs baseline"
 > @echo "  integrity-summary  emit release integrity JSON"
+> @echo "  rand-profile       apply minimal domain-rand profile"
+> @echo "  rand-sweep         apply domain-rand PROFILE=..."
+> @echo "  data-checksums     write datasets checksums"
+> @echo "  maps-dem/buildings/costmap  map recipes via make.sh"
+> @echo "  maps-verify        print mask hist + cost ranges"
+> @echo "  mbtiles            build offline MBTiles (cost/mask)"
+> @echo "  mbtiles-verify     check MBTiles metadata"
+> @echo "  maps-publish       placeholder for publishing"
 > @echo "  ci                 run all gates"
 
 onnx-all:
@@ -49,6 +57,7 @@ ci:
 > $(MAKE) data-verify
 > $(MAKE) data-diff
 > $(MAKE) integrity-summary
+
 # === domain-rand & data smoke additions ===
 .PHONY: rand-profile data-checksums
 
@@ -71,18 +80,58 @@ rand-sweep:
 >   --out artifacts/domain_randomization/$(PROFILE).json \
 >   --jsonl artifacts/domain_randomization/$(PROFILE)-samples.jsonl
 
-
-# === Maps/Costmaps ===
-.PHONY: maps-costmap
-maps-costmap:
-> AREA=$(AREA) ./scripts/maps/make_costmap.sh
-
 # --- maps targets ---
+.PHONY: maps-dem maps-buildings maps-costmap maps-verify
+
 maps-dem:
->	scripts/maps/make.sh dem $${AREA} $${S} $${W} $${N} $${E}
+> scripts/maps/make.sh dem $${AREA} $${S} $${W} $${N} $${E}
 
 maps-buildings:
->	scripts/maps/make.sh buildings $${AREA} $${S} $${W} $${N} $${E}
+> scripts/maps/make.sh buildings $${AREA} $${S} $${W} $${N} $${E}
 
 maps-costmap:
->	scripts/maps/make.sh costmap $${AREA}
+> scripts/maps/make.sh costmap $${AREA}
+
+# maps verify
+maps-verify:
+> gdalinfo -mm -hist maps/build/$${AREA}_buildings_mask.tif | sed -n '1,80p'
+> gdalinfo -mm maps/costmaps/$${AREA}_cost.tif | sed -n '1,60p'
+
+# --- Maps / Tiles / MBTiles ---------------------------------------------------
+AREA ?= yyz_downtown
+MAPS_DIR := maps
+BUILD_DIR := $(MAPS_DIR)/build
+COST_DIR := $(MAPS_DIR)/costmaps
+TILES_DIR := tiles
+MBTILES_DIR := $(MAPS_DIR)/mbtiles
+
+# Expect these RGBA rasters already exist from your pipeline:
+COST_RGBA := $(COST_DIR)/$(AREA)_cost_rgba.tif
+MASK_RGBA := $(BUILD_DIR)/$(AREA)_buildings_mask_rgba.tif
+
+.PHONY: mbtiles
+mbtiles: $(MBTILES_DIR)/$(AREA)_cost.mbtiles $(MBTILES_DIR)/$(AREA)_mask.mbtiles
+
+$(MBTILES_DIR)/$(AREA)_cost.mbtiles: $(COST_RGBA)
+> mkdir -p $(MBTILES_DIR)
+> scripts/maps/mbtiles_from_raster.sh "$<" "$@"
+
+$(MBTILES_DIR)/$(AREA)_mask.mbtiles: $(MASK_RGBA)
+> mkdir -p $(MBTILES_DIR)
+> scripts/maps/mbtiles_from_raster.sh "$<" "$@"
+
+.PHONY: mbtiles-verify
+mbtiles-verify: mbtiles
+> @echo "Checking MBTiles metadata and zooms..."
+> sqlite3 $(MBTILES_DIR)/$(AREA)_cost.mbtiles 'select name, value from metadata where name in ("minzoom","maxzoom","format","name","bounds");'
+> sqlite3 $(MBTILES_DIR)/$(AREA)_mask.mbtiles 'select name, value from metadata where name in ("minzoom","maxzoom","format","name","bounds");'
+> @echo "✔ MBTiles look OK"
+
+.PHONY: maps-publish
+maps-publish: mbtiles
+> @echo "Publish step placeholder (rsync/gh-release/minio). Add your remote later."
+> @echo "Artifacts in: $(MBTILES_DIR)"
+
+.PHONY: maps-readback
+maps-readback:
+> python scripts/maps/smoke_cost_readback.py --cost maps/costmaps/$(AREA)_cost.tif --n 20 --out maps/reports/$(AREA)_readback.csv
