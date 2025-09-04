@@ -49,3 +49,15 @@ ci:
 > $(MAKE) data-verify
 > $(MAKE) data-diff
 > $(MAKE) integrity-summary
+# === domain-rand & data smoke additions ===
+.PHONY: rand-profile data-checksums
+
+rand-profile:
+> python simulation/domain_randomization/scripts/apply_randomization.py \
+>   --profile sim/simulation/domain_randomization/profiles/minimal.yaml \
+>   --out artifacts/domain_randomization/minimal.json
+
+data-checksums:
+> mkdir -p artifacts/datasets
+> python sim/scripts/data/hash_tree.py datasets > artifacts/datasets/artifacts.sha256 || true
+> test -s artifacts/datasets/artifacts.sha256 && echo "Checksums written"
