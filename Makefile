@@ -76,3 +76,13 @@ rand-sweep:
 .PHONY: maps-costmap
 maps-costmap:
 > AREA=$(AREA) ./scripts/maps/make_costmap.sh
+
+# --- maps targets ---
+maps-dem:
+>	scripts/maps/make.sh dem $${AREA} $${S} $${W} $${N} $${E}
+
+maps-buildings:
+>	scripts/maps/make.sh buildings $${AREA} $${S} $${W} $${N} $${E}
+
+maps-costmap:
+>	scripts/maps/make.sh costmap $${AREA}
