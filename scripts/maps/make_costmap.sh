@@ -1,28 +1,50 @@
 #!/usr/bin/env bash
 set -euo pipefail
-AREA="${AREA:-area1}"
-DEM="maps/src/${AREA}_dem.tif"
-BLD_VECT="${BLD_VECT:-maps/src/${AREA}_buildings.geojson}"
-OUTDIR="maps/build/${AREA}"
-COST="maps/costmaps/${AREA}_cost.tif"
-mkdir -p "$OUTDIR" maps/costmaps
+# Inputs:
+#   AREA=<name>  (required)
+#   DEM=<path/to/dem.tif> (optional; if absent, you must fetch one first)
+# Requires: gdal_calc.py, gdal_rasterize, gdaldem, gdal_edit.py, gdal_translate
 
-if [[ ! -f "$DEM" ]]; then echo "Missing $DEM"; exit 2; fi
-if [[ ! -f "$BLD_VECT" ]]; then echo "Missing $BLD_VECT"; exit 2; fi
+: "${AREA:?Set AREA=<name>}"
+BUILD="maps/build"
+COSTS="maps/costmaps"
+SRC="maps/src"
+mkdir -p "$BUILD" "$COSTS" "$SRC"
 
-echo "[1/4] slope from DEM"
-gdaldem slope "$DEM" "$OUTDIR/slope.tif" -s 1.0
+DEM_PATH="${DEM:-$BUILD/${AREA}_dtm1m.tif}"
+MSK="$BUILD/${AREA}_buildings_mask.tif"
+SLOPE="$BUILD/${AREA}_slope.tif"
+COST="$COSTS/${AREA}_cost.tif"
+GJ="$SRC/${AREA}_buildings.geojson"
 
-echo "[2/4] rasterize buildings to DEM grid"
-# Align to DEM georeferencing
-gdal_rasterize -burn 1 -a_nodata 0 -te $(gdalinfo "$DEM" | awk '/Lower Left|Upper Right/ {gsub(/[(),]/,""); if ($1=="Lower") {xmin=$3; ymin=$4} else {xmax=$3; ymax=$4}} END {print xmin, ymin, xmax, ymax}') \
-  -tr $(gdalinfo "$DEM" | awk -F'[(), ]+' '/Pixel Size/ {print ($6<0)?-$5:$5, ($6<0)?-$6:$6}') \
-  -ot Byte -init 0 "$BLD_VECT" "$OUTDIR/buildings.tif"
+if [ ! -f "$DEM_PATH" ]; then
+  echo "Missing DEM at $DEM_PATH. Fetch one first." >&2
+  exit 2
+fi
 
-echo "[3/4] combine slope + buildings to cost (buildings=1000, slope cost = 10*(s/45)^2 + 1)"
-gdal_calc.py --quiet \
-  -A "$OUTDIR/slope.tif" -B "$OUTDIR/buildings.tif" \
-  --calc="where(B==1, 1000, minimum(1000, 10*(A/45.0)*(A/45.0) + 1))" \
-  --NoDataValue=0 --outfile="$COST" --type=Float32
+# 1) Slope (%)
+gdaldem slope -p "$DEM_PATH" "$SLOPE" -compute_edges
 
-echo "[4/4] done -> $COST"
+# 2) Mask scaffold: explicit zero image (Byte, NoData=0) so there’s no nodata propagation
+gdal_calc.py --overwrite --calc="0" --type=Byte --NoDataValue=0 --outfile "$MSK" -A "$DEM_PATH"
+
+# 2b) Burn buildings=1 if we have GeoJSON
+if [ -f "$GJ" ]; then
+  gdal_rasterize -burn 1 -at "$GJ" "$MSK"
+  # Drop any stale aux stats file so gdalinfo recomputes properly
+  rm -f "${MSK}.aux.xml" || true
+else
+  echo "[warn] No buildings GeoJSON at $GJ; leaving mask at zeros."
+fi
+
+# 3) Cost combine (Float32; tune weights per mission)
+gdal_calc.py --overwrite -A "$SLOPE" -B "$MSK" --type=Float32 \
+  --NoDataValue=-9999 --calc="(A*2.0)+(B*200.0)" --outfile "$COST"
+
+# 4) Previews (8-bit with explicit scaling to avoid blank PNGs)
+gdal_translate -of PNG -ot Byte -a_nodata 0 -scale 0 15 1 255 "$SLOPE" "${SLOPE%.tif}.png" >/dev/null
+gdal_translate -of PNG -ot Byte               -scale 0  1 0 255 "$MSK"   "${MSK%.tif}.png"   >/dev/null
+gdal_translate -of PNG -ot Byte -a_nodata 0 -scale 0 500 1 255 "$COST"  "${COST%.tif}.png"  >/dev/null
+
+echo "[ok] Built:"
+ls -lh "$SLOPE" "${SLOPE%.tif}.png" "$MSK" "${MSK%.tif}.png" "$COST" "${COST%.tif}.png"

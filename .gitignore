@@ -31,3 +31,7 @@ training/runs/
 .pre-commit-config.yaml.bak*
 artifacts/domain_randomization/
 artifacts/onnx/*.bak-*
+
+# maps & costmaps (rasters)
+maps/build/
+maps/costmaps/
