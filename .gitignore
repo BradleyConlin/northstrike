@@ -26,3 +26,8 @@ training/runs/
 !training/tests/
 !training/tests/data/
 !training/tests/data/test_dataset_diff_smoke.py
+
+# Backups & local outputs
+.pre-commit-config.yaml.bak*
+artifacts/domain_randomization/
+artifacts/onnx/*.bak-*
