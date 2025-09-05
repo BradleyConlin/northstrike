@@ -5,10 +5,6 @@
 - **Gates**:
   - `maps-readback`: sample Float32 at random points → CSV + JSON summary
   - `tiles-parity`: compare MBTiles grayscale vs scaled Float32 at pixel centers (±5 DN, 0↔1 allowed)
-- **Attribution**:
-  - Contains information licensed under the [Open Government Licence – Canada] (HRDEM CanElevation).
-  - © OpenStreetMap contributors (ODbL). Our raster tiles and masks are a “Produced Work.”
-
 
 # Toronto — yyz_downtown AOI
 
@@ -23,6 +19,6 @@
 - Masks: strict **0/1 Byte**, NoData=0, NEAREST overviews.
 - Tile scheme: **XYZ** (no TMS), cache-busted when regenerating.
 
-## Attribution (required)
+## Attribution
 - Contains information licensed under the **Open Government Licence – Canada** (HRDEM / CanElevation).
 - © **OpenStreetMap contributors** (ODbL). The rasterized building mask is a Produced Work.
