@@ -165,7 +165,12 @@ maps-ci:
 maps-bundle: mbtiles8
 > mkdir -p artifacts/maps
 > zip -j artifacts/maps/$(AREA)_tiles_cost8.zip $(MBTILES_DIR)/$(AREA)_cost8.mbtiles
+> sha256sum artifacts/maps/$(AREA)_tiles_cost8.zip > artifacts/maps/$(AREA)_tiles_cost8.zip.sha256
 
 .PHONY: maps-publish
 maps-publish: maps-bundle
 > @echo "Bundle ready: artifacts/maps/$(AREA)_tiles_cost8.zip"
+
+.PHONY: maps-smoke
+maps-smoke: maps-costmap2 mbtiles8 tiles-parity maps-readback
+> @echo "✔ maps-smoke passed for AREA=$(AREA)"
