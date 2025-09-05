@@ -128,10 +128,6 @@ mbtiles-verify: mbtiles
 > @echo "✔ MBTiles look OK"
 
 .PHONY: maps-publish
-maps-publish: mbtiles
-> @echo "Publish step placeholder (rsync/gh-release/minio). Add your remote later."
-> @echo "Artifacts in: $(MBTILES_DIR)"
-
 .PHONY: maps-readback
 maps-readback:
 > python scripts/maps/smoke_cost_readback.py --cost maps/costmaps/$(AREA)_cost.tif --n 20 --out maps/reports/$(AREA)_readback.csv
