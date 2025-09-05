@@ -107,7 +107,7 @@ gdal_translate -quiet -ot Byte -a_nodata 0 -scale 0 15 1 255 "$SLOPE" "$SLOPE_PN
 # 2) Buildings mask (if not present, try to build from OSM)
 if [[ ! -f "$MASK_BLD" ]]; then mk_zero_mask "$DEM" "$MASK_BLD"; fi
 if [[ -f "$OSM" ]]; then
-  TMP_GJ="$(mktemp --suffix=.geojson)"; trap 'rm -f "$TMP_GJ"' EXIT
+  TMP_GJ="$(mktemp -u --suffix=.geojson)"; trap 'rm -f "$TMP_GJ"' EXIT
   ogr2ogr -f GeoJSON "$TMP_GJ" "$OSM" multipolygons -where "building IS NOT NULL" || true
   if [[ -s "$TMP_GJ" ]]; then burn_mask "$TMP_GJ" "$MASK_BLD"; fi
 fi
@@ -116,7 +116,7 @@ clean_mask "$MASK_BLD"
 # 3) Roads mask (optional)
 mk_zero_mask "$DEM" "$MASK_ROAD"
 if [[ -f "$OSM" ]]; then
-  TMP_GJ="$(mktemp --suffix=.geojson)"; trap 'rm -f "$TMP_GJ"' EXIT
+  TMP_GJ="$(mktemp -u --suffix=.geojson)"; trap 'rm -f "$TMP_GJ"' EXIT
   ogr2ogr -f GeoJSON "$TMP_GJ" "$OSM" lines -where "highway IS NOT NULL" || true
   if [[ -s "$TMP_GJ" ]]; then burn_mask "$TMP_GJ" "$MASK_ROAD"; fi
 fi
@@ -125,17 +125,21 @@ clean_mask "$MASK_ROAD"
 # 4) Water mask (optional)
 mk_zero_mask "$DEM" "$MASK_WATR"
 if [[ -f "$OSM" ]]; then
-  TMP_GJ="$(mktemp --suffix=.geojson)"; trap 'rm -f "$TMP_GJ"' EXIT
-  # water areas can be in multipolygons; rivers may appear as lines (ignored here)
-  ogr2ogr -f GeoJSON "$TMP_GJ" "$OSM" multipolygons -where "natural='water' OR water IS NOT NULL" || true
-  if [[ -s "$TMP_GJ" ]]; then burn_mask "$TMP_GJ" "$MASK_WATR"; fi
+  TMP_W1="$(mktemp -u --suffix=.geojson)"; trap 'rm -f "'$TMP_W1'"' EXIT
+  TMP_W2="$(mktemp -u --suffix=.geojson)"; trap 'rm -f "'$TMP_W2'"' EXIT
+  # Common water areas (lakes, reservoirs, basins)
+  ogr2ogr -f GeoJSON "$TMP_W1" "$OSM" multipolygons \n    -where "natural='water' OR landuse IN ('reservoir','basin')" || true
+  # Wide rivers sometimes come as polygons tagged waterway=riverbank
+  ogr2ogr -f GeoJSON "$TMP_W2" "$OSM" multipolygons \n    -where "waterway='riverbank'" || true
+  [[ -s "$TMP_W1" ]] && burn_mask "$TMP_W1" "$MASK_WATR"
+  [[ -s "$TMP_W2" ]] && burn_mask "$TMP_W2" "$MASK_WATR"
 fi
 clean_mask "$MASK_WATR"
 
 # 5) Parks/green mask (optional)
 mk_zero_mask "$DEM" "$MASK_PARK"
 if [[ -f "$OSM" ]]; then
-  TMP_GJ="$(mktemp --suffix=.geojson)"; trap 'rm -f "$TMP_GJ"' EXIT
+  TMP_GJ="$(mktemp -u --suffix=.geojson)"; trap 'rm -f "$TMP_GJ"' EXIT
   ogr2ogr -f GeoJSON "$TMP_GJ" "$OSM" multipolygons -where "leisure='park' OR landuse IN ('recreation_ground','grass')" || true
   if [[ -s "$TMP_GJ" ]]; then burn_mask "$TMP_GJ" "$MASK_PARK"; fi
 fi

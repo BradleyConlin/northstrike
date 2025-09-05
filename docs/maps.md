@@ -56,3 +56,35 @@
   (example: `road_penalty: -40.0`).
 
 - **Publishing**: `make maps-publish AREA=<aoi>` writes `artifacts/maps/<AREA>_tiles_cost8.zip` and a `.sha256`.
+
+
+### Water extraction (robust)
+- We don’t rely on a `water` column (often missing in OSM extracts).
+- We burn polygons from:
+  - `natural='water'`
+  - `landuse IN ('reservoir','basin')`
+  - `waterway='riverbank'` (wide rivers commonly tagged this way)
+- **Implementation note:** we write two temporary GeoJSONs and burn both.
+  You may see this benign message on some GDAL builds:
+  “Input datasource uses random layer reading, but output datasource does not support random layer writing.”
+
+### OSM fetch & usage
+Fetch OSM once per AOI (bbox **W,S,E,N**):
+
+    AREA=<aoi> S=<south> W=<west> N=<north> E=<east> make maps-osm
+
+This writes `maps/src/<AREA>_osm.osm`. The cost builder picks it up automatically:
+
+    AREA=<aoi> make maps-costmap2
+    # or
+    AREA=<aoi> make maps-smoke
+
+### Masks quick check
+Each mask is **0/1 Byte** (`NoData=0`, NEAREST overviews):
+
+    gdalinfo -stats maps/build/<AREA>_{roads,water,parks}_mask.tif | sed -n '1,40p'
+    # Look for Min=0, Max=1, and a non-zero Mean if features exist.
+
+### Viewer notes
+- Tiles are **XYZ**, requested from `/tiles/{z}/{x}/{y}.png?v=N` (absolute path + cache-buster).
+- 404s at extreme edges/zooms usually just mean that slippy address isn’t covered — not an error.

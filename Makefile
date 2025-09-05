@@ -174,3 +174,9 @@ maps-publish: maps-bundle
 .PHONY: maps-smoke
 maps-smoke: maps-costmap2 mbtiles8 tiles-parity maps-readback
 > @echo "✔ maps-smoke passed for AREA=$(AREA)"
+
+
+.PHONY: maps-osm
+maps-osm:
+> : $${AREA:?Set AREA=... and S W N E bbox}
+> ./scripts/maps/fetch_osm_overpass.sh
