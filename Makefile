@@ -149,11 +149,27 @@ $(MBTILES_DIR)/$(AREA)_cost8.mbtiles: $(COST_DIR)/$(AREA)_cost_8bit.vrt
 > scripts/maps/mbtiles_from_raster.sh "$<" "$@"
 
 # --- Parity smoke: 8-bit grayscale tile value ~= scaled Float32 cost ---------
+N ?= 30
 .PHONY: tiles-parity
 tiles-parity: mbtiles8
 > python scripts/maps/tile_parity_smoke.py \
 >   --mbtiles $(MBTILES_DIR)/$(AREA)_cost8.mbtiles \
 >   --cost $(COST_DIR)/$(AREA)_cost.tif \
->   --zoom 14 \
->   --n 30 \
+>   --zoom 14 --n $(N) \
 >   --out maps/reports/$(AREA)_tile_parity.csv
+
+.PHONY: maps-ci
+maps-ci:
+> $(MAKE) maps-costmap2 AREA=$(AREA)
+> $(MAKE) mbtiles8 AREA=$(AREA)
+> $(MAKE) tiles-parity AREA=$(AREA) N=40
+> $(MAKE) maps-readback AREA=$(AREA)
+
+.PHONY: maps-bundle
+maps-bundle: mbtiles8
+> mkdir -p artifacts/maps
+> zip -j artifacts/maps/$(AREA)_tiles_cost8.zip $(MBTILES_DIR)/$(AREA)_cost8.mbtiles
+
+.PHONY: maps-publish
+maps-publish: maps-bundle
+> @echo "Bundle ready: artifacts/maps/$(AREA)_tiles_cost8.zip"
