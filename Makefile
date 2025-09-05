@@ -94,8 +94,8 @@ maps-costmap:
 
 # maps verify
 maps-verify:
-> gdalinfo -mm -hist maps/build/$${AREA}_buildings_mask.tif | sed -n '1,80p'
-> gdalinfo -mm maps/costmaps/$${AREA}_cost.tif | sed -n '1,60p'
+> gdalinfo -stats -hist maps/build/$${AREA}_buildings_mask.tif | sed -n '1,80p'
+> { gdalinfo -stats maps/costmaps/$${AREA}_cost.tif 2>/dev/null || gdalinfo -mm maps/costmaps/$${AREA}_cost.tif 2>/dev/null || true; } | sed -n '1,80p'
 
 # --- Maps / Tiles / MBTiles ---------------------------------------------------
 AREA ?= yyz_downtown
@@ -135,3 +135,25 @@ maps-publish: mbtiles
 .PHONY: maps-readback
 maps-readback:
 > python scripts/maps/smoke_cost_readback.py --cost maps/costmaps/$(AREA)_cost.tif --n 20 --out maps/reports/$(AREA)_readback.csv
+
+.PHONY: maps-costmap2
+maps-costmap2:
+> AREA=$(AREA) ./scripts/maps/make_costmap.sh --yaml scripts/maps/cost_recipe.yaml
+
+# --- 8-bit MBTiles (from VRT) -----------------------------------------------
+.PHONY: mbtiles8
+mbtiles8: $(MBTILES_DIR)/$(AREA)_cost8.mbtiles
+
+$(MBTILES_DIR)/$(AREA)_cost8.mbtiles: $(COST_DIR)/$(AREA)_cost_8bit.vrt
+> mkdir -p $(MBTILES_DIR)
+> scripts/maps/mbtiles_from_raster.sh "$<" "$@"
+
+# --- Parity smoke: 8-bit grayscale tile value ~= scaled Float32 cost ---------
+.PHONY: tiles-parity
+tiles-parity: mbtiles8
+> python scripts/maps/tile_parity_smoke.py \
+>   --mbtiles $(MBTILES_DIR)/$(AREA)_cost8.mbtiles \
+>   --cost $(COST_DIR)/$(AREA)_cost.tif \
+>   --zoom 14 \
+>   --n 30 \
+>   --out maps/reports/$(AREA)_tile_parity.csv
