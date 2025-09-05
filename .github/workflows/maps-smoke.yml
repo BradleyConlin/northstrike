@@ -1,0 +1,24 @@
+name: maps-smoke
+on:
+  push:
+  pull_request:
+jobs:
+  smoke:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GDAL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin
+      - name: Maps smoke (yyz_downtown)
+        run: |
+          make maps-smoke AREA=yyz_downtown N=20
+      - name: Publish bundle (no upload, just build + sha)
+        run: |
+          make maps-publish AREA=yyz_downtown
+          ls -lh artifacts/maps || true
+      - name: Show readback/parity summaries
+        run: |
+          ls -1 maps/reports || true
+          find artifacts/maps -maxdepth 1 -type f -name '*.zip*' -ls || true
