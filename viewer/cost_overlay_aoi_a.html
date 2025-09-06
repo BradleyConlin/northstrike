@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AOI-A Cost Overlay</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>html,body,#map{height:100%;margin:0}.leaflet-container{background:#111}
+.legend{position:absolute;bottom:10px;left:10px;background:#fff;padding:6px 8px;border-radius:6px;font:12px system-ui}</style>
+<div id="map"></div><div class="legend"><b>Cost overlay</b><br>dark=low, bright=high (0–1000)</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const bounds=L.latLngBounds([37.6593,-91.1989],[37.7674,-91.0621]);
+const map=L.map('map',{minZoom:11,maxZoom:16,maxBounds:bounds,maxBoundsViscosity:1}).fitBounds(bounds);
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+const costGray=L.tileLayer('/tiles/aoi_rural_mo_cost8/{z}/{x}/{y}.png',{opacity:.45,bounds:bounds,noWrap:true,errorTileUrl:'/viewer/empty.png'});
+const costColor=L.tileLayer('/tiles/aoi_rural_mo_cost_color/{z}/{x}/{y}.png',{opacity:.70,bounds:bounds,noWrap:true,errorTileUrl:'/viewer/empty.png'}).addTo(map);
+L.control.layers({'OpenStreetMap':osm},{'Cost (gray)':costGray,'Cost (color)':costColor}).addTo(map);
+</script>

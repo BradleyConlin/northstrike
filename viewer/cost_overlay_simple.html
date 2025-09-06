@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8">
+<title>Cost overlay</title><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>html,body,#map{height:100%;margin:0}.leaflet-container{background:#111}</style>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const bounds=L.latLngBounds([-79.419959,43.628429],[-79.310044,43.701573]);
+const map=L.map('map',{maxBounds:bounds,maxBoundsViscosity:1}).fitBounds(bounds);
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+const cost=L.tileLayer('/tiles/yyz_downtown_cost8/{z}/{x}/{y}.png',{
+  minZoom:12,maxZoom:18,opacity:0.55,bounds:bounds,noWrap:true,errorTileUrl:'/viewer/empty.png'
+}).addTo(map);
+</script>

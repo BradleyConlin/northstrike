@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cost Overlay – simple</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>html,body,#map{height:100%;margin:0}</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Center on downtown Toronto
+  const map = L.map('map').setView([43.654, -79.383], 13);
+
+  // Base layer
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Color cost tiles — adjust path if you changed AREA or tiles dir
+  L.tileLayer('/tiles/yyz_downtown_cost_color/{z}/{x}/{y}.png', {
+    opacity: 0.65,
+    minNativeZoom: 12,  // you generated 12–18
+    maxNativeZoom: 18,
+    noWrap: true
+  }).addTo(map);
+</script>
+</body>
+</html>

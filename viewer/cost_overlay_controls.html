@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cost Overlay (color + slider)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  html,body,#map{height:100%;margin:0}
+  .ui { position:absolute; top:10px; left:10px; z-index:2000; background:#fff; padding:8px 10px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.2); font:14px/1.2 system-ui,sans-serif;}
+  .legend { margin-top:8px; }
+  .legend .bar { width:220px; height:10px; background:
+    linear-gradient(90deg,
+      rgb(68,1,84) 0%,
+      rgb(72,40,120) 5%,
+      rgb(62,74,137) 10%,
+      rgb(49,104,142) 20%,
+      rgb(38,130,142) 30%,
+      rgb(31,158,137) 40%,
+      rgb(53,183,121) 60%,
+      rgb(110,206,88) 80%,
+      rgb(253,231,37) 100%); border-radius:4px;}
+  .legend .ticks { display:flex; justify-content:space-between; font-size:12px; color:#333; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="ui">
+  <label>Cost opacity:
+    <input id="op" type="range" min="0" max="1" value="0.65" step="0.01" />
+  </label>
+  <div class="legend">
+    <div class="bar"></div>
+    <div class="ticks"><span>0</span><span>200</span><span>400</span><span>600</span><span>800</span><span>1000+</span></div>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Toronto center; you can replace with fitBounds later if you like
+  const map = L.map('map').setView([43.654, -79.383], 13);
+
+  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Your color tiles
+  const cost = L.tileLayer('/tiles/yyz_downtown_cost_color/{z}/{x}/{y}.png', {
+    opacity: 0.65, maxZoom: 18
+  }).addTo(map);
+
+  // Slider → layer opacity
+  document.getElementById('op').addEventListener('input', (e) => {
+    cost.setOpacity(parseFloat(e.target.value));
+  });
+</script>
+</body>
+</html>
