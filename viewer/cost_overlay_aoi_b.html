@@ -11,8 +11,8 @@ const SOUTH=37.30, WEST=-107.80, NORTH=37.65, EAST=-107.25;
 const bounds=L.latLngBounds([SOUTH,WEST],[NORTH,EAST]);
 const map=L.map('map',{minZoom:11,maxZoom:16,maxBounds:bounds,maxBoundsViscosity:1.0}).fitBounds(bounds);
 const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
-const color=L.tileLayer('/tiles/aoi_wilderness_co_cost_color/{z}/{x}/{y}.png',{opacity:.70,bounds:bounds,noWrap:true});
-const gray =L.tileLayer('/tiles/aoi_wilderness_co_cost8/{z}/{x}/{y}.png'     ,{opacity:.45,bounds:bounds,noWrap:true,errorTileUrl:'/viewer/empty.png'});
+const color=L.tileLayer('tiles/aoi_wilderness_co_cost_color/{z}/{x}/{y}.png',{opacity:.70,bounds:bounds,noWrap:true});
+const gray =L.tileLayer('tiles/aoi_wilderness_co_cost8/{z}/{x}/{y}.png'     ,{opacity:.45,bounds:bounds,noWrap:true,errorTileUrl:'/viewer/empty.png'});
 color.addTo(map);
 L.control.layers({'OpenStreetMap':osm},{'Cost (color)':color,'Cost (gray)':gray}).addTo(map);
 </script>
