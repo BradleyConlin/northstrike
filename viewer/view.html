@@ -1,0 +1,29 @@
+<!doctype html><html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cost Tiles Viewer</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>html,body,#map{height:100%;margin:0}</style>
+</head><body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // AOI bounds (W,S,E,N)
+  const aoi=[-79.42183462233241,43.628424688431934,-79.30803385824855,43.70157325516256];
+
+  const map = L.map('map',{minZoom:11,maxZoom:17});
+  const base = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Your generated tiles in /tiles
+  const overlay = L.tileLayer('/tiles/{z}/{x}/{y}.png?v=11', {
+    maxZoom: 17, opacity: 0.85, attribution: 'CanElevation (OGL–Canada) · Cost overlay'
+  }).addTo(map);
+
+  // Fit map to AOI
+  map.fitBounds([[aoi[1],aoi[0]],[aoi[3],aoi[2]]]);
+
+  // Simple layer toggle (optional)
+  L.control.layers({OSM:base},{Cost:overlay},{collapsed:true}).addTo(map);
+</script>
+</body></html>

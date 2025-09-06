@@ -1,0 +1,17 @@
+name: sensor-noise
+samples: 30
+lighting: {}
+textures: {}
+wind:
+  mean_speed_mps: [0.0, 2.0]
+  gust_speed_mps: [0.0, 1.0]
+  direction_deg: [0, 360]
+sensors:
+  imu:
+    gyro_noise_std: [0.003, 0.01]
+    gyro_bias_rw: [5e-05, 3e-04]
+    accel_noise_std: [0.01, 0.05]
+    accel_bias_rw: [2e-04, 1e-03]
+  gnss:
+    pos_noise_std_m: [0.8, 3.0]
+    vel_noise_std_mps: [0.1, 0.5]

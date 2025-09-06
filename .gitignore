@@ -26,3 +26,31 @@ training/runs/
 !training/tests/
 !training/tests/data/
 !training/tests/data/test_dataset_diff_smoke.py
+
+# Backups & local outputs
+.pre-commit-config.yaml.bak*
+artifacts/domain_randomization/
+artifacts/onnx/*.bak-*
+
+# maps & costmaps (rasters)
+maps/build/
+maps/costmaps/
+
+# Map artifacts
+maps/build/
+maps/costmaps/
+tiles/
+# --- maps/tiles & heavy rasters (generated) ---
+tiles/
+maps/build/
+maps/costmaps/
+# sidecar stats files we don't want
+*.tif.aux.xml
+# MBTiles and other publish artifacts (generated)
+*.mbtiles
+
+# maps/tiles artifacts
+tiles/
+maps/build/
+maps/costmaps/
+*.tif.aux.xml

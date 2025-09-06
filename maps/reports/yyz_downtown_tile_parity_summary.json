@@ -1,0 +1,13 @@
+{
+  "samples": 40,
+  "zoom": 14,
+  "bounds": [
+    -79.42183462233241,
+    43.628424688431934,
+    -79.30803385824855,
+    43.70157325516256
+  ],
+  "mismatches": 0,
+  "pass": true,
+  "csv": "maps/reports/yyz_downtown_tile_parity.csv"
+}

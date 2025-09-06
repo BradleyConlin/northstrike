@@ -1,0 +1,37 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cost Overlay</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  html,body,#map{height:100%;margin:0}
+  .leaflet-container{background:#111}
+  .legend{position:absolute;bottom:10px;left:10px;background:#fff;padding:6px 8px;border-radius:6px;font:12px system-ui}
+</style>
+<div id="map"></div>
+<div class="legend"><b>Cost overlay</b><br>dark=low, bright=high (0–1000)</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Toronto AOI bounds (clamps requests/scroll)
+  const SOUTH=43.62843, WEST=-79.42000, NORTH=43.70157, EAST=-79.31000;
+  const aoi=L.latLngBounds([SOUTH,WEST],[NORTH,EAST]);
+
+  const map=L.map('map',{
+    minZoom:12,maxZoom:18,maxBounds:aoi,maxBoundsViscosity:1.0
+  }).fitBounds(aoi);
+
+  // Base map (no attribution text for your local-only usage)
+  const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+
+  // Overlays: color default ON, gray available via toggle
+  const costColor=L.tileLayer('/tiles/yyz_downtown_cost_color/{z}/{x}/{y}.png',{
+    opacity:0.70,bounds:aoi,noWrap:true,errorTileUrl:'/viewer/empty.png'
+  }).addTo(map);
+
+  const costGray=L.tileLayer('/tiles/yyz_downtown_cost8/{z}/{x}/{y}.png',{
+    opacity:0.45,bounds:aoi,noWrap:true,errorTileUrl:'/viewer/empty.png'
+  });
+
+  L.control.layers({'OpenStreetMap':osm},{'Cost (color)':costColor,'Cost (gray)':costGray}).addTo(map);
+
+  // OPTIONAL: quick opacity tweak via console
+  // costColor.setOpacity(0.6); costGray.setOpacity(0.5);
+</script>

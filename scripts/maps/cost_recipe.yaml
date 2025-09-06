@@ -1,0 +1,7 @@
+# scripts/maps/cost_recipe.yaml
+# Slopes are in percent. Masks are strict 0/1 Byte on DEM grid.
+slope_mult: 2.0
+building_penalty: 200.0
+road_penalty: 80.0
+water_penalty: 500.0
+park_penalty: 20.0

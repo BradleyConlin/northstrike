@@ -1,0 +1,28 @@
+<!doctype html><meta charset=utf-8>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>html,body,#map{height:100%;margin:0}</style>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const sw = L.latLng(43.628429, -79.419959);
+  const ne = L.latLng(43.701573, -79.310044);
+  const bounds = L.latLngBounds(sw, ne);
+
+  const map = L.map('map', {
+    minZoom: 12,
+    maxZoom: 18,
+    maxBounds: bounds,
+    maxBoundsViscosity: 1.0,
+    worldCopyJump: false
+  }).fitBounds(bounds);
+
+  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+
+  const cost = L.tileLayer('/tiles/yyz_downtown_cost8/{z}/{x}/{y}.png', {
+    bounds: bounds,
+    opacity: 0.6,
+    minZoom: 12, maxZoom: 18,
+    minNativeZoom: 12, maxNativeZoom: 18,
+    noWrap: true
+  }).addTo(map);
+</script>
