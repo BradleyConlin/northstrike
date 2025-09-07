@@ -4,14 +4,12 @@ from mlflow.tracking import MlflowClient
 BACKEND = "sqlite:///artifacts/mlflow/mlflow.db"
 MODEL = "perception.depth"
 
-
 def test_registry_has_depth_model():
     mlflow.set_tracking_uri(BACKEND)
     mlflow.set_registry_uri(BACKEND)
     c = MlflowClient()
     versions = c.search_model_versions(f"name='{MODEL}'")
     assert len(versions) >= 1
-
 
 def test_registry_staging_or_alias():
     mlflow.set_tracking_uri(BACKEND)
