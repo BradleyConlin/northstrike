@@ -195,3 +195,14 @@ mbtiles-verify:
 > done
 
 maps-publish: maps-mbtiles mbtiles-verify
+
+# === Perf harness ===
+.PHONY: perf-ort perf-trt
+
+perf-ort:
+> python scripts/inference/ort_profile.py --model artifacts/onnx/depth_e24.onnx --provider cpu --iters 50
+> python scripts/inference/ort_profile.py --model artifacts/onnx/policy_dummy.onnx --provider cpu --shape 1x64 --iters 200
+
+perf-trt:
+> bash scripts/inference/trtexec_bench.sh artifacts/onnx/depth_e24.onnx || true
+> bash scripts/inference/trtexec_bench.sh artifacts/onnx/policy_dummy.onnx || true
