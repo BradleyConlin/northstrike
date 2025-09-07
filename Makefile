@@ -230,3 +230,11 @@ datasets-scaffold:
 
 datasets-verify:
 > python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify.json
+
+# --- MBTiles vs raster parity smoke ---
+tiles-parity:
+> test -n "$(AREA)" || (echo "Set AREA=..." && false)
+> python scripts/maps/tiles_parity_smoke.py \
+>   --mbtiles artifacts/maps/mbtiles/$(AREA)_cost_gray.mbtiles \
+>   --raster  maps/costmaps/$(AREA)_cost_8bit.vrt \
+>   --json-out artifacts/perf/tiles_parity_$(AREA).json || true

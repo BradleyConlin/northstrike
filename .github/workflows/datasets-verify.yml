@@ -1,20 +1,17 @@
 name: datasets-verify
+
 on:
   pull_request:
-    paths:
-      - 'datasets/**'
-      - 'scripts/datasets/**'
-      - 'training/tests/data/**'
-      - '.github/workflows/datasets-verify.yml'
+  push:
+    branches: [ main ]
+
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { lfs: true }
       - uses: actions/setup-python@v5
-        with: { python-version: "3.10" }
-      - run: pip install -U pip && pip install onnx onnxruntime numpy
-      - run: python scripts/datasets/manifest.py --root datasets --out datasets/manifest.json
-      - run: python scripts/datasets/verify_manifest.py --root datasets --manifest datasets/manifest.json
-      - run: python scripts/datasets/diff_manifest.py --old docs/perf/baselines/datasets_manifest_baseline.json --new datasets/manifest.json --fail-on-change
+        with:
+          python-version: '3.10'
+      - name: Verify public datasets scaffold
+        run: python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
