@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Northstrike — Multi-AOI Cost Overlay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<style>
+  html, body, #map { height:100%; margin:0 }
+  .leaflet-control-layers { max-height: 300px; overflow:auto }
+  .legend {
+    background: rgba(25,25,28,0.88); color:#fff; padding:8px 10px; border-radius:8px;
+    font: 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  .legend .bar {
+    height: 10px; margin: 6px 0 4px; border-radius: 3px;
+    background: linear-gradient(90deg,
+      rgba(0,0,0,0) 0%,
+      rgba(37,52,148,0.63) 5%,
+      rgba(65,182,196,0.75) 20%,
+      rgba(123,204,196,0.82) 50%,
+      rgba(255,255,128,0.90) 100px,
+      rgba(254,178,76,0.94) 200px,
+      rgba(240,59,32,1.0) 400px
+    );
+  }
+  .legend .ticks { display:flex; justify-content:space-between }
+  .legend .ticks span { color:#ddd }
+  .panel {
+    background:rgba(25,25,28,0.88); color:#fff; padding:8px 10px; border-radius:8px;
+    font:12px system-ui; min-width: 180px;
+  }
+  .panel input[type="range"] { width: 140px; }
+  .status { background:rgba(25,25,28,0.88); color:#fff; padding:6px 8px; border-radius:8px; font:12px system-ui; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('map', {minZoom: 6, maxZoom: 18}).setView([37.71337, -91.13049], 11);
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+/* Overlay tiles (set your folders) */
+const aoiLayers = {
+  "AOI A — Missouri (color)": L.tileLayer('/tiles/aoi_rural_mo_cost_color/{z}/{x}/{y}.png', {opacity: 0.75}),
+  "AOI A — Missouri (gray)" : L.tileLayer('/tiles/aoi_rural_mo_cost8/{z}/{x}/{y}.png',        {opacity: 0.75}),
+  "AOI B — Weminuche (color)": L.tileLayer('/tiles/aoi_wilderness_co_cost_color/{z}/{x}/{y}.png', {opacity: 0.75}),
+  "AOI B — Weminuche (gray)" : L.tileLayer('/tiles/aoi_wilderness_co_cost8/{z}/{x}/{y}.png',        {opacity: 0.75}),
+};
+// default on:
+aoiLayers["AOI A — Missouri (color)"].addTo(map);
+
+// Track which AOI is “current” for probing
+let currentAOI = 'aoi_rural_mo';
+map.on('overlayadd', (e) => {
+  for (const [name, layer] of Object.entries(aoiLayers)) {
+    if (e.layer === layer) {
+      if (name.includes('Missouri')) currentAOI = 'aoi_rural_mo';
+      if (name.includes('Weminuche')) currentAOI = 'aoi_wilderness_co';
+    }
+  }
+});
+
+const overlays = {...aoiLayers};
+L.control.layers({ "OpenStreetMap": osm }, overlays, {collapsed:false}).addTo(map);
+
+// Quick-jump buttons
+const boundsA = L.latLngBounds([ [37.6593, -91.1989], [37.7674, -91.0621] ]);
+// (Adjust B if your build script uses slightly different bbox)
+const boundsB = L.latLngBounds([ [37.12, -107.90], [37.62, -107.05] ]);
+
+const jumps = L.control({position:'topleft'});
+jumps.onAdd = function(){
+  const div = L.DomUtil.create('div','panel');
+  div.innerHTML = `
+    <div><b>AOIs</b></div>
+    <button id="goA">Missouri</button>
+    <button id="goB">Weminuche</button>
+    <div style="margin-top:6px">
+      Opacity <input id="op" type="range" min="0" max="100" value="75">
+    </div>`;
+  return div;
+};
+jumps.addTo(map);
+document.getElementById('goA').onclick = () => map.fitBounds(boundsA);
+document.getElementById('goB').onclick = () => map.fitBounds(boundsB);
+document.getElementById('op').oninput = (e) => {
+  const v = (+e.target.value)/100;
+  for (const lyr of Object.values(aoiLayers)) lyr.setOpacity(v);
+};
+// Legend (values match our color ramp breakpoints)
+const legend = L.control({position:'bottomright'});
+legend.onAdd = function(){
+  const div = L.DomUtil.create('div','legend');
+  div.innerHTML = `
+    <div><b>Cost</b></div>
+    <div class="bar"></div>
+    <div class="ticks"><span>0</span><span>5</span><span>20</span><span>50</span><span>100</span><span>200</span><span>400+</span></div>`;
+  return div;
+};
+legend.addTo(map);
+
+// Click → probe cost via CGI
+const status = L.control({position:'bottomleft'});
+status.onAdd = () => {
+  const d = L.DomUtil.create('div','status');
+  d.innerText = 'Click map to probe cost';
+  return d;
+};
+status.addTo(map);
+
+map.on('click', async (e) => {
+  const {lat, lng} = e.latlng;
+  const url = `/cgi-bin/cost_query.py?area=${currentAOI}&lat=${lat}&lon=${lng}`;
+  try {
+    const r = await fetch(url, {cache:'no-store'});
+    const js = await r.json();
+    if (!js.ok || js.cost === null) {
+      status.getContainer().innerText = `AOI=${currentAOI}  lat=${lat.toFixed(5)} lon=${lng.toFixed(5)}  cost: n/a`;
+      return;
+    }
+    L.marker([lat,lng]).addTo(map).bindPopup(`AOI=${currentAOI}<br>Cost: <b>${js.cost.toFixed(3)}</b>`).openPopup();
+    status.getContainer().innerText = `AOI=${currentAOI}  lat=${lat.toFixed(5)} lon=${lng.toFixed(5)}  cost=${js.cost.toFixed(3)}`;
+  } catch (err) {
+    status.getContainer().innerText = 'probe failed (see console)';
+    console.error(err);
+  }
+});
+</script>
+</body>
+</html>
