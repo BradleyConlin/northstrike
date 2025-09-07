@@ -91,7 +91,7 @@ maps-verify:
 > { gdalinfo -stats maps/costmaps/$${AREA}_cost.tif 2>/dev/null || gdalinfo -mm maps/costmaps/$${AREA}_cost.tif 2>/dev/null || true; } | sed -n '1,80p'
 
 # --- Maps / Tiles / MBTiles ---------------------------------------------------
-AREA ?= toronto_downtown
+AREA ?= yyz_downtown
 MAPS_DIR := maps
 BUILD_DIR := $(MAPS_DIR)/build
 COST_DIR := $(MAPS_DIR)/costmaps
@@ -231,40 +231,3 @@ tiles-parity:
 >   --mbtiles artifacts/maps/mbtiles/$(AREA)_cost_gray.mbtiles \
 >   --raster  maps/costmaps/$(AREA)_cost_8bit.vrt \
 >   --json-out artifacts/perf/tiles_parity_$(AREA).json || true
-
-# --- Local tile server ---
-tiles-serve:
-> docker run --rm -p 8001:8000 \
->   -v "$(PWD)/artifacts/maps/mbtiles:/tilesets" \
->   ghcr.io/consbio/mbtileserver:latest
-
-# === Step 5 convenience targets ===
-maps-step5-all:
-> bash scripts/maps/finish_step5_numeric.sh && bash scripts/maps/finish_step5_mbtiles.sh
-
-maps-publish:
-> bash scripts/maps/publish_step5.sh
-
-# CSV of "lon,lat" -> sampled Float32 cost values
-# Usage: make maps-readback AREA=toronto CSV=artifacts/maps/probes_in_toronto.csv
-maps-readback:
-> test -n "$(AREA)" || (echo "Set AREA=toronto|rural_mo" && exit 2)
-> test -n "$(CSV)" || (echo "Set CSV=path/to/probes.csv" && exit 2)
-> python3 scripts/maps/smoke_planner_cost_query.py maps_v2/build/$(AREA)/$(AREA)_cost_f32.tif $(CSV) artifacts/maps/probes_out_$(AREA).csv
-.PHONY: maps-v2-publish
-maps-v2-publish:
-> bash scripts/maps/publish_step5.sh
-.PHONY: data-smoke
-data-smoke:
-> .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke
-.PHONY: rl-hover-train rl-hover-eval
-rl-hover-train:
-> .venv/bin/python sim/rl/train_ppo_hover.py --steps $(or $(STEPS),1000000)
-rl-hover-eval:
-> .venv/bin/python sim/rl/eval_ppo_hover.py --out artifacts/rl/hover_eval.json
-.PHONY: dr-smoke
-dr-smoke:
-> .venv/bin/python sim/simulation/domain_randomization/apply_profile.py --profile $(PROFILE) --seed $(or $(SEED),42)
-.PHONY: data-smoke
-data-smoke:
-> - .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke
