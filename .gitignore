@@ -63,3 +63,7 @@ maps/masks/
 maps/src/
 cgi-bin/
 *.bak
+
+# Perf traces & local bundles
+onnxruntime_profile__*.json
+artifacts/maps/*.zip
