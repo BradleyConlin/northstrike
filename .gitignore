@@ -54,3 +54,12 @@ tiles/
 maps/build/
 maps/costmaps/
 *.tif.aux.xml
+
+# === repo hygiene: keep heavy map data out of git ===
+artifacts/
+maps/build/
+maps/costmaps/
+maps/masks/
+maps/src/
+cgi-bin/
+*.bak
