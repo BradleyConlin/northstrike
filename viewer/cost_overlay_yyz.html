@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cost Overlay – Toronto (YYZ)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>html,body,#map{height:100%;margin:0}.leaflet-container{background:#111}.legend{position:absolute;bottom:10px;left:10px;background:#fff;padding:6px 8px;border-radius:6px;font:12px/1.2 system-ui}</style>
+<div id="map"></div><div class="legend"><b>Cost overlay</b><br><small>Data: © OpenStreetMap contributors; DEM: HRDEM (NRCan), Open Government Licence – Canada</small><br>dark=low, bright=high (0–1000)</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map=L.map('map',{minZoom:12,maxZoom:18}).setView([43.6519,-79.3849], 13);
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+const color=L.tileLayer('/tiles/yyz_downtown_cost_color/{z}/{x}/{y}.png',{opacity:.70,noWrap:true,errorTileUrl:'/viewer/empty.png'});
+const gray =L.tileLayer('/tiles/yyz_downtown_cost8/{z}/{x}/{y}.png',{opacity:.45,noWrap:true,errorTileUrl:'/viewer/empty.png'});
+color.addTo(map); L.control.layers({'OpenStreetMap':osm},{'Cost (color)':color,'Cost (gray)':gray}).addTo(map);
+</script>
