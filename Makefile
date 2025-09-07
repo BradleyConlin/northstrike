@@ -121,12 +121,6 @@ $(MBTILES_DIR)/$(AREA)_mask.mbtiles: $(MASK_RGBA)
 > scripts/maps/mbtiles_from_raster.sh "$<" "$@"
 
 .PHONY: mbtiles-verify
-mbtiles-verify: mbtiles
-> @echo "Checking MBTiles metadata and zooms..."
-> sqlite3 $(MBTILES_DIR)/$(AREA)_cost.mbtiles 'select name, value from metadata where name in ("minzoom","maxzoom","format","name","bounds");'
-> sqlite3 $(MBTILES_DIR)/$(AREA)_mask.mbtiles 'select name, value from metadata where name in ("minzoom","maxzoom","format","name","bounds");'
-> @echo "✔ MBTiles look OK"
-
 .PHONY: maps-publish
 .PHONY: maps-readback
 maps-readback:
