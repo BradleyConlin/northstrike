@@ -36,6 +36,7 @@ def main():
     }
     so = ort.SessionOptions()
     so.enable_profiling = True
+    so.profile_file_prefix = os.path.join(args.outdir, "ort_profile")
     sess = ort.InferenceSession(args.model, sess_options=so, providers=[providers[args.provider]])
 
     # Infer input shape (or override)
