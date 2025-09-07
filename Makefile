@@ -224,3 +224,15 @@ mlflow-alias-staging:
 > python scripts/mlops/set_alias.py \
 >   --name perception.depth --alias staging \
 >   --backend sqlite:///artifacts/mlflow/mlflow.db
+
+# --- Public datasets scaffold ---
+datasets-scaffold:
+> bash scripts/data/scaffold_public_datasets.sh
+
+
+# --- Public datasets scaffold ---
+datasets-scaffold:
+> bash scripts/data/scaffold_public_datasets.sh
+
+datasets-verify:
+> python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify.json
