@@ -180,3 +180,18 @@ maps-smoke: maps-costmap2 mbtiles8 tiles-parity maps-readback
 maps-osm:
 > : $${AREA:?Set AREA=... and S W N E bbox}
 > ./scripts/maps/fetch_osm_overpass.sh
+
+# === Maps: MBTiles publish ===
+.PHONY: maps-mbtiles maps-publish mbtiles-verify
+
+maps-mbtiles:
+> bash scripts/maps/mbtiles_publish.sh $(AREA)
+
+mbtiles-verify:
+> ls -lh artifacts/maps/mbtiles/*.mbtiles 2>/dev/null || true
+> for f in artifacts/maps/mbtiles/*.mbtiles; do \
+>   test -f "$$f" || continue; echo "==> $$f"; \
+>   gdalinfo "$$f" | sed -n '1,40p' | sed -n '/Metadata:/,$$p' | head -n 40; \
+> done
+
+maps-publish: maps-mbtiles mbtiles-verify

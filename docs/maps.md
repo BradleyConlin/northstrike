@@ -88,3 +88,13 @@ Each mask is **0/1 Byte** (`NoData=0`, NEAREST overviews):
 ### Viewer notes
 - Tiles are **XYZ**, requested from `/tiles/{z}/{x}/{y}.png?v=N` (absolute path + cache-buster).
 - 404s at extreme edges/zooms usually just mean that slippy address isn’t covered — not an error.
+## Publishing MBTiles (offline)
+
+We export planner cost layers to MBTiles in two variants:
+- **Gray**: scaled from Float32 cost (0→1500 → 1→255).
+- **Color**: symbolized RGBA.
+
+**Build:**
+```bash
+make maps-publish            # all areas
+make maps-publish AREA=yyz_downtown
