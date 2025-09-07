@@ -206,3 +206,21 @@ perf-ort:
 perf-trt:
 > bash scripts/inference/trtexec_bench.sh artifacts/onnx/depth_e24.onnx || true
 > bash scripts/inference/trtexec_bench.sh artifacts/onnx/policy_dummy.onnx || true
+
+# --- MLflow registry helpers ---
+mlflow-verify:
+> python scripts/mlops/require_registry.py \
+>   --name perception.depth \
+>   --backend sqlite:///artifacts/mlflow/mlflow.db \
+>   --expect-stage Staging \
+>   --json-out artifacts/perf/mlflow_verify.json
+
+mlflow-alias-prod:
+> python scripts/mlops/set_alias.py \
+>   --name perception.depth --alias production \
+>   --backend sqlite:///artifacts/mlflow/mlflow.db
+
+mlflow-alias-staging:
+> python scripts/mlops/set_alias.py \
+>   --name perception.depth --alias staging \
+>   --backend sqlite:///artifacts/mlflow/mlflow.db
