@@ -121,12 +121,6 @@ $(MBTILES_DIR)/$(AREA)_mask.mbtiles: $(MASK_RGBA)
 > scripts/maps/mbtiles_from_raster.sh "$<" "$@"
 
 .PHONY: mbtiles-verify
-mbtiles-verify: mbtiles
-> @echo "Checking MBTiles metadata and zooms..."
-> sqlite3 $(MBTILES_DIR)/$(AREA)_cost.mbtiles 'select name, value from metadata where name in ("minzoom","maxzoom","format","name","bounds");'
-> sqlite3 $(MBTILES_DIR)/$(AREA)_mask.mbtiles 'select name, value from metadata where name in ("minzoom","maxzoom","format","name","bounds");'
-> @echo "✔ MBTiles look OK"
-
 .PHONY: maps-publish
 .PHONY: maps-readback
 maps-readback:
@@ -206,3 +200,33 @@ perf-ort:
 perf-trt:
 > bash scripts/inference/trtexec_bench.sh artifacts/onnx/depth_e24.onnx || true
 > bash scripts/inference/trtexec_bench.sh artifacts/onnx/policy_dummy.onnx || true
+
+# --- MLflow registry helpers ---
+mlflow-verify:
+> python scripts/mlops/require_registry.py \
+>   --name perception.depth \
+>   --backend sqlite:///artifacts/mlflow/mlflow.db \
+>   --expect-stage Staging \
+>   --json-out artifacts/perf/mlflow_verify.json
+
+mlflow-alias-prod:
+> python scripts/mlops/set_alias.py \
+>   --name perception.depth --alias production \
+>   --backend sqlite:///artifacts/mlflow/mlflow.db
+
+mlflow-alias-staging:
+> python scripts/mlops/set_alias.py \
+>   --name perception.depth --alias staging \
+>   --backend sqlite:///artifacts/mlflow/mlflow.db
+
+# --- Public datasets scaffold ---
+datasets-scaffold:
+> bash scripts/data/scaffold_public_datasets.sh
+
+
+# --- Public datasets scaffold ---
+datasets-scaffold:
+> bash scripts/data/scaffold_public_datasets.sh
+
+datasets-verify:
+> python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify.json

@@ -67,3 +67,8 @@ cgi-bin/
 # Perf traces & local bundles
 onnxruntime_profile__*.json
 artifacts/maps/*.zip
+
+# Public datasets (keep heavy data out of Git)
+datasets/public/*/raw/**
+datasets/public/*/processed/**
+!datasets/public/*/README.md
