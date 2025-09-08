@@ -1,0 +1,28 @@
+<!doctype html><html><head>
+<meta charset="utf-8"/><title>Northstrike Tiles</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>html,body,#map{height:100%;margin:0}</style>
+</head><body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const svc='yyz_downtown_cost_color';
+const url=`http://127.0.0.1:8001/services/${svc}/tiles/{z}/{x}/{y}.png`;
+const bounds=[[43.628308200574466,-79.42183462233241],[43.70157325516256,-79.30819479078946]];
+const minZoom=11, maxNativeZoom=12, maxZoom=18;
+const map=L.map('map',{zoomControl:true});
+const osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap contributors',maxZoom:19});
+osm.addTo(map);
+const overlay=L.tileLayer(url,{minZoom,maxZoom,maxNativeZoom,tms:false,noWrap:false,opacity:1});
+overlay.addTo(map);
+map.fitBounds(bounds);
+// simple opacity slider
+const ctrl=L.control({position:'topright'});ctrl.onAdd=function(){
+  const d=L.DomUtil.create('div','leaflet-bar');d.style.background='#fff';d.style.padding='6px';
+  d.innerHTML='opacity <input id="op" type="range" min="0" max="1" step="0.05" value="1">';
+  d.onmousemove=e=>L.DomEvent.stopPropagation(e);d.onmousedown=e=>L.DomEvent.stopPropagation(e);
+  setTimeout(()=>document.getElementById('op').oninput=(e)=>overlay.setOpacity(e.target.value),0);
+  return d;};ctrl.addTo(map);
+</script>
+</body></html>

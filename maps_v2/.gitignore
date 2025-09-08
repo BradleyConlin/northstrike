@@ -1,0 +1,7 @@
+# binary rasters and caches (we commit only scripts/recipes)
+build/
+mbtiles/
+*.aux.xml
+*.ovr
+*.pyc
+.DS_Store

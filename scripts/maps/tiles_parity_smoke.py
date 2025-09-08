@@ -16,22 +16,41 @@ def mbtiles_bounds(path):
         minlon, minlat, maxlon, maxlat = map(float, row[0].split(","))
     return minlon, minlat, maxlon, maxlat
 
-def sample_val(raster, lon, lat, band=1):
-    out = sh(["gdallocationinfo", "-valonly", "-wgs84", raster, str(lon), str(lat)])
-    vals = [v for v in out.split() if v.strip() != ""]
-    if len(vals) == 1:  # single-band Byte/Float32
-        v = vals[0]
-        if v.lower() == "nan":
-            return math.nan
+def _sample_float(path, lon, lat, extra=None, band=None):
+    """Return a single float value (or NaN) from gdallocationinfo."""
+    cmd = ["gdallocationinfo", "-valonly", "-wgs84"]
+    if extra:
+        cmd += list(extra)
+    if band is not None:
+        cmd += ["-b", str(band)]
+    cmd += [path, str(lon), str(lat)]
+    out = sh(cmd).strip()
+    # When no -b is given and dataset has multiple bands, gdallocationinfo prints e.g. "R G B [A]".
+    parts = [p for p in out.split() if p.strip() != ""]
+    if len(parts) >= 1:
         try:
-            return int(round(float(v)))
+            return float(parts[0])  # first channel if multiple
         except ValueError:
             return math.nan
-    # Multi-band (e.g., RGBA MBTiles) — take first band as gray proxy
+    return math.nan
+
+def sample_val_int(path, lon, lat, extra=None, band=None, luma=False):
+    """Return integer DN. If luma=True, compute from RGB bands 1..3."""
+    if luma:
+        r = _sample_float(path, lon, lat, extra=extra, band=1)
+        g = _sample_float(path, lon, lat, extra=extra, band=2)
+        b = _sample_float(path, lon, lat, extra=extra, band=3)
+        if any(math.isnan(v) for v in (r, g, b)):
+            return 0
+        v = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    else:
+        v = _sample_float(path, lon, lat, extra=extra, band=band)
+    if math.isnan(v):
+        return 0
     try:
-        return int(round(float(vals[0])))
+        return int(round(v))
     except Exception:
-        return math.nan
+        return 0
 
 def scale_float_to_byte(v, max_m=1500.0):
     if math.isnan(v):
@@ -43,70 +62,75 @@ def scale_float_to_byte(v, max_m=1500.0):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mbtiles", required=True, help="Gray MBTiles to validate")
-    ap.add_argument("--raster", required=True, help="Reference raster (8-bit VRT/GeoTIFF)")
+    ap.add_argument("--mbtiles", required=True, help="Target MBTiles (gray or color)")
+    ap.add_argument("--raster", required=True, help="Reference raster (8-bit VRT/GeoTIFF or RGBA)")
     ap.add_argument("--float32", default=None, help="Optional Float32 cost raster for mapping check")
     ap.add_argument("--n", type=int, default=60)
     ap.add_argument("--tol", type=int, default=2, help="Allowed DN tolerance for equality checks")
     ap.add_argument("--json-out", default="artifacts/perf/tiles_parity.json")
+    # MBTiles reading controls
+    ap.add_argument("--zoom", type=int, default=None, help="Force MBTiles ZOOM_LEVEL via GDAL open option")
+    ap.add_argument("--ovr",  type=int, default=None, help="Force overview index for gdallocationinfo")
+    # Band/luma controls
+    ap.add_argument("--mb-band", type=int, default=None, help="MBTiles band to read (1=R/Gray, 2=G, 3=B, 4=A)")
+    ap.add_argument("--ref-band", type=int, default=None, help="Reference raster band to read")
+    ap.add_argument("--mb-luma", action="store_true", help="Compute luminance from MBTiles RGB (bands 1..3)")
     args = ap.parse_args()
 
     os.makedirs(os.path.dirname(args.json_out), exist_ok=True)
 
     # Confirm GDAL sees MBTiles (ensures driver present & projection OK)
-    # (Driver docs: https://gdal.org/drivers/raster/mbtiles.html)
     minlon, minlat, maxlon, maxlat = mbtiles_bounds(args.mbtiles)
 
+    # Build extra flags for MBTiles access if requested
+    mbtiles_extra = []
+    if args.zoom is not None:
+        mbtiles_extra += ["-oo", f"ZOOM_LEVEL={args.zoom}"]
+    if args.ovr is not None:
+        mbtiles_extra += ["-overview", str(args.ovr)]
+
     rng = random.Random(0xC0FFEE)
-    ok_equal = 0
-    bad_equal = 0
-    ok_map = 0
-    bad_map = 0
+    ok_equal = bad_equal = ok_map = bad_map = 0
     samples = []
+
     for _ in range(args.n):
         lon = rng.uniform(minlon, maxlon)
         lat = rng.uniform(minlat, maxlat)
 
-        mb = sample_val(args.mbtiles, lon, lat)
-        ref = sample_val(args.raster, lon, lat)
+        mb = sample_val_int(args.mbtiles, lon, lat, extra=mbtiles_extra,
+                            band=args.mb_band, luma=args.mb_luma)
+        ref = sample_val_int(args.raster,  lon, lat, band=args.ref_band)
 
         status_equal = "skip"
-        if not math.isnan(mb) and not math.isnan(ref):
+        if mb is not None and ref is not None:
             status_equal = "ok" if abs(mb - ref) <= args.tol else "bad"
-            ok_equal += (status_equal == "ok")
-            bad_equal += (status_equal == "bad")
+            ok_equal += (1 if status_equal == "ok" else 0)
+            bad_equal += (1 if status_equal == "bad" else 0)
 
         status_map = "skip"
         if args.float32:
-            f32 = sample_val(args.float32, lon, lat)
-            if math.isnan(f32):
-                expected = 0
-            else:
-                expected = scale_float_to_byte(f32)
-            if not math.isnan(mb):
-                status_map = "ok" if abs(mb - expected) <= args.tol else "bad"
-                ok_map += (status_map == "ok")
-                bad_map += (status_map == "bad")
+            f32 = _sample_float(args.float32, lon, lat)
+            expected = 0 if math.isnan(f32) else scale_float_to_byte(f32)
+            status_map = "ok" if abs(mb - expected) <= args.tol else "bad"
+            ok_map += (1 if status_map == "ok" else 0)
+            bad_map += (1 if status_map == "bad" else 0)
 
         samples.append({
-            "lon": lon, "lat": lat, "mb": mb, "ref8": ref,
-            "map_status": status_map, "eq_status": status_equal
+            "lon": lon, "lat": lat, "mb": mb, "ref": ref,
+            "eq_status": status_equal, "map_status": status_map
         })
 
     summary = {
-        "mbtiles": args.mbtiles,
-        "raster": args.raster,
-        "float32": args.float32,
-        "n": args.n,
-        "tol": args.tol,
-        "equal_ok": ok_equal, "equal_bad": bad_equal,
-        "map_ok": ok_map, "map_bad": bad_map,
+        "mbtiles": args.mbtiles, "raster": args.raster, "float32": args.float32,
+        "n": args.n, "tol": args.tol, "zoom": args.zoom, "ovr": args.ovr,
+        "mb_band": args.mb_band, "ref_band": args.ref_band, "mb_luma": args.mb_luma,
+        "equal_ok": ok_equal, "equal_bad": bad_equal, "map_ok": ok_map, "map_bad": bad_map,
         "ts": int(time.time()),
     }
     with open(args.json_out, "w") as f:
         json.dump({"summary": summary, "samples": samples}, f, indent=2)
 
-    print(f"EQ (MBTiles vs 8-bit): ok={ok_equal} bad={bad_equal}")
+    print(f"EQ (MBTiles vs ref): ok={ok_equal} bad={bad_equal}")
     if args.float32:
         print(f"MAP (MBTiles vs Float32→Byte): ok={ok_map} bad={bad_map}")
     print(f"Wrote {args.json_out}")

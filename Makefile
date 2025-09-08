@@ -238,3 +238,9 @@ tiles-parity:
 >   --mbtiles artifacts/maps/mbtiles/$(AREA)_cost_gray.mbtiles \
 >   --raster  maps/costmaps/$(AREA)_cost_8bit.vrt \
 >   --json-out artifacts/perf/tiles_parity_$(AREA).json || true
+
+# --- Local tile server ---
+tiles-serve:
+> docker run --rm -p 8001:8000 \
+>   -v "$(PWD)/artifacts/maps/mbtiles:/tilesets" \
+>   ghcr.io/consbio/mbtileserver:latest

@@ -1,0 +1,12 @@
+<!doctype html><meta charset=utf-8><title>YYZ Cost</title>
+<link rel=stylesheet href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<div id=map style="height:100vh"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+ const m=L.map('map').setView([43.6532,-79.3832],13);
+ const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+   maxZoom:19,attribution:'&copy; OpenStreetMap contributors'
+ }).addTo(m);
+ const overlay=L.tileLayer('http://127.0.0.1:8001/services/yyz_downtown_cost_color/tiles/{z}/{x}/{y}.png',{opacity:0.8}).addTo(m);
+ L.control.layers({'OpenStreetMap':osm},{'YYZ cost':overlay},{collapsed:false}).addTo(m);
+</script>
