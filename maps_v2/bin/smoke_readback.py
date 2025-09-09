@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import csv, json, math, subprocess, sys, pathlib, statistics as stats
 root = subprocess.check_output(["git","rev-parse","--show-toplevel"]).decode().strip()
-area = sys.argv[1] if len(sys.argv)>1 else "yyz_downtown"
-pts_csv = sys.argv[2] if len(sys.argv)>2 else "/tmp/yyz_pts.csv"
+area = sys.argv[1] if len(sys.argv)>1 else "toronto_downtown"
+pts_csv = sys.argv[2] if len(sys.argv)>2 else "/tmp/toronto_pts.csv"
 cost = pathlib.Path(root)/"maps_v2"/"build"/area/(f"{area}_cost_f32.tif")
 out_dir = pathlib.Path(root)/"maps_v2"/"build"/area
 out_dir.mkdir(parents=True, exist_ok=True)

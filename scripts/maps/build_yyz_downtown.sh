@@ -3,7 +3,7 @@ set -euo pipefail
 REPO=${REPO:-$HOME/dev/northstrike}
 cd "$REPO"
 
-AREA=yyz_downtown
+AREA=toronto_downtown
 S=43.6200; W=-79.4700; N=43.7500; E=-79.3200   # WGS84 bbox
 EPSG=32617                                      # UTM 17N
 

@@ -4,8 +4,8 @@ set -euo pipefail
 # Usage:
 #   build_cost_from_osm.sh AOI S W N E DEM.tif FILTERED.osm.pbf
 # Example:
-#   build_cost_from_osm.sh yyz_downtown 43.62 -79.42 43.70 -79.30 \
-#     maps/build/yyz_downtown_dtm_wgs84_clip.tif maps/masks/yyz_downtown_filtered.osm.pbf
+#   build_cost_from_osm.sh toronto_downtown 43.62 -79.42 43.70 -79.30 \
+#     maps/build/toronto_downtown_dtm_wgs84_clip.tif maps/masks/toronto_downtown_filtered.osm.pbf
 
 AOI="${1:?AOI}"
 S="${2:?S}"; W="${3:?W}"; N="${4:?N}"; E="${5:?E}"

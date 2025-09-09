@@ -98,7 +98,7 @@ maps-verify:
 > { gdalinfo -stats maps/costmaps/$${AREA}_cost.tif 2>/dev/null || gdalinfo -mm maps/costmaps/$${AREA}_cost.tif 2>/dev/null || true; } | sed -n '1,80p'
 
 # --- Maps / Tiles / MBTiles ---------------------------------------------------
-AREA ?= yyz_downtown
+AREA ?= toronto_downtown
 MAPS_DIR := maps
 BUILD_DIR := $(MAPS_DIR)/build
 COST_DIR := $(MAPS_DIR)/costmaps

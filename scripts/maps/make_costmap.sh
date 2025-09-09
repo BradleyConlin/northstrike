@@ -13,7 +13,7 @@ set -euo pipefail
 #   maps/costmaps/<AREA>_cost_rgba.tif     # RGBA visualization for tiles/MBTiles
 #
 # Usage:
-#   AREA=yyz_downtown scripts/maps/make_costmap.sh [--yaml scripts/maps/cost_recipe.yaml] [--dem path/to.tif]
+#   AREA=toronto_downtown scripts/maps/make_costmap.sh [--yaml scripts/maps/cost_recipe.yaml] [--dem path/to.tif]
 #
 # Notes:
 # - Masks are 0/1 Byte with NoData=0, NEAREST overviews only.

@@ -22,7 +22,7 @@ best = {}  # prefer 'color' bounds if both exist
 for path in sorted(glob.glob(os.path.join(MB_DIR, "*_cost_*.mbtiles"))):
     base = os.path.basename(path)
     name = base[:-8]  # strip .mbtiles
-    aoi, flavor = name.split("_cost_")  # e.g., yyz_downtown, color/gray
+    aoi, flavor = name.split("_cost_")  # e.g., toronto_downtown, color/gray
     b = read_bounds(path)
     if not b:
         continue

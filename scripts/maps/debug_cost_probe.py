@@ -4,7 +4,7 @@
 import sys, os, random, math
 from osgeo import gdal, osr
 
-area = sys.argv[1] if len(sys.argv) > 1 else "yyz_downtown"
+area = sys.argv[1] if len(sys.argv) > 1 else "toronto_downtown"
 ras = f"maps/costmaps/{area}_cost.tif"
 
 ds = gdal.Open(ras, gdal.GA_ReadOnly)

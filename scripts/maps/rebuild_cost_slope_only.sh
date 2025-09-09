@@ -2,7 +2,7 @@
 set -euo pipefail
 set -x
 
-AREA="${1:-yyz_downtown}"
+AREA="${1:-toronto_downtown}"
 DTM="maps/build/${AREA}_dtm1m.tif"
 SLOPE="maps/build/${AREA}_slope_pct.tif"
 COST="maps/costmaps/${AREA}_cost.tif"

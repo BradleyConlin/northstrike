@@ -4,7 +4,7 @@ set -euo pipefail
 # Usage:
 #   scripts/maps/mbtiles_from_raster.sh <input_rgba_tif> <out_mbtiles>
 # Example:
-#   scripts/maps/mbtiles_from_raster.sh maps/costmaps/yyz_downtown_cost_rgba.tif maps/mbtiles/yyz_downtown_cost.mbtiles
+#   scripts/maps/mbtiles_from_raster.sh maps/costmaps/toronto_downtown_cost_rgba.tif maps/mbtiles/toronto_downtown_cost.mbtiles
 
 in_tif="${1:-}"; out_mb="${2:-}"
 if [[ -z "${in_tif}" || -z "${out_mb}" ]]; then

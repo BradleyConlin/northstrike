@@ -1,0 +1,19 @@
+<!doctype html><meta charset=utf-8><title>Northstrike AOIs</title>
+<link rel=stylesheet href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<div id=map style="height:100vh"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const m=L.map('map').setView([43.6532,-79.3832],13);
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+ {maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(m);
+const tor=L.tileLayer('http://127.0.0.1:8001/services/toronto_cost_color/tiles/{z}/{x}/{y}.png',{opacity:0.85}).addTo(m);
+const rur=L.tileLayer('http://127.0.0.1:8001/services/rural_mo_cost_color/tiles/{z}/{x}/{y}.png',{opacity:0.85});
+const wem=L.tileLayer('http://127.0.0.1:8001/services/weminuche_co_cost_color/tiles/{z}/{x}/{y}.png',{opacity:0.85});
+L.control.layers({'OpenStreetMap':osm},{'Toronto':tor,'Rural MO':rur,'Weminuche CO':wem},{collapsed:false, position:'topright'}).addTo(m);
+const ctl=L.control({position:'topright'}); ctl.onAdd=()=>{const d=L.DomUtil.create('div'); d.innerHTML=
+ '<div style="background:#fff;padding:6px 8px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.2)">'+
+ '<b>Jump</b> '+
+ '<button onclick="m.setView([43.6532,-79.3832],13)">Toronto</button> '+
+ '<button onclick="m.setView([37.7134,-91.1305],12)">Rural MO</button> '+
+ '<button onclick="m.setView([37.35,-107.45],11)">Weminuche</button></div>'; return d;}; ctl.addTo(m);
+</script>

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: scripts/maps/publish_mbtiles_from_cost.sh yyz_downtown
-AREA="${1:-yyz_downtown}"
+# Usage: scripts/maps/publish_mbtiles_from_cost.sh toronto_downtown
+AREA="${1:-toronto_downtown}"
 
 REPO="${REPO:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 cd "$REPO"

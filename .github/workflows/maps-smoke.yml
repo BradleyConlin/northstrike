@@ -11,12 +11,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gdal-bin
-      - name: Maps smoke (yyz_downtown)
+      - name: Maps smoke (toronto_downtown)
         run: |
-          make maps-smoke AREA=yyz_downtown N=20
+          make maps-smoke AREA=toronto_downtown N=20
       - name: Publish bundle (no upload, just build + sha)
         run: |
-          make maps-publish AREA=yyz_downtown
+          make maps-publish AREA=toronto_downtown
           ls -lh artifacts/maps || true
       - name: Show readback/parity summaries
         run: |
