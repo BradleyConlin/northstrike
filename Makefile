@@ -244,3 +244,20 @@ tiles-serve:
 > docker run --rm -p 8001:8000 \
 >   -v "$(PWD)/artifacts/maps/mbtiles:/tilesets" \
 >   ghcr.io/consbio/mbtileserver:latest
+
+# === Step 5 convenience targets ===
+maps-step5-all:
+> bash scripts/maps/finish_step5_numeric.sh && bash scripts/maps/finish_step5_mbtiles.sh
+
+maps-publish:
+> bash scripts/maps/publish_step5.sh
+
+# CSV of "lon,lat" -> sampled Float32 cost values
+# Usage: make maps-readback AREA=toronto CSV=artifacts/maps/probes_in_toronto.csv
+maps-readback:
+> test -n "$(AREA)" || (echo "Set AREA=toronto|rural_mo" && exit 2)
+> test -n "$(CSV)" || (echo "Set CSV=path/to/probes.csv" && exit 2)
+> python3 scripts/maps/smoke_planner_cost_query.py maps_v2/build/$(AREA)/$(AREA)_cost_f32.tif $(CSV) artifacts/maps/probes_out_$(AREA).csv
+.PHONY: maps-v2-publish
+maps-v2-publish:
+> bash scripts/maps/publish_step5.sh
