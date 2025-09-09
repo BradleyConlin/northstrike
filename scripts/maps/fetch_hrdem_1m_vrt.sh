@@ -3,7 +3,7 @@ set -euo pipefail
 # Usage:
 #   scripts/maps/fetch_hrdem_1m_vrt.sh AREA S W N E
 # Example:
-#   scripts/maps/fetch_hrdem_1m_vrt.sh yyz_downtown 43.63 -79.42 43.70 -79.31
+#   scripts/maps/fetch_hrdem_1m_vrt.sh toronto_downtown 43.63 -79.42 43.70 -79.31
 # Output: maps/build/${AREA}_dtm1m.tif  (UTM-projected, 1m)
 
 if [ "$#" -ne 5 ]; then

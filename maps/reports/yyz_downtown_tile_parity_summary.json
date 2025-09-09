@@ -9,5 +9,5 @@
   ],
   "mismatches": 0,
   "pass": true,
-  "csv": "maps/reports/yyz_downtown_tile_parity.csv"
+  "csv": "maps/reports/toronto_downtown_tile_parity.csv"
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-AREA="${1:-yyz_downtown}"
+AREA="${1:-toronto_downtown}"
 DTM="maps/build/${AREA}_dtm1m.tif"
 OSM="maps/src/${AREA}_osm.osm"
 

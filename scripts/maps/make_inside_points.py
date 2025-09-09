@@ -4,7 +4,7 @@
 import os, sys, random, csv
 from osgeo import gdal, osr
 
-area = sys.argv[1] if len(sys.argv) > 1 else "yyz_downtown"
+area = sys.argv[1] if len(sys.argv) > 1 else "toronto_downtown"
 N = int(sys.argv[2]) if len(sys.argv) > 2 else 10
 ras = f"maps/costmaps/{area}_cost.tif"
 

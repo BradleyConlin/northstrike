@@ -4,8 +4,8 @@ set -euo pipefail
 # MBTiles publisher: builds gray (from Float32 cost) + color (from RGBA) as MBTiles.
 # Usage:
 #   bash scripts/maps/mbtiles_publish.sh
-#   AREA=yyz_downtown bash scripts/maps/mbtiles_publish.sh
-#   bash scripts/maps/mbtiles_publish.sh yyz_downtown
+#   AREA=toronto_downtown bash scripts/maps/mbtiles_publish.sh
+#   bash scripts/maps/mbtiles_publish.sh toronto_downtown
 #
 # Outputs: artifacts/maps/mbtiles/<AREA>_cost_{gray,color}.mbtiles
 
