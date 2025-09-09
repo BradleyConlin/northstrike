@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Northstrike – MBTiles Overlay</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <style>
+    html,body,#map { height:100%; margin:0; }
+    .ctl { position:absolute; z-index:1000; background:#fff; padding:.5rem .75rem; border-radius:.5rem; box-shadow:0 2px 10px rgba(0,0,0,.15); }
+    #svcctl { top:10px; left:10px; }
+  </style>
+</head>
+<body>
+<div id="svcctl" class="ctl">
+  <label>Service:
+    <select id="svc">
+      <option value="toronto_cost_color">toronto_cost_color</option>
+      <option value="ottawa_cost_color">ottawa_cost_color</option>
+      <option value="rural_mo_cost_color">rural_mo_cost_color</option>
+    </select>
+  </label>
+</div>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="anonymous"></script>
+<script>
+  // read ?svc= from query string; default to toronto_cost_color
+  const params = new URLSearchParams(location.search);
+  const initialSvc = params.get('svc') || 'toronto_cost_color';
+  const svcSelect = document.getElementById('svc');
+  svcSelect.value = initialSvc;
+
+  // Base map (OSM)
+  const map = L.map('map', { zoomControl: true }).setView([43.67, -79.38], 12);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  let overlay;
+  function setOverlay(name) {
+    if (overlay) map.removeLayer(overlay);
+    overlay = L.tileLayer(`http://127.0.0.1:8001/services/${name}/tiles/{z}/{x}/{y}.png`, {
+      opacity: 0.85,
+      tileSize: 256
+    }).addTo(map);
+
+    // Fit to bounds using mbtileserver TileJSON
+    fetch(`http://127.0.0.1:8001/services/${name}`)
+      .then(r => r.json())
+      .then(tj => {
+        if (tj.bounds && tj.bounds.length === 4) {
+          const b = [[tj.bounds[1], tj.bounds[0]], [tj.bounds[3], tj.bounds[2]]];
+          map.fitBounds(b, { maxZoom: tj.maxzoom || 17 });
+        }
+      }).catch(() => {});
+  }
+
+  setOverlay(initialSvc);
+  svcSelect.addEventListener('change', e => setOverlay(e.target.value));
+</script>
+</body>
+</html>
