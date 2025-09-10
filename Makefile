@@ -275,3 +275,18 @@ dr-smoke:
 .PHONY: data-smoke
 data-smoke:
 > - .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke
+.PHONY: rl-smoke-eval
+rl-smoke-eval:
+> mkdir -p artifacts/rl
+> .venv/bin/python sim/rl/eval_hover_smoke.py --episodes "${EPISODES:-3}" --out artifacts/rl/hover_eval.json
+# --- RL smoke override (append-only; keep at END of file) ---
+EPISODES ?= 3
+
+.PHONY: rl-smoke-eval
+rl-smoke-eval:
+> mkdir -p artifacts/rl
+> .venv/bin/python sim/rl/eval_hover_smoke.py --episodes "$(EPISODES)" --out artifacts/rl/hover_eval.json
+
+# Back-compat alias: keep old name working in CI
+.PHONY: rl-hover-eval
+rl-hover-eval: rl-smoke-eval
