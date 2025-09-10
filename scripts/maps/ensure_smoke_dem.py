@@ -9,14 +9,13 @@ os.makedirs(os.path.dirname(dst), exist_ok=True)
 
 if os.path.exists(dst):
     print(f"[smoke-dem] exists: {dst}")
-    sys.exit(0)
+    raise SystemExit(0)
 
-w = h = 256                           # small raster
+w = h = 256
 arr = (np.arange(h, dtype=np.float32)[:,None] + np.arange(w, dtype=np.float32)[None,:])
 
-# EPSG:4326 near Toronto City Hall; ~1.1 m/px in degrees (good enough for smoke)
-origin_lon, origin_lat = -79.395, 43.653
-px, py = 1e-5, -1e-5                  # note negative y pixel size
+origin_lon, origin_lat = -79.395, 43.653  # near Toronto City Hall
+px, py = 1e-5, -1e-5                      # ~1.1 m/px in degrees; negative y size
 gt = (origin_lon, px, 0.0, origin_lat, 0.0, py)
 
 drv = gdal.GetDriverByName("GTiff")
