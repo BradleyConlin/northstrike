@@ -1,0 +1,44 @@
+name: RL Smoke
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  rl-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements-rl.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Create venv + install RL deps
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install -U pip
+          pip install -r requirements-rl.txt
+
+      - name: Run RL smoke
+        run: |
+          . .venv/bin/activate
+          make rl-hover-eval SMOKE=1 EPISODES=3
+
+      - name: Upload smoke JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: rl-hover-eval
+          path: artifacts/rl/hover_eval.json
