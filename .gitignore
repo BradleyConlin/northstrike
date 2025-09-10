@@ -72,3 +72,4 @@ artifacts/maps/*.zip
 datasets/public/*/raw/**
 datasets/public/*/processed/**
 !datasets/public/*/README.md
+!training/scripts/data/**

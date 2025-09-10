@@ -261,3 +261,17 @@ maps-readback:
 .PHONY: maps-v2-publish
 maps-v2-publish:
 > bash scripts/maps/publish_step5.sh
+.PHONY: data-smoke
+data-smoke:
+> .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke
+.PHONY: rl-hover-train rl-hover-eval
+rl-hover-train:
+> .venv/bin/python sim/rl/train_ppo_hover.py --steps $(or $(STEPS),1000000)
+rl-hover-eval:
+> .venv/bin/python sim/rl/eval_ppo_hover.py --out artifacts/rl/hover_eval.json
+.PHONY: dr-smoke
+dr-smoke:
+> .venv/bin/python sim/simulation/domain_randomization/apply_profile.py --profile $(PROFILE) --seed $(or $(SEED),42)
+.PHONY: data-smoke
+data-smoke:
+> - .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke

@@ -1,100 +1,14 @@
-# Maps & Costmaps
+# Maps & Costmaps — Attributions & Notes
 
-- **AOI**: `toronto_downtown` (EPSG:32617, 1 m)
-- **Pipeline**: HRDEM → slope (percent) → OSM → masks (0/1 Byte) → cost Float32 (planner) → 8-bit VRT + color-relief → tiles/MBTiles (viewer)
-- **Gates**:
-  - `maps-readback`: sample Float32 at random points → CSV + JSON summary
-  - `tiles-parity`: compare MBTiles grayscale vs scaled Float32 at pixel centers (±5 DN, 0↔1 allowed)
+**AOIs built:** Toronto (UTM17N), Rural Missouri (UTM15N).
+**Artifacts:** Float32 cost COGs (planner truth) + color PNG MBTiles (EPSG:3857, XYZ).
 
-# Toronto — toronto_downtown AOI
+**Attribution (required when publishing anything derived):**
+- DEM (Canada): Contains information licensed under the Open Government Licence – Canada. Source: NRCan CanElevation HRDEM (1 m).
+- DEM (Global): Contains modified Copernicus DEM data [Copernicus Programme].
+- OSM: © OpenStreetMap contributors (ODbL). Our raster masks are a “Produced Work.”
 
-- AOI bounds (WGS84):
-  W: -79.4218346223, S: 43.6284246884, E: -79.3080338582, N: 43.7015732552
-- DEM: HRDEM 1 m DTM (CanElevation), reprojected to **EPSG:32617 (WGS 84 / UTM 17N)**.
-- Pixel size: **1.0 m**.
-- Products:
-  - Float32 planner raster: `maps/costmaps/toronto_downtown_cost.tif` (NoData = -9999, COG, AVERAGE overviews).
-  - 8-bit visualization VRT (scaled 0→1500 ⇒ 1→255): `maps/costmaps/toronto_downtown_cost_8bit.vrt`.
-  - MBTiles (XYZ): `maps/mbtiles/toronto_downtown_cost8.mbtiles` (minzoom=11, maxzoom=17, format=png).
-- Masks: strict **0/1 Byte**, NoData=0, NEAREST overviews.
-- Tile scheme: **XYZ** (no TMS), cache-busted when regenerating.
-
-## Attribution
-- Contains information licensed under the **Open Government Licence – Canada** (HRDEM / CanElevation).
-- © **OpenStreetMap contributors** (ODbL). The rasterized building mask is a Produced Work.
-
-### Visualization scale
-- Cost viz is scaled **0 → 1500 ⇒ 1 → 255** before color-relief (planner raster remains Float32).
-- Typical browse zooms: **z11–z17** for `toronto_downtown_cost8.mbtiles`.
-
-## Implementation notes & troubleshooting
-
-- **Temp file overwrite (GeoJSON)**: On Jammy, `ogr2ogr`’s GeoJSON driver won’t overwrite an existing file.
-  We create temp names that **don’t pre-exist** (`mktemp -u --suffix=.geojson`) so `ogr2ogr` can write them.
-
-- **GDAL options (Jammy-safe)**: Avoid `gdalinfo -ovr`, `gdal_translate -srcnodata/-dstnodata` (not available).
-  We recompute stats with `-stats` and unset NoData on the 8-bit VRT before color-relief.
-
-- **Cost viz scale**: Tiles are from an 8-bit VRT scaled **0→1500 ⇒ 1→255**. The Float32 COG remains the planner truth.
-  Typical browse zooms: **z11–z17** for `toronto_downtown`.
-
-- **Masks**: strict **0/1 Byte**, `NoData=0`, NEAREST overviews only.
-  Quick sanity: `gdalinfo -stats maps/build/<AREA>_{roads,water,parks}_mask.tif` → Min=0, Max=1, non-zero mean if present.
-
-- **OSM water filter**: Some extracts don’t expose a `water` column; use `natural='water'`
-  (and optionally `landuse IN ('reservoir','basin')`, `waterway='riverbank'`) to catch common cases.
-
-- **Viewer**:
-  - Serve the repo root: `python -m http.server 8080` and open `http://localhost:8080/viewer/view.html`.
-  - The viewer requests `/tiles/{z}/{x}/{y}.png?v=N` (absolute path + cache-buster).
-    Make sure tiles live under `tiles/` at repo root, and you generated **XYZ** (not TMS).
-
-- **Parity smoke**: `tiles-parity` samples MBTiles pixels and compares to the Float32 raster (±5 DN, 0↔1 allowed).
-  A zero tile with Float32 NaN is treated as OK (outside AOI).
-
-- **Road preference**: To prefer roads, set a **negative** `road_penalty` in `scripts/maps/cost_recipe.yaml`
-  (example: `road_penalty: -40.0`).
-
-- **Publishing**: `make maps-publish AREA=<aoi>` writes `artifacts/maps/<AREA>_tiles_cost8.zip` and a `.sha256`.
-
-
-### Water extraction (robust)
-- We don’t rely on a `water` column (often missing in OSM extracts).
-- We burn polygons from:
-  - `natural='water'`
-  - `landuse IN ('reservoir','basin')`
-  - `waterway='riverbank'` (wide rivers commonly tagged this way)
-- **Implementation note:** we write two temporary GeoJSONs and burn both.
-  You may see this benign message on some GDAL builds:
-  “Input datasource uses random layer reading, but output datasource does not support random layer writing.”
-
-### OSM fetch & usage
-Fetch OSM once per AOI (bbox **W,S,E,N**):
-
-    AREA=<aoi> S=<south> W=<west> N=<north> E=<east> make maps-osm
-
-This writes `maps/src/<AREA>_osm.osm`. The cost builder picks it up automatically:
-
-    AREA=<aoi> make maps-costmap2
-    # or
-    AREA=<aoi> make maps-smoke
-
-### Masks quick check
-Each mask is **0/1 Byte** (`NoData=0`, NEAREST overviews):
-
-    gdalinfo -stats maps/build/<AREA>_{roads,water,parks}_mask.tif | sed -n '1,40p'
-    # Look for Min=0, Max=1, and a non-zero Mean if features exist.
-
-### Viewer notes
-- Tiles are **XYZ**, requested from `/tiles/{z}/{x}/{y}.png?v=N` (absolute path + cache-buster).
-- 404s at extreme edges/zooms usually just mean that slippy address isn’t covered — not an error.
-## Publishing MBTiles (offline)
-
-We export planner cost layers to MBTiles in two variants:
-- **Gray**: scaled from Float32 cost (0→1500 → 1→255).
-- **Color**: symbolized RGBA.
-
-**Build:**
-```bash
-make maps-publish            # all areas
-make maps-publish AREA=toronto_downtown
+**Viewer:** local only, `viewer/mbtiles_overlay.html?svc=<service>`, served at 127.0.0.1.
+**Tile scheme:** XYZ `{z}/{x}/{y}.png` (not TMS).
+**Masks:** Strict 0/1 Byte, no NoData.
+**Planner raster:** Float32 with NoData = −9999 outside AOI.
