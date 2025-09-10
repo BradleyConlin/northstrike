@@ -1,24 +1,38 @@
 name: release-models
-on:
+true:
   push:
-    tags: ['models-*']
+    tags:
+    - models-*
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 0
     - uses: actions/setup-python@v5
-      with: { python-version: '3.10' }
+      with:
+        python-version: '3.10'
     - run: pip install --quiet onnx onnxruntime pyyaml
     - name: Gates (contracts+perf+smokes)
-      run: |
-        python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
-        python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir artifacts/perf --check
-        python -m pip install -U pip && pip install pytest && pytest -q training/tests/inference/test_depth_offline_smoke.py training/tests/inference/test_policy_offline_smoke.py training/tests/inference/test_e2e_tick_smoke.py training/tests/inference/test_promote_model_smoke.py
+      run: 'python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml
+        --outdir artifacts/perf
+
+        python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir
+        artifacts/perf --check
+
+        pytest -q training/tests/inference/test_depth_offline_smoke.py training/tests/inference/test_policy_offline_smoke.py
+        training/tests/inference/test_e2e_tick_smoke.py training/tests/inference/test_promote_model_smoke.py
+
+        '
     - name: Pack models
-      run: |
-        python scripts/inference/e2e_tick.py --out artifacts/perf/e2e_tick.json
-        python scripts/inference/pack_models.py --manifest deploy/models/manifest.json --out artifacts/releases/${{ github.ref_name }}.zip
+      run: 'python scripts/inference/e2e_tick.py --out artifacts/perf/e2e_tick.json
+
+        python scripts/inference/pack_models.py --manifest deploy/models/manifest.json
+        --out artifacts/releases/${{ github.ref_name }}.zip
+
+        '
     - uses: softprops/action-gh-release@v2
       with:
         files: artifacts/releases/${{ github.ref_name }}.zip

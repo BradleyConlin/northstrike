@@ -1,17 +1,19 @@
 name: datasets-verify
-
-on:
-  pull_request:
+true:
+  pull_request: null
   push:
-    branches: [ main ]
-
+    branches:
+    - main
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Verify public datasets scaffold
-        run: python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
+    - uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 0
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Verify public datasets scaffold
+      run: python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
