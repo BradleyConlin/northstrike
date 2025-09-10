@@ -7,4 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "maps smoke runs on push→main only"
+      - name: Install GDAL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin
+      - name: Maps smoke (toronto_downtown)
+        run: |
+          bash scripts/maps/smoke_prep_and_make.sh toronto_downtown
+      - name: Publish bundle (no upload, just build + sha)
+        run: |
+          make maps-publish AREA=toronto_downtown
+          ls -lh artifacts/maps || true
+      - name: Show readback/parity summaries
+        run: |
+          ls -1 maps/reports || true
+          find artifacts/maps -maxdepth 1 -type f -name '*.zip*' -ls || true
