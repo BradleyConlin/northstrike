@@ -32,7 +32,7 @@
   const params = new URLSearchParams(location.search);
   const initialSvc = params.get('svc') || 'toronto_cost_color';
   const svcSelect = document.getElementById('svc');
-  svcSelect.value = initialSvc;
+  if (svcSelect) svcSelect.value = initialSvc;
 
   // Base map (OSM)
   const map = L.map('map', { zoomControl: true }).setView([43.67, -79.38], 12);
@@ -60,7 +60,22 @@
   }
 
   setOverlay(initialSvc);
-  svcSelect.addEventListener('change', e => setOverlay(e.target.value));
+  svcSelect && svcSelect.addEventListener('change', e => setOverlay(e.target.value));
+</script>
+
+<div class="ctl" style="right:10px;top:10px;position:absolute;background:#fff;padding:.5rem;border-radius:.5rem;box-shadow:0 1px 4px rgba(0,0,0,.25)">
+  <label style="font:12px sans-serif">Overlay opacity
+    <input id="op" type="range" min="0" max="1" step="0.05" value="0.85"
+           oninput="typeof overlay!=='undefined'&&overlay.setOpacity(parseFloat(this.value))">
+  </label>
+  <div style="font:12px/1.2 sans-serif;margin-top:.25rem;opacity:.8">
+    © OpenStreetMap contributors · DEM: NRCan HRDEM (OGL-Canada)
+  </div>
+</div>
+
+<script>
+  // kick the slider once so it applies the default opacity
+  document.getElementById('op')?.dispatchEvent(new Event('input'));
 </script>
 </body>
 </html>
