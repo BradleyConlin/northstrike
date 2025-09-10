@@ -1,0 +1,4 @@
+{
+  "version": 1,
+  "description": "placeholder schema for CI smoke (satisfies scripts/datasets/verify_manifest.py)"
+}

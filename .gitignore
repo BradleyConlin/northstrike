@@ -72,4 +72,11 @@ artifacts/maps/*.zip
 datasets/public/*/raw/**
 datasets/public/*/processed/**
 !datasets/public/*/README.md
-!training/scripts/data/**
+# --- CI placeholders (track only specific files in /datasets) ---
+!/datasets/
+/datasets/*
+!/datasets/schema_v1.json
+!/datasets/_smoke/
+/datasets/_smoke/*
+!/datasets/_smoke/tiny.txt
+# --- end CI placeholders ---
