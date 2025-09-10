@@ -1,5 +1,3 @@
-.ONESHELL:
-SHELL := /bin/bash
 .RECIPEPREFIX := >
 .DEFAULT_GOAL := help
 
@@ -59,6 +57,7 @@ ci:
 > $(MAKE) data-verify
 > $(MAKE) data-diff
 > $(MAKE) integrity-summary
+
 # === domain-rand & data smoke additions ===
 .PHONY: rand-profile data-checksums
 
@@ -81,9 +80,15 @@ rand-sweep:
 >   --out artifacts/domain_randomization/$(PROFILE).json \
 >   --jsonl artifacts/domain_randomization/$(PROFILE)-samples.jsonl
 
+# --- maps targets ---
+.PHONY: maps-dem maps-buildings maps-costmap maps-verify
 
-# === Maps/Costmaps ===
-.PHONY: maps-costmap
+maps-dem:
+> scripts/maps/make.sh dem $${AREA} $${S} $${W} $${N} $${E}
+
+maps-buildings:
+> scripts/maps/make.sh buildings $${AREA} $${S} $${W} $${N} $${E}
+
 maps-costmap:
 > scripts/maps/make.sh costmap $${AREA}
 
@@ -261,12 +266,22 @@ data-smoke:
 > .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke
 .PHONY: rl-hover-train rl-hover-eval
 rl-hover-train:
-> env PYTHONPATH=sim:$$PYTHONPATH .venv/bin/python sim/rl/train_ppo.py
-
+> .venv/bin/python sim/rl/train_ppo_hover.py --steps $(or $(STEPS),1000000)
 rl-hover-eval:
-> mkdir -p artifacts/rl
-> if [ "$${SMOKE:-0}" = "1" ]; then
->   .venv/bin/python sim/rl/eval_hover_smoke.py --episodes "$${EPISODES:-3}" --out artifacts/rl/hover_eval.json
-> else
->   env PYTHONPATH=sim:$$PYTHONPATH .venv/bin/python sim/rl/eval_ppo.py $${EVAL_MODEL:+--model $$EVAL_MODEL} --episodes "$${EPISODES:-3}"
-> fi
+> .venv/bin/python sim/rl/eval_ppo_hover.py --out artifacts/rl/hover_eval.json
+.PHONY: dr-smoke
+dr-smoke:
+> .venv/bin/python sim/simulation/domain_randomization/apply_profile.py --profile $(PROFILE) --seed $(or $(SEED),42)
+.PHONY: data-smoke
+data-smoke:
+> - .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke
+.PHONY: rl-hover-train rl-hover-eval
+rl-hover-train:
+> .venv/bin/python sim/rl/train_ppo.py --env px4_alt_env --steps $(or $(STEPS),1000000)
+rl-hover-eval:
+> .venv/bin/python sim/rl/eval_ppo.py --env px4_alt_env --out artifacts/rl/hover_eval.json
+.PHONY: rl-hover-train rl-hover-eval
+rl-hover-train:
+> PYTHONPATH=sim:$ .venv/bin/python sim/rl/train_ppo.py --env px4_alt_env --steps $(or $(STEPS),1000000)
+rl-hover-eval:
+> PYTHONPATH=sim:$ .venv/bin/python sim/rl/eval_ppo.py --env px4_alt_env --out artifacts/rl/hover_eval.json
