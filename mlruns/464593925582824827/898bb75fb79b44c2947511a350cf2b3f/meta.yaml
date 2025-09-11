@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/898bb75fb79b44c2947511a350cf2b3f/artifacts
+end_time: 1757554143020
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 898bb75fb79b44c2947511a350cf2b3f
+run_name: clean-lynx-667
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757554143006
+status: 3
+tags: []
+user_id: brad

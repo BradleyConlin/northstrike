@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/0e9a678a6e3d47b9a820f15c7b4c8cef/artifacts
+end_time: 1757554143827
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 0e9a678a6e3d47b9a820f15c7b4c8cef
+run_name: omniscient-skink-736
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757554143816
+status: 3
+tags: []
+user_id: brad

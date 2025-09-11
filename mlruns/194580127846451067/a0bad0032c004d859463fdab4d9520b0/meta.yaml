@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/a0bad0032c004d859463fdab4d9520b0/artifacts
+end_time: 1757559021707
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: a0bad0032c004d859463fdab4d9520b0
+run_name: casual-ape-686
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757559021688
+status: 3
+tags: []
+user_id: brad

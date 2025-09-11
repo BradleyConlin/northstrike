@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/03a14fd0453f4ad29edec521b979226e/artifacts
+end_time: 1757555760754
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 03a14fd0453f4ad29edec521b979226e
+run_name: calm-ray-789
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757555760742
+status: 3
+tags: []
+user_id: brad

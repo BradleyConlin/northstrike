@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/defff716ef634f8cb89ca8cafbe4d231/artifacts
+end_time: 1757554905682
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: defff716ef634f8cb89ca8cafbe4d231
+run_name: popular-fly-245
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757554905671
+status: 3
+tags: []
+user_id: brad

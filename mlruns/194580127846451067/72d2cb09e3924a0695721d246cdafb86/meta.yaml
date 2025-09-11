@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/72d2cb09e3924a0695721d246cdafb86/artifacts
+end_time: 1757555277185
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 72d2cb09e3924a0695721d246cdafb86
+run_name: caring-yak-617
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757555277174
+status: 3
+tags: []
+user_id: brad

@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/9b4ad8b40a274a54802bf078b274a5d5/artifacts
+end_time: 1757546702881
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 9b4ad8b40a274a54802bf078b274a5d5
+run_name: nervous-whale-578
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757546702871
+status: 3
+tags: []
+user_id: brad

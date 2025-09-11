@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/5eaabbf4b1de4b108f111a5a8302f301/artifacts
+end_time: 1757556194131
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 5eaabbf4b1de4b108f111a5a8302f301
+run_name: worried-fox-162
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757556194119
+status: 3
+tags: []
+user_id: brad

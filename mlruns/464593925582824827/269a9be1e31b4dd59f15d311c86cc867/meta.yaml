@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/269a9be1e31b4dd59f15d311c86cc867/artifacts
+end_time: 1757555605762
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 269a9be1e31b4dd59f15d311c86cc867
+run_name: resilient-tern-839
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757555605750
+status: 3
+tags: []
+user_id: brad

@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/08419cc6f385425dafe3d7cbbd0f8c53/artifacts
+end_time: 1757557224042
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 08419cc6f385425dafe3d7cbbd0f8c53
+run_name: suave-rook-467
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757557224031
+status: 3
+tags: []
+user_id: brad

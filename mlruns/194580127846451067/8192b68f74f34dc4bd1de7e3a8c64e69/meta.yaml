@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/8192b68f74f34dc4bd1de7e3a8c64e69/artifacts
+end_time: 1757553537920
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 8192b68f74f34dc4bd1de7e3a8c64e69
+run_name: languid-loon-294
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757553537909
+status: 3
+tags: []
+user_id: brad

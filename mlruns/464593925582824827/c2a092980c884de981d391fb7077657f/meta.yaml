@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/c2a092980c884de981d391fb7077657f/artifacts
+end_time: 1757554488546
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: c2a092980c884de981d391fb7077657f
+run_name: kindly-finch-431
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757554488534
+status: 3
+tags: []
+user_id: brad

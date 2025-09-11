@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/2805915d16914e3282e1f50037d92733/artifacts
+end_time: 1757554904876
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 2805915d16914e3282e1f50037d92733
+run_name: dazzling-robin-474
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757554904864
+status: 3
+tags: []
+user_id: brad

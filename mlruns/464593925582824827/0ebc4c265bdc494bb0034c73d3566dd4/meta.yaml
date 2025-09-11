@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/0ebc4c265bdc494bb0034c73d3566dd4/artifacts
+end_time: 1757557223102
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 0ebc4c265bdc494bb0034c73d3566dd4
+run_name: selective-seal-827
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757557223090
+status: 3
+tags: []
+user_id: brad

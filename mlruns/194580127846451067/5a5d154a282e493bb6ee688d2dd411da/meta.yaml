@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/5a5d154a282e493bb6ee688d2dd411da/artifacts
+end_time: 1757556595764
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 5a5d154a282e493bb6ee688d2dd411da
+run_name: rogue-goose-648
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757556595753
+status: 3
+tags: []
+user_id: brad

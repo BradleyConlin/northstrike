@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/0c9263f8d2ea4cb490789706910cf759/artifacts
+end_time: 1757555606578
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: 0c9263f8d2ea4cb490789706910cf759
+run_name: bright-sow-254
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757555606567
+status: 3
+tags: []
+user_id: brad

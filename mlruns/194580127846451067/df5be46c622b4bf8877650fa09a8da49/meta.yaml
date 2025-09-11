@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/df5be46c622b4bf8877650fa09a8da49/artifacts
+end_time: 1757559465104
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: df5be46c622b4bf8877650fa09a8da49
+run_name: blushing-swan-233
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757559465093
+status: 3
+tags: []
+user_id: brad

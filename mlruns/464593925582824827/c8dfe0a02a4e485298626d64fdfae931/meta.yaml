@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/c8dfe0a02a4e485298626d64fdfae931/artifacts
+end_time: 1757556908609
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: c8dfe0a02a4e485298626d64fdfae931
+run_name: placid-mole-365
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757556908597
+status: 3
+tags: []
+user_id: brad

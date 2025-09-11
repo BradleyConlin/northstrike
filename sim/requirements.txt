@@ -2,7 +2,7 @@
 gymnasium>=0.29
 stable-baselines3>=2.3.0
 mavsdk>=2.1.0
-numpy>=1.24
+numpy
 
 # SB3 deps
 torch>=2.1

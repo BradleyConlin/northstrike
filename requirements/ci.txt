@@ -1,4 +1,4 @@
-onnx==1.14.1
+onnx
 onnxruntime
 numpy
 pytest

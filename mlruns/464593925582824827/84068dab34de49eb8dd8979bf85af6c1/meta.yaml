@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/84068dab34de49eb8dd8979bf85af6c1/artifacts
+end_time: 1757556594950
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 84068dab34de49eb8dd8979bf85af6c1
+run_name: orderly-bass-880
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757556594938
+status: 3
+tags: []
+user_id: brad

@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/8b6e493e16404f8c98f4843c3a7e21de/artifacts
+end_time: 1757544253858
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 8b6e493e16404f8c98f4843c3a7e21de
+run_name: trusting-slug-701
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757544253846
+status: 3
+tags: []
+user_id: brad

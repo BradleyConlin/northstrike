@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/019bf982e12542b0b68c9737d8daebaa/artifacts
+end_time: 1757553866911
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 019bf982e12542b0b68c9737d8daebaa
+run_name: thoughtful-goat-66
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757553866899
+status: 3
+tags: []
+user_id: brad

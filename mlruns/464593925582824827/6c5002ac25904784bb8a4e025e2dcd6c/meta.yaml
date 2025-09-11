@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/6c5002ac25904784bb8a4e025e2dcd6c/artifacts
+end_time: 1757547009144
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: 6c5002ac25904784bb8a4e025e2dcd6c
+run_name: beautiful-duck-556
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757547009132
+status: 3
+tags: []
+user_id: brad

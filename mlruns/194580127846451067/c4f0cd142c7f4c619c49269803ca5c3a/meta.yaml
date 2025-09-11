@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/c4f0cd142c7f4c619c49269803ca5c3a/artifacts
+end_time: 1757553867714
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: c4f0cd142c7f4c619c49269803ca5c3a
+run_name: legendary-dove-339
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757553867703
+status: 3
+tags: []
+user_id: brad

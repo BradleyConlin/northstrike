@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/464593925582824827/d787cb41ccea4782afc43511d2145edd/artifacts
+end_time: 1757546702077
+entry_point_name: ''
+experiment_id: '464593925582824827'
+lifecycle_stage: active
+run_id: d787cb41ccea4782afc43511d2145edd
+run_name: luxuriant-perch-493
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757546702066
+status: 3
+tags: []
+user_id: brad

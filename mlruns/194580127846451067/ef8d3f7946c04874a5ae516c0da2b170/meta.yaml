@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/194580127846451067/ef8d3f7946c04874a5ae516c0da2b170/artifacts
+end_time: 1757556194936
+entry_point_name: ''
+experiment_id: '194580127846451067'
+lifecycle_stage: active
+run_id: ef8d3f7946c04874a5ae516c0da2b170
+run_name: valuable-seal-424
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757556194925
+status: 3
+tags: []
+user_id: brad
