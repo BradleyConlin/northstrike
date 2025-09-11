@@ -80,3 +80,4 @@ mlruns/
 .envrc
 artifacts/perf/
 artifacts/waypoint_run*.csv
+/artifacts/onnx/policy_dummy.onnx
