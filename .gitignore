@@ -73,3 +73,10 @@ datasets/public/*/raw/**
 datasets/public/*/processed/**
 !datasets/public/*/README.md
 !training/scripts/data/**
+
+# Local runs & perf outputs
+mlruns/
+.venv_release/
+.envrc
+artifacts/perf/
+artifacts/waypoint_run*.csv
