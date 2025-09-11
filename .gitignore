@@ -73,3 +73,7 @@ datasets/public/*/raw/**
 datasets/public/*/processed/**
 !datasets/public/*/README.md
 !training/scripts/data/**
+
+# Local runs & test artifacts
+mlruns/
+artifacts/test/
