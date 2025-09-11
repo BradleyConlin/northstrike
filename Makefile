@@ -290,3 +290,21 @@ rl-smoke-eval:
 # Back-compat alias: keep old name working in CI
 .PHONY: rl-hover-eval
 rl-hover-eval: rl-smoke-eval
+
+.PHONY: doctor smoke full
+doctor:
+	python scripts/dev/repo_doctor.py
+
+smoke:
+	pytest -q \
+	  training/tests/sim_randomization/test_randomization.py::test_values_within_bounds \
+	  training/tests/training/test_training_pipeline.py::test_outputs_exist_and_nonempty \
+	  training/tests/mlops/test_mlflow_tracking.py \
+	  training/tests/mlops/test_registry_smoke.py \
+	  training/tests/inference/test_depth_offline_smoke.py \
+	  training/tests/inference/test_policy_offline_smoke.py \
+	  training/tests/inference/test_e2e_tick_smoke.py \
+	  training/tests/sysid/test_sysid_estimator.py
+
+full:
+	pytest -q

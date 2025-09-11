@@ -42,3 +42,12 @@ repos:
         pass_filenames: true
         files: ^artifacts/onnx/.*\.onnx$
         exclude: _promote_.*\.onnx$
+
+  - repo: local
+    hooks:
+      - id: repo-doctor
+        name: repo-doctor
+        entry: python scripts/dev/repo_doctor.py
+        language: system
+        pass_filenames: false
+        stages: [pre-commit, pre-push]

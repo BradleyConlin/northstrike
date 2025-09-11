@@ -73,3 +73,14 @@ datasets/public/*/raw/**
 datasets/public/*/processed/**
 !datasets/public/*/README.md
 !training/scripts/data/**
+
+# Heavy generated artifacts
+artifacts/maps/
+artifacts/publish/
+maps/build/
+maps/costmaps/
+maps/src/
+maps/masks/
+maps_v2/build/
+artifacts/test/
+mlruns/
