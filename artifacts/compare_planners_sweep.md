@@ -1,4 +1,7 @@
-# Planner KPI Seed Sweep
-
+## Planner KPI Seed Sweep
+Sim: 1.5s
 RRT (across seeds)
-Generated: 2025-08-30T14:01:27.252419
+A* (across seeds)
+
+- seed 0: ok
+- seed 1: ok
