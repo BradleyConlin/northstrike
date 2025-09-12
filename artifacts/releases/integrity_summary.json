@@ -2,7 +2,7 @@
   "meta": {
     "manifest": "deploy/models/manifest.json",
     "tool": "scripts/inference/integrity_summary.py",
-    "ts": 1757644356
+    "ts": 1757710171
   },
   "models": {
     "control.policy": {
@@ -17,7 +17,7 @@
           ]
         }
       ],
-      "mtime": 1757644031,
+      "mtime": 1757710158,
       "opset": 13,
       "outputs": [
         {
@@ -31,7 +31,7 @@
       ],
       "path": "artifacts/onnx/policy_dummy.onnx",
       "sha256_computed": "65382854ca9cbd5710b10e2d192ec054618c50fcb67254bc76a1dc7b61b209e3",
-      "sha256_manifest": "3f5afece6ab881c1be2b785a248e75f05506f49024a29fa0b978f83d105d90bd"
+      "sha256_manifest": "e19983efa3a37c1f531e3f9450a1b65a51c5b08bca1a6826feb0f5abdeded587"
     },
     "perception.depth": {
       "bytes": 161,
@@ -93,8 +93,8 @@
         640
       ],
       "iters": 2,
-      "p50_depth_ms": 1.2189340014010668,
-      "p50_policy_ms": 0.8515059985220432,
+      "p50_depth_ms": 0.9910599961876869,
+      "p50_policy_ms": 0.9334855005145073,
       "policy_input_shape": [
         1,
         64
