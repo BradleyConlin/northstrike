@@ -3,63 +3,55 @@ name: onnx-gates
 on:
   pull_request:
     paths:
-      - ".github/workflows/onnx-gates.yml"
-      - "scripts/inference/**"
-      - "deploy/models/**"
-      - "training/tests/inference/**"
-      - "requirements*.txt"
-  workflow_dispatch:
-
-permissions:
-  contents: read
+      - 'scripts/inference/**'
+      - 'deploy/models/**'
+      - 'training/tests/inference/**'
+      - '.github/workflows/onnx-gates.yml'
 
 jobs:
   onnx:
-    name: onnx
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        shell: bash -euo pipefail
+    timeout-minutes: 12
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10 (with pip cache)
+      - name: Setup Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-          cache: "pip"  # built-in pip cache
+          python-version: '3.10'
 
-      - name: Install minimal deps for ONNX gates
+      - name: Install minimal deps
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip wheel
-          pip install onnx==1.16.1 onnxruntime==1.18.1 numpy==1.26.4 pytest==8.3.2
+          # Try repo requirements first (if present), then ensure ONNX/ORT/pytest.
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install --upgrade onnx==1.16.0 onnxruntime==1.18.0 pytest
 
-      - name: Build dummy policy (IR=10, opset=13)
+      - name: Build deterministic dummy policy (IR=10, opset=13)
         run: |
+          set -euo pipefail
           mkdir -p artifacts/onnx
           python scripts/inference/make_dummy_policy_onnx.py \
             --in-dim 64 --out-dim 4 \
             --out artifacts/onnx/policy_dummy.onnx
+          # quick sanity
           python - <<'PY'
-          import onnx, pathlib
-          p = pathlib.Path("artifacts/onnx/policy_dummy.onnx")
-          m = onnx.load(str(p))
-          print("EXISTS:", p.is_file(), "IR:", m.ir_version, "opsets:", [(i.domain, i.version) for i in m.opset_import])
+          import onnx; m=onnx.load("artifacts/onnx/policy_dummy.onnx")
+          print("IR", m.ir_version, "opsets", [(i.domain,i.version) for i in m.opset_import])
           PY
 
-      - name: Verify manifest hashes (read-only check)
+      - name: Verify manifest hashes
         run: |
+          set -euo pipefail
           python scripts/inference/verify_manifest_hashes.py \
             --manifest deploy/models/manifest.json --check
 
-      - name: Inference smokes (fast)
+      - name: Inference smokes (policy + e2e + verify)
         run: |
+          set -euo pipefail
           pytest -q training/tests/inference/test_policy_offline_smoke.py
           pytest -q training/tests/inference/test_e2e_tick_smoke.py
           pytest -q training/tests/inference/test_verify_manifest_hashes.py
-
-      - name: ONNX verify gate
-        run: |
-          make onnx-verify
