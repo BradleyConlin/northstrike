@@ -1,28 +1,22 @@
-name: ONNX Gates
+name: onnx-gates
 on:
   pull_request:
-  push: { branches: [ main ] }
-  workflow_dispatch:
-
+  push:
+    branches: [ main ]
 jobs:
   onnx:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { lfs: true, fetch-depth: 0 }
-      - name: PR light pass
-        if: ${{ github.event_name == 'pull_request' }}
-        run: echo "ONNX gates skipped on PR"; exit 0
+        with:
+          lfs: true
+          fetch-depth: 0
       - uses: actions/setup-python@v5
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        with: { python-version: '3.10', cache: 'pip' }
-      - name: Deps + LFS + dummy policy
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: |
-          python -m pip install -U pip
-          pip install onnx onnxruntime numpy pyyaml
-          git lfs fetch --all && git lfs checkout
-          python scripts/inference/make_dummy_policy_onnx.py || true
-      - name: Contracts
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
+        with:
+          python-version: "3.10"
+      - name: Prepare env & dummy policy
+        run: bash scripts/ci/prepare_pr_env.sh
+      - name: ONNX verify
+        run: make onnx-verify
+      - name: ONNX regress
+        run: make onnx-regress

@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      with:
-        lfs: true
-        fetch-depth: 0
-        with: { lfs: true }
+        with:
+          lfs: true
+          fetch-depth: 0
       - uses: actions/setup-python@v5
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        with: { python-version: '3.10', cache: 'pip' }
-      - name: Main run
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: python -m pip install -U pip && pip install pytest && pytest -q || true
+        with:
+          python-version: "3.10"
+      - name: Prepare env & dummy policy
+        run: bash scripts/ci/prepare_pr_env.sh
+      - name: CI suite
+        run: make ci
