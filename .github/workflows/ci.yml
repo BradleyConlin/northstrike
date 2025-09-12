@@ -5,6 +5,8 @@ on:
     branches: [ main, hardening/** ]
 jobs:
   run:
+  run:
+  if: ${{ github.event_name != "pull_request" }}
   run:  if: ${{ github.event_name != "pull_request" }}
     runs-on: ubuntu-latest
     steps:

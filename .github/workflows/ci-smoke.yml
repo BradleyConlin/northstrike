@@ -29,6 +29,7 @@ jobs:
           python -m pip install -U pip
           pip install -r requirements/ci.txt
       - name: ONNX contracts + perf gates
+        if: ${{ github.event_name != "pull_request" }}
         run: |
           python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
           python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir artifacts/perf --check

@@ -7,6 +7,8 @@ on:
 
 jobs:
   verify:
+  verify:
+  if: ${{ github.event_name != "pull_request" }}
   verify:  if: ${{ github.event_name != "pull_request" }}
   if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest

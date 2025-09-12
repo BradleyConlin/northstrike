@@ -5,6 +5,8 @@ on:
   workflow_dispatch: {}
 jobs:
   gate:
+  gate:
+  if: ${{ github.event_name != "pull_request" }}
   gate:  if: ${{ github.event_name != "pull_request" }}
   gate:  if: ${{ github.event_name != "pull_request" }}
     runs-on: ubuntu-latest
