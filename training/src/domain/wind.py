@@ -37,8 +37,8 @@ class WindField:
 
     def __init__(
         self,
-        p_xy: OUParams = OUParams(),
-        p_z: OUParams = OUParams(tau_s=7.0, sigma=1.2),
+        p_xy: OUParams | None = None,
+        p_z: OUParams | None = None,
         seed: int = 42,
     ):
         self.wx = OUWind1D(p_xy, seed=seed + 1)

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # debug_cost_probe.py <AREA>
 # Prints nodata, min/max, %valid estimate for maps/costmaps/<AREA>_cost.tif
-import sys, os, random, math
-from osgeo import gdal, osr
+import math
+import random
+import sys
+
+from osgeo import gdal
 
 area = sys.argv[1] if len(sys.argv) > 1 else "toronto_downtown"
 ras = f"maps/costmaps/{area}_cost.tif"

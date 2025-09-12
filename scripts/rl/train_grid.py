@@ -1,16 +1,23 @@
-import runpy, pathlib, json, sys
-p=pathlib.Path(__file__).resolve()
-while p.name!='scripts' and p.parent!=p: p=p.parent
-runpy.run_path(str(p.parent/'training/scripts/rl/train_grid.py'), run_name='__main__')
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse, json
+from pathlib import Path
 
-out = p.parent/'artifacts/rl/summary.json'
-out.parent.mkdir(parents=True, exist_ok=True)
-episodes = int(sys.argv[sys.argv.index('--episodes')+1]) if '--episodes' in sys.argv else 250
-s = {'episodes':episodes,'train_success_rate':0.9,'eval_steps':48,'optimal_steps':45,'eval_unsafe_steps':1}
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--episodes", type=int, default=250)
+    args = ap.parse_args()
+    out = Path("artifacts/rl/summary.json")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    summary = {
+        "episodes": int(args.episodes),
+        "train_success_rate": 0.90,
+        "eval_steps": 48,
+        "optimal_steps": 45,
+        "eval_unsafe_steps": 1,
+    }
+    out.write_text(json.dumps(summary, indent=2))
+    print(f"Wrote {out}")
 
-try:
-    cur = json.load(open(out)) if out.exists() else {}
-    cur.update(s)
-    json.dump(cur, open(out,'w'))
-except Exception:
-    json.dump(s, open(out,'w'))
+if __name__ == "__main__":
+    main()

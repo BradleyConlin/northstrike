@@ -15,22 +15,26 @@ Notes:
 - Uses traditional GIS axis order when available.
 """
 from __future__ import annotations
+
 import csv
 import math
 import os
 import sys
-from typing import Tuple
 
 try:
     from osgeo import gdal, osr
-except Exception as e:
-    print("ERROR: GDAL Python bindings unavailable. Ensure numpy<2 is pinned and python3-gdal is installed.", file=sys.stderr)
+except Exception:
+    print(
+        "ERROR: GDAL unavailable. Pin numpy<2 and install python3-gdal.",
+        file=sys.stderr,
+    )
     raise
+
 
 def inv_gt_compat(gt):
     """Return inverse geotransform 6-tuple regardless of GDAL signature."""
     res = gdal.InvGeoTransform(gt)
-    if isinstance(res, (list, tuple)):
+    if isinstance(res, list | tuple):
         if len(res) == 6:
             return res
         if len(res) == 2:
@@ -40,6 +44,7 @@ def inv_gt_compat(gt):
             return inv_gt
     return res  # hope it's already the 6-tuple
 
+
 def open_raster(path: str):
     ds = gdal.Open(path, gdal.GA_ReadOnly)
     if ds is None:
@@ -48,18 +53,25 @@ def open_raster(path: str):
     nodata = band.GetNoDataValue()
     inv_gt = inv_gt_compat(ds.GetGeoTransform())
 
-    src_srs = osr.SpatialReference(); src_srs.ImportFromWkt(ds.GetProjection())
-    try: src_srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
-    except AttributeError: pass
+    src_srs = osr.SpatialReference()
+    src_srs.ImportFromWkt(ds.GetProjection())
+    try:
+        src_srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    except AttributeError:
+        pass
 
-    wgs84 = osr.SpatialReference(); wgs84.ImportFromEPSG(4326)
-    try: wgs84.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
-    except AttributeError: pass
+    wgs84 = osr.SpatialReference()
+    wgs84.ImportFromEPSG(4326)
+    try:
+        wgs84.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    except AttributeError:
+        pass
 
     to_src = osr.CoordinateTransformation(wgs84, src_srs)
     return ds, band, nodata, inv_gt, to_src
 
-def latlon_to_pixel(lat: float, lon: float, to_src, inv_gt) -> Tuple[int, int] | None:
+
+def latlon_to_pixel(lat: float, lon: float, to_src, inv_gt) -> tuple[int, int] | None:
     # Transform WGS84 (lon,lat) -> raster CRS (x,y). Guard failures.
     try:
         x, y, _ = to_src.TransformPoint(lon, lat)
@@ -72,6 +84,7 @@ def latlon_to_pixel(lat: float, lon: float, to_src, inv_gt) -> Tuple[int, int] |
         return None
     return int(round(px_f)), int(round(py_f))
 
+
 def sample_pixel(ds, band, px: int, py: int):
     if px < 0 or py < 0 or px >= ds.RasterXSize or py >= ds.RasterYSize:
         return None
@@ -79,6 +92,7 @@ def sample_pixel(ds, band, px: int, py: int):
     if arr is None:
         return None
     return float(arr[0, 0])
+
 
 def find_lat_lon_columns(header):
     lat_idx = lon_idx = -1
@@ -91,6 +105,7 @@ def find_lat_lon_columns(header):
     if lat_idx == -1 or lon_idx == -1:
         raise RuntimeError(f"Could not find lat/lon columns in header: {header}")
     return lat_idx, lon_idx
+
 
 def main():
     if len(sys.argv) < 3:
@@ -106,7 +121,7 @@ def main():
     os.makedirs(os.path.dirname(out_csv), exist_ok=True)
 
     rows_out = [["lat", "lon", "cost"]]
-    with open(in_csv, "r", newline="") as f:
+    with open(in_csv, newline="") as f:
         rdr = csv.reader(f)
         header = next(rdr)
         lat_idx, lon_idx = find_lat_lon_columns(header)
@@ -118,16 +133,20 @@ def main():
                 lat = float(str(row[lat_idx]).strip())
                 lon = float(str(row[lon_idx]).strip())
             except ValueError:
-                rows_out.append(["NaN", "NaN", "NaN"]); continue
+                rows_out.append(["NaN", "NaN", "NaN"])
+                continue
 
             pix = latlon_to_pixel(lat, lon, to_src, inv_gt)
             if pix is None:
-                rows_out.append([f"{lat:.12f}", f"{lon:.12f}", "NaN"]); continue
+                rows_out.append([f"{lat:.12f}", f"{lon:.12f}", "NaN"])
+                continue
 
             px, py = pix
             val = sample_pixel(ds, band, px, py)
 
-            if val is None or (nodata is not None and (math.isnan(val) or abs(val - nodata) < 1e-12)):
+            if val is None or (
+                nodata is not None and (math.isnan(val) or abs(val - nodata) < 1e-12)
+            ):
                 cost_str = "NaN"
             else:
                 cost_str = f"{val:.6f}"
@@ -138,6 +157,7 @@ def main():
         csv.writer(f).writerows(rows_out)
 
     print(f"Wrote {out_csv}")
+
 
 if __name__ == "__main__":
     main()

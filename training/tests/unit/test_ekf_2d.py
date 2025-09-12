@@ -13,7 +13,7 @@ def test_ekf_tracks_constant_accel():
     ax, ay = 0.5, -0.2
     rng = random.Random(123)
 
-    for k in range(int(5.0 / dt)):
+    for _k in range(int(5.0 / dt)):
         # propagate truth
         vx += ax * dt
         vy += ay * dt

@@ -1,14 +1,8 @@
 {
   "files": [
     {
-      "bytes": 447,
-      "mtime": 1757553521,
-      "relpath": "schema_v1.json",
-      "sha256": "ecd1a4b15e05894569c3f25d923ff8e6a4c999719fb9ebdcd06372ab235fdcbb"
-    },
-    {
       "bytes": 11,
-      "mtime": 1757560343,
+      "mtime": 1757715338,
       "relpath": "_smoke/tiny.txt",
       "sha256": "d5cf73578b04b630eac8696bb790505ffbf0e516bbcfc848b58decf818e074b6"
     },
@@ -30,11 +24,11 @@
       ".png",
       ".txt"
     ],
-    "hashed": 3,
+    "hashed": 1,
     "max_bytes": 209715200,
     "root": "datasets",
     "tool": "datasets/manifest.py",
-    "total": 3,
-    "ts": 1757560343
+    "total": 1,
+    "ts": 1757715339
   }
 }

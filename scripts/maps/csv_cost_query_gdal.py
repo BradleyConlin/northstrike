@@ -4,22 +4,27 @@ Query Float32 cost at (lat,lon) from a CSV using GDAL only (no subprocess).
 Input CSV must have headers 'lat' and 'lon' (case-insensitive). Output goes to
 maps/reports/<AREA>_cost_query.csv with columns lat,lon,cost.
 """
-import csv, os, sys, math
-from typing import Tuple
+import csv
+import math
+import os
+import sys
+
 from osgeo import gdal, osr
+
 
 def inv_gt_compat(gt):
     """Return (ok, inv_gt) regardless of GDAL Python signature."""
     res = gdal.InvGeoTransform(gt)
     # Newer builds sometimes return just the 6-tuple
-    if isinstance(res, (list, tuple)) and len(res) == 6:
+    if isinstance(res, list | tuple) and len(res) == 6:
         return True, res
     # Classic signature: (ok, inv_gt)
-    if isinstance(res, (list, tuple)) and len(res) == 2:
+    if isinstance(res, list | tuple) and len(res) == 2:
         ok, inv_gt = res
         return bool(ok), inv_gt
     # Fallback
     return True, res
+
 
 def open_raster(raster_path):
     ds = gdal.Open(raster_path, gdal.GA_ReadOnly)
@@ -33,6 +38,7 @@ def open_raster(raster_path):
         sys.exit("ERROR: InvGeoTransform failed")
     proj_wkt = ds.GetProjection()
     return ds, band, nodata, gt, inv_gt, proj_wkt
+
 
 def build_transform_to_raster(proj_wkt):
     """WGS84 (lon,lat) -> raster CRS transform."""
@@ -50,9 +56,11 @@ def build_transform_to_raster(proj_wkt):
 
     return osr.CoordinateTransformation(wgs84, ras)
 
+
 def sample_pixel(band, px: int, py: int):
     """Read a single pixel (nearest)."""
     return band.ReadAsArray(px, py, 1, 1)[0, 0]
+
 
 def main():
     if len(sys.argv) != 3:
@@ -69,7 +77,7 @@ def main():
     XSIZE, YSIZE = ds.RasterXSize, ds.RasterYSize
     to_raster = build_transform_to_raster(PROJ_WKT)
 
-    def world_to_pixel(x, y) -> Tuple[int, int]:
+    def world_to_pixel(x, y) -> tuple[int, int]:
         px_f, py_f = gdal.ApplyGeoTransform(INV_GT, x, y)
         # nearest neighbor indices
         return int(round(px_f)), int(round(py_f))
@@ -105,6 +113,7 @@ def main():
         w.writeheader()
         w.writerows(rows_out)
     print(f"Wrote {out_csv}")
+
 
 if __name__ == "__main__":
     main()
