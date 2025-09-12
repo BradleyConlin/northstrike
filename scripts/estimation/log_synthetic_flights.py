@@ -113,7 +113,7 @@ def main():
     out_jsonl = out_base / "runs.jsonl"
     out_summary = out_base / "sweep_summary.json"
 
-    mlf = MLflowClient(enabled=(not args.no-mlflow), experiment=args.experiment)
+    mlf = MLflowClient(enabled=(not args.no_mlflow), experiment=args.experiment)
     git_sha = _git_sha_short()
 
     combos = itertools.product(
