@@ -17,6 +17,9 @@ jobs:
       run: |
         python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
         python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir artifacts/perf --check
+        python -m pip install -U pip
+        pip install -r requirements.txt || true
+        pip install pytest
         pytest -q training/tests/inference/test_depth_offline_smoke.py training/tests/inference/test_policy_offline_smoke.py training/tests/inference/test_e2e_tick_smoke.py training/tests/inference/test_promote_model_smoke.py
     - name: Pack models
       run: |

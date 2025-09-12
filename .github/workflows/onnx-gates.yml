@@ -27,6 +27,9 @@ jobs:
             --config docs/perf/budgets.yaml --outdir artifacts/perf --check
       - name: Tests (offline, e2e, promote)
         run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt || true
+          pip install pytest
           pytest -q \
             training/tests/inference/test_depth_offline_smoke.py \
             training/tests/inference/test_policy_offline_smoke.py \
