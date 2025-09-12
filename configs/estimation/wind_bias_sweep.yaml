@@ -1,0 +1,6 @@
+sweep:
+  seeds: [1, 2]
+  wind_speed_mps: [0.0, 5.0]
+  wind_dir_deg: [0, 180]
+  gyro_bias_dps: [0.0, 0.05]
+  gnss_bias_m: [0.0, 1.5]
