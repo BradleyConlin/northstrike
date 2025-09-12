@@ -4,12 +4,20 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force run even if datasets/public/** is absent'
+        type: boolean
+        default: false
 
 jobs:
   verify:
-    # On PRs: always run (step is already non-blocking).
-    # On push→main: only run if something exists under datasets/public/**
-    if: ${{ github.event_name != 'push' || hashFiles('datasets/public/**') != '' }}
+    # On PRs: always run (step non-blocking).
+    # On push→main: run only if datasets exist.
+    # On manual dispatch: run if inputs.force==true.
+    if: ${{ github.event_name != 'push'
+           || hashFiles('datasets/public/**') != ''
+           || (github.event_name == 'workflow_dispatch' && inputs.force) }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +40,7 @@ jobs:
         run: mkdir -p artifacts/perf && python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
         continue-on-error: true
 
-      - name: Verify (blocking on push)
+      - name: Verify (blocking on push/dispatch)
         if: github.event_name != 'pull_request'
         run: mkdir -p artifacts/perf && python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
 
