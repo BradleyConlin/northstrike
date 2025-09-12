@@ -1,32 +1,21 @@
 name: maps-smoke
 on:
-  push:
-    branches:
-      - 'main'
+  push: { branches: [ main ] }
   workflow_dispatch:
-
 jobs:
   smoke:
-  smoke:
-  if: ${{ github.event_name == "push" && github.ref == "refs/heads/main" }}
-  smoke:
-  if: ${{ github.event_name != "pull_request" }}
-  smoke:  if: ${{ github.event_name != "pull_request" }}
-  if: ${{ github.event_name == "push" if: ${{ github.event_name == "push" if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }}if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }} github.ref == "refs/heads/main" }}if: ${{ github.event_name == "push" if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }}if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }} github.ref == "refs/heads/main" }} github.ref == "refs/heads/main" }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-        with:
-          lfs: true
-          fetch-depth: 0
+        with: { lfs: true, fetch-depth: 0 }
+      - run: git lfs fetch --all && git lfs checkout
       - name: Install GDAL
         run: |
           sudo apt-get update
           sudo apt-get install -y gdal-bin
       - name: Maps smoke (toronto_downtown)
-        run: |
-          make maps-smoke AREA=toronto_downtown N=20
-      - name: Publish bundle (no upload, just build + sha)
+        run: make maps-smoke AREA=toronto_downtown N=20
+      - name: Publish bundle (no upload)
         run: |
           make maps-publish AREA=toronto_downtown
           ls -lh artifacts/maps || true

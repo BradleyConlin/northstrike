@@ -1,25 +1,14 @@
 name: ci-gate
 on:
-  push:
-    branches:
-      - 'main'
+  push: { branches: [ main ] }
   workflow_dispatch:
-
 jobs:
   gate:
-  gate:
-  if: ${{ github.event_name == "push" && github.ref == "refs/heads/main" }}
-  gate:
-  if: ${{ github.event_name != "pull_request" }}
-  gate:  if: ${{ github.event_name != "pull_request" }}
-  gate:  if: ${{ github.event_name != "pull_request" }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      with:
-        lfs: true
-        fetch-depth: 0
-        with: { lfs: true }
+        with: { lfs: true, fetch-depth: 0 }
+      - run: git lfs fetch --all && git lfs checkout
       - uses: actions/setup-python@v5
-        with: { python-version: "3.10" }
+        with: { python-version: '3.10' }
       - run: .github/scripts/ci_gate.sh
