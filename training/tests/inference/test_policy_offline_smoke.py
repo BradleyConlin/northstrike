@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 
+
 def test_policy_offline_smoke(tmp_path):
     incsv = tmp_path / "in.csv"
     with open(incsv, "w", newline="") as f:
@@ -19,9 +20,12 @@ def test_policy_offline_smoke(tmp_path):
         [
             sys.executable,
             "scripts/inference/run_policy_offline.py",
-            "--model", model,
-            "--in-csv", str(incsv),
-            "--out-csv", str(outcsv),
+            "--model",
+            model,
+            "--in-csv",
+            str(incsv),
+            "--out-csv",
+            str(outcsv),
         ],
         check=True,
     )

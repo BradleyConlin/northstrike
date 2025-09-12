@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # make_inside_points.py <AREA> [N]
 # Writes maps/reports/<AREA>_inside_latlon.csv with N random (lat,lon) inside the raster.
-import os, sys, random, csv
+import csv
+import os
+import random
+import sys
+
 from osgeo import gdal, osr
 
 area = sys.argv[1] if len(sys.argv) > 1 else "toronto_downtown"
@@ -14,20 +18,27 @@ if ds is None:
 gt = ds.GetGeoTransform()
 xsize, ysize = ds.RasterXSize, ds.RasterYSize
 
-src = osr.SpatialReference(); src.ImportFromWkt(ds.GetProjection())
-try: src.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
-except AttributeError: pass
-wgs = osr.SpatialReference(); wgs.ImportFromEPSG(4326)
-try: wgs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
-except AttributeError: pass
+src = osr.SpatialReference()
+src.ImportFromWkt(ds.GetProjection())
+try:
+    src.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+except AttributeError:
+    pass
+wgs = osr.SpatialReference()
+wgs.ImportFromEPSG(4326)
+try:
+    wgs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+except AttributeError:
+    pass
 to_wgs = osr.CoordinateTransformation(src, wgs)
 
-rows = [("lat","lon")]
+rows = [("lat", "lon")]
 for _ in range(N):
-    px = random.randint(0, xsize-1); py = random.randint(0, ysize-1)
+    px = random.randint(0, xsize - 1)
+    py = random.randint(0, ysize - 1)
     # pixel center
-    x = gt[0] + (px + 0.5)*gt[1] + (py + 0.5)*gt[2]
-    y = gt[3] + (px + 0.5)*gt[4] + (py + 0.5)*gt[5]
+    x = gt[0] + (px + 0.5) * gt[1] + (py + 0.5) * gt[2]
+    y = gt[3] + (px + 0.5) * gt[4] + (py + 0.5) * gt[5]
     lon, lat, _ = to_wgs.TransformPoint(x, y)
     rows.append((f"{lat:.12f}", f"{lon:.12f}"))
 

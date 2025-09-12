@@ -32,7 +32,7 @@ def _run_cli(csv_path: Path) -> dict:
     except Exception:
         m = re.search(r"\{.*\}", text, re.S)
         if not m:
-            raise AssertionError(f"Could not parse KPI JSON from stdout:\n{text}")
+            raise AssertionError(f"Could not parse KPI JSON from stdout:\n{text}") from None
         return json.loads(m.group(0))
 
 

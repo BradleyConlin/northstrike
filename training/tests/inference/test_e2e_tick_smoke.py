@@ -1,6 +1,10 @@
-import json, os, subprocess, sys
+import json
+import os
+import subprocess
+import sys
 
 OUT = "artifacts/perf/e2e_tick.json"
+
 
 def test_e2e_tick_creates_report():
     try:

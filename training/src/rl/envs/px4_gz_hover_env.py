@@ -42,8 +42,8 @@ class _MavsdkClient:
         """Python 3.10-safe wait with asyncio.wait_for."""
         try:
             return await asyncio.wait_for(coro, timeout=timeout_s)
-        except asyncio.TimeoutError:
-            raise TimeoutError(f"Timeout while waiting for {what} ({timeout_s}s)")
+        except asyncio.TimeoutError as err:
+            raise TimeoutError(f"Timeout while waiting for {what} ({timeout_s}s)") from err
 
     async def _connect(self, connect_timeout_s: float, local_ready_timeout_s: float):
         if self._debug:
