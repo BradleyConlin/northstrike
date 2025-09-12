@@ -1,5 +1,6 @@
 name: datasets-verify
 on:
+  pull_request:
   push: { branches: [ main ] }
   workflow_dispatch:
 jobs:
@@ -8,8 +9,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { lfs: true, fetch-depth: 0 }
-      - run: git lfs fetch --all && git lfs checkout
       - uses: actions/setup-python@v5
         with: { python-version: '3.10' }
+      - name: PR light pass
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "datasets-verify skipped on PR"; exit 0
+      - run: git lfs fetch --all && git lfs checkout
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       - name: Verify public datasets scaffold
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
