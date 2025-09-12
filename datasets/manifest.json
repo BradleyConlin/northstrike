@@ -1,16 +1,22 @@
 {
   "files": [
     {
-      "bytes": 114,
-      "mtime": 1756575666,
+      "bytes": 447,
+      "mtime": 1757553521,
       "relpath": "schema_v1.json",
-      "sha256": "ecce8ec15f63b12c1f2de1d66abf29f8572d718a04a54d345fff43cb2f79b7c3"
+      "sha256": "ecd1a4b15e05894569c3f25d923ff8e6a4c999719fb9ebdcd06372ab235fdcbb"
     },
     {
       "bytes": 11,
-      "mtime": 1756603996,
+      "mtime": 1757638468,
       "relpath": "_smoke/tiny.txt",
       "sha256": "d5cf73578b04b630eac8696bb790505ffbf0e516bbcfc848b58decf818e074b6"
+    },
+    {
+      "bytes": 416,
+      "mtime": 1757491425,
+      "relpath": "public/xview/FINGERPRINT.json",
+      "sha256": "6bbb8e875159b845605834c63da6ff43c5f72f4b150b679766c145c62a299e7e"
     }
   ],
   "meta": {
@@ -24,11 +30,11 @@
       ".png",
       ".txt"
     ],
-    "hashed": 2,
+    "hashed": 3,
     "max_bytes": 209715200,
     "root": "datasets",
     "tool": "datasets/manifest.py",
-    "total": 2,
-    "ts": 1756603996
+    "total": 3,
+    "ts": 1757638468
   }
 }

@@ -1,8 +1,8 @@
-# Planner KPI Compare
+## Planner KPI Compare
 
-| Planner | PathLen_m | Time_s | Notes |
-|---|---:|---:|---|
-| A* | 10.0 | 1.5 | demo |
-| RRT | 10.5 | 1.6 | demo |
+Sim: 1.5s, RRT seed: 123
 
-Generated: 2025-08-30T14:01:27.236298
+| Planner | Result |
+|---|---|
+| RRT | ok |
+| A* | ok |

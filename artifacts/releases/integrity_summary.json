@@ -2,27 +2,27 @@
   "meta": {
     "manifest": "deploy/models/manifest.json",
     "tool": "scripts/inference/integrity_summary.py",
-    "ts": 1756614740
+    "ts": 1757638469
   },
   "models": {
     "control.policy": {
-      "bytes": 9150,
+      "bytes": 1186,
       "inputs": [
         {
           "dtype": "tensor(float)",
-          "name": "input",
+          "name": "x",
           "shape": [
             1,
             64
           ]
         }
       ],
-      "mtime": 1756614739,
+      "mtime": 1757638454,
       "opset": 13,
       "outputs": [
         {
           "dtype": "tensor(float)",
-          "name": "output",
+          "name": "y",
           "shape": [
             1,
             4
@@ -30,11 +30,11 @@
         }
       ],
       "path": "artifacts/onnx/policy_dummy.onnx",
-      "sha256_computed": "e19983efa3a37c1f531e3f9450a1b65a51c5b08bca1a6826feb0f5abdeded587",
-      "sha256_manifest": "e19983efa3a37c1f531e3f9450a1b65a51c5b08bca1a6826feb0f5abdeded587"
+      "sha256_computed": "3f5afece6ab881c1be2b785a248e75f05506f49024a29fa0b978f83d105d90bd",
+      "sha256_manifest": "3f5afece6ab881c1be2b785a248e75f05506f49024a29fa0b978f83d105d90bd"
     },
     "perception.depth": {
-      "bytes": 169,
+      "bytes": 161,
       "inputs": [
         {
           "dtype": "tensor(float)",
@@ -47,8 +47,8 @@
           ]
         }
       ],
-      "mtime": 1756611900,
-      "opset": 18,
+      "mtime": 1757564868,
+      "opset": 13,
       "outputs": [
         {
           "dtype": "tensor(float)",
@@ -62,19 +62,19 @@
         }
       ],
       "path": "artifacts/onnx/depth_e24.onnx",
-      "sha256_computed": "313bc82b2befd3f4d39446d00c34e3ce45df760d59835fdf9a8500099c42ef65",
-      "sha256_manifest": "313bc82b2befd3f4d39446d00c34e3ce45df760d59835fdf9a8500099c42ef65"
+      "sha256_computed": "ec46e29f20059494b62aa1bb479ba1dcae598ca4d03c16578cda6b43164eb085",
+      "sha256_manifest": "ec46e29f20059494b62aa1bb479ba1dcae598ca4d03c16578cda6b43164eb085"
     }
   },
   "perf": {
     "control_policy_profile": {
-      "fps": 108930.91927347406,
+      "fps": 106882.08392534721,
       "iters": 200,
-      "mean_ms": 0.008964545413618907,
+      "mean_ms": 0.00915215008717496,
       "name": "control.policy",
-      "p50_ms": 0.00886599809746258,
-      "p90_ms": 0.009158003376796842,
-      "p99_ms": 0.010000760521506861,
+      "p50_ms": 0.009037001291289926,
+      "p90_ms": 0.00919710291782394,
+      "p99_ms": 0.01131498040194852,
       "path": "artifacts/onnx/policy_dummy.onnx",
       "provider": "CPUExecutionProvider",
       "warmup": 30
@@ -93,8 +93,8 @@
         640
       ],
       "iters": 2,
-      "p50_depth_ms": 4.389662507921457,
-      "p50_policy_ms": 0.8750969991087914,
+      "p50_depth_ms": 7.972429500892758,
+      "p50_policy_ms": 0.8788955006748438,
       "policy_input_shape": [
         1,
         64
@@ -105,13 +105,13 @@
       ]
     },
     "perception_depth_profile": {
-      "fps": 9071.454944069133,
+      "fps": 5531.77828191377,
       "iters": 200,
-      "mean_ms": 0.10994932486937614,
+      "mean_ms": 0.18049857500955113,
       "name": "perception.depth",
-      "p50_ms": 0.09753999984241091,
-      "p90_ms": 0.1065809978172183,
-      "p99_ms": 0.35525279927241915,
+      "p50_ms": 0.09643300109019037,
+      "p90_ms": 0.10607309741317295,
+      "p99_ms": 3.0669644270892515,
       "path": "artifacts/onnx/depth_e24.onnx",
       "provider": "CPUExecutionProvider",
       "warmup": 30
