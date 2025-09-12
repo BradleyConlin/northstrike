@@ -1,27 +1,44 @@
 name: ci-smoke
 on:
   pull_request:
-  push: { branches: [ main ] }
-  workflow_dispatch:
-
+  push:
+    branches: [ "main", "hardening/**" ]
 jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with: { lfs: true, fetch-depth: 0 }
-      - name: PR light pass
-        if: ${{ github.event_name == 'pull_request' }}
-        run: git lfs checkout || true; echo "smoke skipped on PR"; exit 0
-      - uses: actions/setup-python@v5
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        with: { python-version: '3.10', cache: 'pip' }
-      - name: Install test deps
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: python -m pip install -U pip && pip install pytest onnx onnxruntime numpy pyyaml
-      - name: Hydrate LFS
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: git lfs fetch --all && git lfs checkout
-      - name: Smoke
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: pytest -q || true
+      - name: Checkout (with LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Git LFS pull
+        run: |
+          git lfs install
+          git lfs pull
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements/ci.txt
+      - name: ONNX contracts + perf gates
+        run: |
+          python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
+          python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir artifacts/perf --check
+          python scripts/inference/verify_manifest_hashes.py --manifest deploy/models/manifest.json --check
+      - name: Pytest smoke
+        run: |
+          python -m pip install -U pip && pip install pytest && pytest -q training/tests/inference -k "smoke or regress"
+      - name: E2E tick snapshot
+        run: |
+          python scripts/inference/e2e_tick.py --out artifacts/perf/e2e_tick.json
+      - name: Upload perf artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-and-smoke
+          path: |
+            artifacts/perf/**
+            deploy/models/manifest.json
