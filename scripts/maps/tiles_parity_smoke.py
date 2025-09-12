@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
-import argparse, json, math, os, random, sqlite3, subprocess, sys, time
+import argparse
+import json
+import math
+import os
+import random
+import sqlite3
+import subprocess
+import time
+
 
 def sh(cmd):
-    r = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         raise RuntimeError(f"cmd failed: {' '.join(cmd)}\n{r.stderr}")
     return r.stdout.strip()
+
 
 def mbtiles_bounds(path):
     # MBTiles stores bounds in WGS84 lon,lat,minmax in the metadata table.
@@ -15,6 +24,7 @@ def mbtiles_bounds(path):
             raise RuntimeError("MBTiles has no 'bounds' metadata")
         minlon, minlat, maxlon, maxlat = map(float, row[0].split(","))
     return minlon, minlat, maxlon, maxlat
+
 
 def sample_val(raster, lon, lat, band=1):
     out = sh(["gdallocationinfo", "-valonly", "-wgs84", raster, str(lon), str(lat)])
@@ -33,6 +43,7 @@ def sample_val(raster, lon, lat, band=1):
     except Exception:
         return math.nan
 
+
 def scale_float_to_byte(v, max_m=1500.0):
     if math.isnan(v):
         return 0  # NoData → 0 in PNG/MBTiles gray
@@ -41,11 +52,14 @@ def scale_float_to_byte(v, max_m=1500.0):
     dn = 1 + int(round((v / max_m) * 254.0))
     return max(1, min(255, dn))
 
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mbtiles", required=True, help="Gray MBTiles to validate")
     ap.add_argument("--raster", required=True, help="Reference raster (8-bit VRT/GeoTIFF)")
-    ap.add_argument("--float32", default=None, help="Optional Float32 cost raster for mapping check")
+    ap.add_argument(
+        "--float32", default=None, help="Optional Float32 cost raster for mapping check"
+    )
     ap.add_argument("--n", type=int, default=60)
     ap.add_argument("--tol", type=int, default=2, help="Allowed DN tolerance for equality checks")
     ap.add_argument("--json-out", default="artifacts/perf/tiles_parity.json")
@@ -73,8 +87,8 @@ def main():
         status_equal = "skip"
         if not math.isnan(mb) and not math.isnan(ref):
             status_equal = "ok" if abs(mb - ref) <= args.tol else "bad"
-            ok_equal += (status_equal == "ok")
-            bad_equal += (status_equal == "bad")
+            ok_equal += status_equal == "ok"
+            bad_equal += status_equal == "bad"
 
         status_map = "skip"
         if args.float32:
@@ -85,13 +99,19 @@ def main():
                 expected = scale_float_to_byte(f32)
             if not math.isnan(mb):
                 status_map = "ok" if abs(mb - expected) <= args.tol else "bad"
-                ok_map += (status_map == "ok")
-                bad_map += (status_map == "bad")
+                ok_map += status_map == "ok"
+                bad_map += status_map == "bad"
 
-        samples.append({
-            "lon": lon, "lat": lat, "mb": mb, "ref8": ref,
-            "map_status": status_map, "eq_status": status_equal
-        })
+        samples.append(
+            {
+                "lon": lon,
+                "lat": lat,
+                "mb": mb,
+                "ref8": ref,
+                "map_status": status_map,
+                "eq_status": status_equal,
+            }
+        )
 
     summary = {
         "mbtiles": args.mbtiles,
@@ -99,8 +119,10 @@ def main():
         "float32": args.float32,
         "n": args.n,
         "tol": args.tol,
-        "equal_ok": ok_equal, "equal_bad": bad_equal,
-        "map_ok": ok_map, "map_bad": bad_map,
+        "equal_ok": ok_equal,
+        "equal_bad": bad_equal,
+        "map_ok": ok_map,
+        "map_bad": bad_map,
         "ts": int(time.time()),
     }
     with open(args.json_out, "w") as f:
@@ -110,6 +132,7 @@ def main():
     if args.float32:
         print(f"MAP (MBTiles vs Float32→Byte): ok={ok_map} bad={bad_map}")
     print(f"Wrote {args.json_out}")
+
 
 if __name__ == "__main__":
     main()
