@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 """
 Task 19 — Synthetic flight logger (wind & sensor biases)
-Phase 1: JSONL summary + MLflow tags (done)
-Phase 2: optional per-run traces (IMU, GNSS, Pose) via --write-traces
 
-Design:
-- Reads a sweep YAML (seeds, wind, biases)
-- For each combo, writes a JSONL record and, if requested, per-run CSV traces:
-    artifacts/logs/estimation/<stamp>/run_XXX/{imu.csv,gnss.csv,pose.csv}
-- MLflow logging remains optional and local (file:artifacts/mlruns by default)
-- Trace generator is deterministic given seed + params and is a drop-in stub
-  to be replaced by SITL; interface stays the same.
+Phase 1: JSONL summary + MLflow tags (done)
+Phase 2: optional per-run traces via --write-traces (stub generator)
+Phase 3: backend selector --backend {stub,external} to allow swapping in SITL logs
+         external: copy imu.csv/gnss.csv/pose.csv from a source dir, one run_* per combo.
+
+Interface is stable for Task 20 (estimators): runs.jsonl + sweep_summary.json and per-run CSVs.
 """
 from __future__ import annotations
-import argparse, itertools, json, math, os, sys, time, pathlib, subprocess, csv, random
+import argparse, itertools, json, math, os, sys, time, pathlib, subprocess, csv, random, shutil
 from dataclasses import dataclass, asdict
 
 try:
@@ -71,18 +68,10 @@ def derived_metrics(p: RunParams) -> RunMetrics:
         gnss_bias_mag_m=abs(float(p.gnss_bias_m)),
     )
 
-# ---------- traces (stub; deterministic & fast) ----------
-def write_traces(out_dir: pathlib.Path, p: RunParams, steps: int, dt: float) -> None:
-    """
-    Writes imu.csv, gnss.csv, pose.csv with simple kinematics influenced by wind & biases.
-    Columns:
-      imu.csv  : t, ax, ay, az, gx, gy, gz
-      gnss.csv : t, lat, lon, alt, horiz_sigma_m
-      pose.csv : t, x, y, z, qw, qx, qy, qz
-    """
+# ---------- traces: stub generator ----------
+def write_traces_stub(out_dir: pathlib.Path, p: RunParams, steps: int, dt: float) -> None:
     _ensure_dir(out_dir)
     rnd = random.Random(p.seed)
-    # Simple planar drift with wind; z fixed at 10 m; yaw follows direction of travel.
     x = y = 0.0
     z = 10.0
     vx = p.wind_speed_mps * math.cos(math.radians(p.wind_dir_deg))
@@ -96,56 +85,55 @@ def write_traces(out_dir: pathlib.Path, p: RunParams, steps: int, dt: float) -> 
     with imu_path.open("w", newline="") as f_imu, \
          gnss_path.open("w", newline="") as f_gnss, \
          pose_path.open("w", newline="") as f_pose:
-        imu_w = csv.writer(f_imu)
-        gnss_w = csv.writer(f_gnss)
-        pose_w = csv.writer(f_pose)
-
+        imu_w = csv.writer(f_imu); gnss_w = csv.writer(f_gnss); pose_w = csv.writer(f_pose)
         imu_w.writerow(["t", "ax", "ay", "az", "gx", "gy", "gz"])
         gnss_w.writerow(["t", "lat", "lon", "alt", "horiz_sigma_m"])
         pose_w.writerow(["t", "x", "y", "z", "qw", "qx", "qy", "qz"])
 
-        # Origin lat/lon near Toronto; 1 deg lat ~ 111 km; 1 deg lon ~ 78.7 km here
-        lat0 = 43.6532
-        lon0 = -79.3832
-        m_per_deg_lat = 111_000.0
-        m_per_deg_lon = 78_700.0
+        lat0 = 43.6532; lon0 = -79.3832
+        m_per_deg_lat = 111_000.0; m_per_deg_lon = 78_700.0
 
         t = 0.0
         for _ in range(steps):
-            # Simple kinematics with tiny random accel
-            ax = 0.1 * (rnd.random() - 0.5)
-            ay = 0.1 * (rnd.random() - 0.5)
-            az = 0.0
-
-            vx += ax * dt
-            vy += ay * dt
-            x += vx * dt
-            y += vy * dt
+            ax = 0.1 * (rnd.random() - 0.5); ay = 0.1 * (rnd.random() - 0.5); az = 0.0
+            vx += ax * dt; vy += ay * dt
+            x += vx * dt;  y += vy * dt
             yaw = math.atan2(vy, vx + 1e-9)
-
-            # Gyro bias + tiny noise (deg/s)
             gx = p.gyro_bias_dps + 0.02 * (rnd.random() - 0.5)
-            gy = 0.02 * (rnd.random() - 0.5)
-            gz = 0.02 * (rnd.random() - 0.5)
+            gy = 0.02 * (rnd.random() - 0.5); gz = 0.02 * (rnd.random() - 0.5)
+            imu_w.writerow([round(t,3), round(ax,6), round(ay,6), round(az,6),
+                            round(gx,6), round(gy,6), round(gz,6)])
 
-            imu_w.writerow([round(t, 3), round(ax, 6), round(ay, 6), round(az, 6),
-                            round(gx, 6), round(gy, 6), round(gz, 6)])
-
-            # GNSS with horizontal bias (meters) applied along +x; convert to deg
             lat = lat0 + (y + 0.0) / m_per_deg_lat
             lon = lon0 + (x + p.gnss_bias_m) / m_per_deg_lon
             alt = 100.0
             gnss_sigma = 1.5 + abs(p.gnss_bias_m) * 0.1
-            gnss_w.writerow([round(t, 3), round(lat, 8), round(lon, 8), alt, round(gnss_sigma, 3)])
+            gnss_w.writerow([round(t,3), round(lat,8), round(lon,8), alt, round(gnss_sigma,3)])
 
-            # Pose quaternion from yaw (roll/pitch=0)
-            cy = math.cos(yaw * 0.5); sy = math.sin(yaw * 0.5)
+            cy = math.cos(yaw*0.5); sy = math.sin(yaw*0.5)
             qw, qx, qy, qz = cy, 0.0, 0.0, sy
-            pose_w.writerow([round(t, 3), round(x, 4), round(y, 4), z,
-                             round(qw, 6), qx, qy, round(qz, 6)])
-
+            pose_w.writerow([round(t,3), round(x,4), round(y,4), z,
+                             round(qw,6), qx, qy, round(qz,6)])
             t += dt
 
+# ---------- traces: external copy ----------
+def copy_traces_external(src_dir: pathlib.Path, dst_dir: pathlib.Path) -> None:
+    """
+    Copies imu.csv, gnss.csv, pose.csv from src_dir to dst_dir (must exist).
+    Skips copy if source and destination are identical.
+    """
+    _ensure_dir(dst_dir)
+    for name in ("imu.csv", "gnss.csv", "pose.csv"):
+        s = src_dir / name
+        if not s.is_file():
+            raise FileNotFoundError(f"external backend missing file: {s}")
+        dst = dst_dir / name
+        try:
+            if s.resolve() == dst.resolve():
+                continue
+        except Exception:
+            pass
+        shutil.copy2(s, dst)
 # ---------- mlflow (optional) ----------
 class MLflowClient:
     def __init__(self, enabled: bool, experiment: str):
@@ -154,7 +142,7 @@ class MLflowClient:
         self.mlflow = None
         if enabled:
             try:
-                import mlflow  # lazy import
+                import mlflow
                 self.mlflow = mlflow
                 import os, pathlib
                 uri = os.environ.get("MLFLOW_TRACKING_URI", "file:artifacts/mlruns")
@@ -185,10 +173,16 @@ def main():
     ap.add_argument("--experiment", default="northstrike", help="MLflow experiment name")
     ap.add_argument("--no-mlflow", action="store_true", help="disable MLflow logging")
 
-    # Phase 2: trace options
+    # traces
     ap.add_argument("--write-traces", action="store_true", help="emit IMU/GNSS/Pose CSVs per run")
     ap.add_argument("--steps", type=int, default=200, help="trace length (rows)")
     ap.add_argument("--dt", type=float, default=0.02, help="timestep in seconds")
+
+    # backend selector
+    ap.add_argument("--backend", choices=["stub", "external"], default="stub",
+                    help="trace backend: 'stub' generates, 'external' copies CSVs")
+    ap.add_argument("--traces-src", default=None,
+                    help="when --backend=external: path containing run_XXX folders with CSVs")
 
     args = ap.parse_args()
 
@@ -197,6 +191,11 @@ def main():
     dsid = args.dataset_id or f"sim_sweep_{time.strftime('%F')}"
 
     out_base = pathlib.Path(args.out_dir) / f"task19_{_now_stamp()}"
+    orig_out_base = out_base
+    i = 1
+    while out_base.exists():
+        out_base = orig_out_base.with_name(orig_out_base.name + f"_{i:02d}")
+        i += 1
     _ensure_dir(out_base)
     out_jsonl = out_base / "runs.jsonl"
     out_summary = out_base / "sweep_summary.json"
@@ -216,46 +215,33 @@ def main():
                           gyro_bias_dps=gyro_b, gnss_bias_m=gnss_b)
             m = derived_metrics(p)
             run_name = f"task19_s{seed}_w{spd}_d{deg}_gnss{gnss_b}_gyro{gyro_b}"
-            tags = {
-                "task": "19",
-                "component": "estimation_logging",
-                "git_sha": git_sha,
-                "dataset_id": dsid,
-                "seed": str(seed),
-            }
-            params = {k: float(v) if isinstance(v, (int, float)) else v for k, v in asdict(p).items()}
+            tags = {"task":"19","component":"estimation_logging","git_sha":git_sha,
+                    "dataset_id":dsid,"seed":str(seed)}
+            params = {k: float(v) if isinstance(v,(int,float)) else v for k,v in asdict(p).items()}
             metrics = asdict(m)
 
             run_id = mlf.log(run_name, params, metrics, tags)
 
-            # Optional traces per run
             rdir = out_base / f"run_{n:03d}"
             if args.write_traces:
-                write_traces(rdir, p, steps=args.steps, dt=args.dt)
+                if args.backend == "stub":
+                    write_traces_stub(rdir, p, steps=args.steps, dt=args.dt)
+                elif args.backend == "external":
+                    if not args.traces_src:
+                        raise SystemExit("--backend=external requires --traces-src DIR")
+                    src = pathlib.Path(args.traces_src) / f"run_{n:03d}"
+                    copy_traces_external(src, rdir)
             run_dirs.append(str(rdir))
 
-            record = {
-                "run_id": run_id,
-                "name": run_name,
-                "params": params,
-                "metrics": metrics,
-                "tags": tags,
-                "run_dir": str(rdir),
-            }
+            record = {"run_id":run_id,"name":run_name,"params":params,"metrics":metrics,
+                      "tags":tags,"run_dir":str(rdir)}
             f.write(json.dumps(record) + "\n")
             n += 1
 
-    summary = {
-        "n_runs": n,
-        "out_dir": str(out_base),
-        "git_sha": git_sha,
-        "dataset_id": dsid,
-        "config": cfg,
-        "run_dirs": run_dirs,
-        "traces": bool(args.write_traces),
-        "steps": int(args.steps),
-        "dt": float(args.dt),
-    }
+    summary = {"n_runs":n,"out_dir":str(out_base),"git_sha":git_sha,"dataset_id":dsid,
+               "config":cfg,"run_dirs":run_dirs,"traces":bool(args.write_traces),
+               "steps":int(args.steps),"dt":float(args.dt),"backend":args.backend,
+               "traces_src": args.traces_src}
     out_summary.write_text(json.dumps(summary, indent=2) + "\n")
     print(f"[task19] wrote {n} runs → {out_base}")
 
