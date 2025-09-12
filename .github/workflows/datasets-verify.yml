@@ -1,19 +1,23 @@
 name: datasets-verify
-true:
-  pull_request: null
+on:
   push:
-    branches:
-    - main
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
-      with:
-        lfs: true
-        fetch-depth: 0
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-    - name: Verify public datasets scaffold
-      run: python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
+      - uses: actions/checkout@v4
+        with: { lfs: true, fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - name: Prep deps
+        run: python -m pip install -U pip && pip install pytest
+      - name: Verify (non-blocking on PR)
+        if: github.event_name == 'pull_request'
+        run: mkdir -p artifacts/perf && python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
+        continue-on-error: true
+      - name: Verify (blocking on push)
+        if: github.event_name != 'pull_request'
+        run: mkdir -p artifacts/perf && python scripts/data/verify_public.py --json-out artifacts/perf/datasets_verify_ci.json
