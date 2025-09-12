@@ -2,52 +2,55 @@ name: onnx-gates
 
 on:
   pull_request:
+    paths:
+      - "scripts/inference/**"
+      - "training/tests/inference/**"
+      - "deploy/models/**"
+      - ".github/workflows/onnx-gates.yml"
+      - "requirements.txt"
+  workflow_dispatch:
 
 jobs:
   onnx:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.10 (with pip cache)
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          cache: "pip"  # built-in pip cache
+          cache: "pip"
 
-      - name: Install minimal deps for ONNX gates
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade onnx onnxruntime pytest
+          python -m pip install -U pip wheel
+          pip install -r requirements.txt
 
-      - name: Build deterministic dummy policy (IR=10, opset=13)
+      - name: Build dummy policy ONNX (IR=10, opset=13)
         run: |
           mkdir -p artifacts/onnx
-          # guard against dead symlink or stale file
-          [ -L artifacts/onnx/policy_dummy.onnx ] || [ -e artifacts/onnx/policy_dummy.onnx ] && rm -f artifacts/onnx/policy_dummy.onnx
           python scripts/inference/make_dummy_policy_onnx.py \
             --in-dim 64 --out-dim 4 \
             --out artifacts/onnx/policy_dummy.onnx
-
-      - name: Sanity: print IR/opset
-        run: |
           python - <<'PY'
           import onnx, pathlib
           p = pathlib.Path("artifacts/onnx/policy_dummy.onnx")
           m = onnx.load(str(p))
-          print("EXISTS:", p.is_file(), "IR:", m.ir_version, "opsets:", [(i.domain, i.version) for i in m.opset_import])
+          assert p.is_file(), "policy file missing"
+          assert m.ir_version == 10, f"IR version mismatch: {m.ir_version}"
+          assert any((i.domain in ("", "ai.onnx")) and i.version == 13 for i in m.opset_import), f"bad opsets: {m.opset_import}"
+          print("OK: dummy policy exists; IR=10; opset=13")
           PY
 
-      - name: Verify manifest hashes (must be OK)
-        run: python scripts/inference/verify_manifest_hashes.py --manifest deploy/models/manifest.json --check
+      - name: Verify manifest hashes
+        run: |
+          python scripts/inference/verify_manifest_hashes.py \
+            --manifest deploy/models/manifest.json --check
 
       - name: Inference smoke tests
         run: |
-          pytest -q training/tests/inference/test_policy_offline_smoke.py
-          pytest -q training/tests/inference/test_e2e_tick_smoke.py
-          pytest -q training/tests/inference/test_verify_manifest_hashes.py
+          pytest -q training/tests/inference
