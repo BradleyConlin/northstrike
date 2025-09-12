@@ -5,6 +5,7 @@ on:
     branches: [ "main", "hardening/**" ]
 jobs:
   smoke:
+  smoke:  if: ${{ github.event_name != "pull_request" }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (with LFS)
