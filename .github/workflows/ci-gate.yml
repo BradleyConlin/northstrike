@@ -1,8 +1,10 @@
 name: ci-gate
 on:
-  pull_request:
-    branches: [ "**" ]
-  workflow_dispatch: {}
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
 jobs:
   gate:
   gate:
