@@ -275,3 +275,38 @@ dr-smoke:
 .PHONY: data-smoke
 data-smoke:
 > - .venv/bin/python training/scripts/data/fetch_public.py --dataset $(DATASET) --smoke
+# --- Task 19: estimation sweep (no-MLflow smoke) ---
+.PHONY: estimation-sweep
+estimation-sweep:
+> mkdir -p artifacts/logs/estimation
+> .venv/bin/python scripts/estimation/log_synthetic_flights.py \
+>   --config configs/estimation/wind_bias_sweep.yaml \
+>   --out-dir artifacts/logs/estimation \
+>   --dataset-id sim_$(shell date +%F) \
+>   --no-mlflow
+.PHONY: estimation-sweep-mlflow
+estimation-sweep-mlflow:
+> .venv/bin/python scripts/estimation/log_synthetic_flights.py \
+>   --config configs/estimation/wind_bias_sweep.yaml \
+>   --out-dir artifacts/logs/estimation \
+>   --dataset-id sim_$(shell date +%F) \
+>   --experiment northstrike
+.PHONY: estimation-traces
+estimation-traces:
+> mkdir -p artifacts/logs/estimation
+> .venv/bin/python scripts/estimation/log_synthetic_flights.py \
+>   --config configs/estimation/wind_bias_sweep.yaml \
+>   --out-dir artifacts/logs/estimation \
+>   --dataset-id sim_$(shell date +%F) \
+>   --no-mlflow \
+>   --write-traces --steps 50 --dt 0.02
+.PHONY: estimation-traces-external
+estimation-traces-external:
+> test -n "$(SRC)" || (echo "usage: make estimation-traces-external SRC=/path/to/traces" && false)
+> mkdir -p artifacts/logs/estimation
+> .venv/bin/python scripts/estimation/log_synthetic_flights.py \
+>   --config configs/estimation/wind_bias_sweep.yaml \
+>   --out-dir artifacts/logs/estimation \
+>   --dataset-id sim_$(shell date +%F) \
+>   --no-mlflow \
+>   --write-traces --backend external --traces-src "$(SRC)"

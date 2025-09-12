@@ -1,6 +1,6 @@
 {
   "model": "artifacts/onnx/policy_dummy.onnx",
-  "latency_ms": 5.879402160644531,
+  "latency_ms": 5.207538604736328,
   "in_shape": [
     1,
     64
@@ -8,6 +8,6 @@
   "out_shape": [
     4
   ],
-  "mean": 1.5,
-  "std": 1.1180340051651
+  "mean": 0.0,
+  "std": 0.0
 }
