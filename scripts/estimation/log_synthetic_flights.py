@@ -80,6 +80,13 @@ class MLflowClient:
             try:
                 import mlflow  # lazy import
                 self.mlflow = mlflow
+                import os, pathlib
+                uri = os.environ.get("MLFLOW_TRACKING_URI", "file:artifacts/mlruns")
+                if uri.startswith("file:"):
+                    mlruns_path = pathlib.Path(uri.split("file:")[-1])
+                    mlruns_path.mkdir(parents=True, exist_ok=True)
+                mlflow.set_tracking_uri(uri)
+
                 mlflow.set_experiment(experiment)
             except Exception as e:
                 print(f"[warn] MLflow disabled ({e})", file=sys.stderr)
