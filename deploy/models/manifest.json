@@ -1,10 +1,10 @@
 {
   "control.policy": {
     "dst": "artifacts/onnx/policy_dummy.onnx",
-    "src": "/tmp/pytest-of-brad/pytest-0/test_promote_policy_symlink_an0/policy_copy.onnx",
-    "sha256": "e19983efa3a37c1f531e3f9450a1b65a51c5b08bca1a6826feb0f5abdeded587",
+    "src": "/tmp/pytest-of-brad/pytest-23/test_promote_policy_symlink_an0/policy_copy.onnx",
+    "sha256": "65382854ca9cbd5710b10e2d192ec054618c50fcb67254bc76a1dc7b61b209e3",
     "validated_shape": "1x64",
-    "ts": 1756948316
+    "ts": 1757715340
   },
   "perception.depth": {
     "dst": "artifacts/onnx/depth_e24.onnx",

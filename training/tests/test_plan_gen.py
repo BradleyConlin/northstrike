@@ -21,4 +21,4 @@ def test_gen_demo_plan_structure():
         assert it["frame"] == 3  # MAV_FRAME_GLOBAL_RELATIVE_ALT
         la, lo, al = it["coordinate"]
         assert isinstance(la, float) and isinstance(lo, float)
-        assert isinstance(al, (int, float))
+        assert isinstance(al, int | float)

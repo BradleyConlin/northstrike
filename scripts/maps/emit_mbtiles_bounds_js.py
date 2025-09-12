@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-import os, glob, sqlite3, json
+import glob
+import json
+import os
+import sqlite3
 
 MB_DIR = os.path.join("artifacts", "maps", "mbtiles")
 OUT_JS = os.path.join("viewer", "mbtiles_bounds.js")
 
+
 def read_bounds(fp):
     try:
         with sqlite3.connect(fp) as db:
-            row = db.execute(
-                "SELECT value FROM metadata WHERE name='bounds'"
-            ).fetchone()
+            row = db.execute("SELECT value FROM metadata WHERE name='bounds'").fetchone()
             if row and row[0]:
                 vals = [float(x) for x in row[0].split(",")]
                 if len(vals) == 4:
@@ -17,6 +19,7 @@ def read_bounds(fp):
     except Exception:
         pass
     return None
+
 
 best = {}  # prefer 'color' bounds if both exist
 for path in sorted(glob.glob(os.path.join(MB_DIR, "*_cost_*.mbtiles"))):

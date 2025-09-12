@@ -1,0 +1,6 @@
+{
+  "sim_seconds": 2.0,
+  "dt": 0.02,
+  "wp_radius": 0.5,
+  "samples": 101
+}

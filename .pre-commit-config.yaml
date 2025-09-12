@@ -1,44 +1,51 @@
 # Northstrike pre-commit (scoped)
+minimum_pre_commit_version: "3.5.0"
 repos:
-  # --- Hygiene hooks (scoped away from generated content) ---
+  # --- Hygiene hooks (ignore generated/large artifacts) ---
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^(mlruns/|artifacts/|datasets/|docs/perf/baselines/|artifacts/perf/|artifacts/releases/)
+        exclude: '^(mlruns/|artifacts/|datasets/|docs/perf/baselines/|artifacts/perf/|artifacts/releases/)'
       - id: end-of-file-fixer
-        exclude: ^(mlruns/|artifacts/|datasets/|docs/perf/baselines/|artifacts/perf/|artifacts/releases/)
+        exclude: '^(mlruns/|artifacts/|datasets/|docs/perf/baselines/|artifacts/perf/|artifacts/releases/)'
 
-  # --- Black (formatter) — scope to our maintained Python dirs ---
+  # --- Black (formatter) — only maintained Python dirs ---
   - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
       - id: black
         args: ["--line-length", "100"]
-        files: ^(scripts/inference/|scripts/datasets/|simulation/domain_randomization/scripts/).+\.py$
+        files: '^(src/|tests/|training/|benchmarks/|scripts/(inference|datasets|estimation|maps)/|simulation/domain_randomization/).+\.py$'
 
-  # --- Ruff (linter+fix) — same scope as Black ---
+  # --- Ruff (linter/fixes) ---
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.11
+    rev: v0.13.0
     hooks:
       - id: ruff
-        args: ["--fix"]
-        files: ^(scripts/inference/|scripts/datasets/|simulation/domain_randomization/scripts/).+\.py$
+        args: ["--fix", "--unsafe-fixes"]
+        files: '^(src/|tests/|training/|benchmarks/|scripts/(inference|datasets|estimation|maps)/|simulation/domain_randomization/).+\.py$'
 
-  # --- Local project hooks (keep ONNX gates) ---
+  # --- isort (import order, Black profile) ---
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args: ["--profile", "black", "--filter-files", "--line-length", "100"]
+        files: '^(src/|tests/|training/|benchmarks/|scripts/(inference|datasets|estimation|maps)/|simulation/domain_randomization/).+\.py$'
+
+  # --- Local hooks: ONNX gates on pre-push only (keep PR fast) ---
   - repo: local
     hooks:
-      - id: onnx-contracts
-        name: onnx-contracts
-        language: system
-        entry: python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
-        pass_filenames: false
-        files: ^(artifacts/onnx/.*\.onnx|docs/perf/budgets\.yaml)$
-
       - id: onnx-normalize-stable
         name: onnx-normalize-stable
+        entry: python scripts/inference/onnx_normalize_stable.py
         language: system
-        entry: python scripts/inference/normalize_onnx_stable.py
-        pass_filenames: true
-        files: ^artifacts/onnx/.*\.onnx$
-        exclude: _promote_.*\.onnx$
+        files: '\.onnx$'
+        stages: [pre-push]
+      - id: onnx-contracts
+        name: onnx-contracts
+        entry: python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml --outdir artifacts/perf
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

@@ -23,7 +23,7 @@ def test_invalid_inputs():
     # start out of bounds
     try:
         plan_on_grid(grid, (-1, 0), (1, 1))
-        assert False, "expected ValueError"
+        raise AssertionError("expected ValueError")
     except ValueError:
         pass
 

@@ -1,18 +1,29 @@
 #!/usr/bin/env python3
-import argparse, io, json, math, os, sqlite3, subprocess, random, csv
+import argparse
+import csv
+import io
+import json
+import math
+import os
+import random
+import sqlite3
+import subprocess
+
 from PIL import Image
+
 
 def xyz_from_lonlat(lon, lat, z):
     lat_rad = math.radians(lat)
-    n = 2.0 ** z
+    n = 2.0**z
     xtile = (lon + 180.0) / 360.0 * n
     ytile = (1.0 - math.asinh(math.tan(lat_rad)) / math.pi) / 2.0 * n
     return xtile, ytile
 
+
 def lonlat_from_xyz_pixel(x, y_xyz, z, px, py, tilesize=256):
     # Convert XYZ indices + pixel coords (0..255) to lon/lat at pixel center in WebMercator
     # px,py can be float; we sample at the center of the pixel footprint
-    n = 2.0 ** z
+    n = 2.0**z
     # normalize to [0,1]
     u = (x + (px + 0.5) / tilesize) / n
     v = (y_xyz + (py + 0.5) / tilesize) / n
@@ -22,12 +33,15 @@ def lonlat_from_xyz_pixel(x, y_xyz, z, px, py, tilesize=256):
     lat = math.degrees(lat_rad)
     return lon, lat
 
+
 def read_mbtiles_bounds(cur):
     cur.execute("SELECT value FROM metadata WHERE name='bounds'")
     row = cur.fetchone()
-    if not row: raise RuntimeError("bounds not found in metadata")
-    b = [float(x) for x in row[0].split(',')]
+    if not row:
+        raise RuntimeError("bounds not found in metadata")
+    b = [float(x) for x in row[0].split(",")]
     return b[0], b[1], b[2], b[3]  # minlon,minlat,maxlon,maxlat
+
 
 def read_png_pixel_from_mbtiles(cur, z, x_xyz, y_xyz, px, py):
     # MBTiles stores TMS row index
@@ -37,12 +51,14 @@ def read_png_pixel_from_mbtiles(cur, z, x_xyz, y_xyz, px, py):
         (z, x_xyz, y_tms),
     )
     row = cur.fetchone()
-    if not row: return None
+    if not row:
+        return None
     img = Image.open(io.BytesIO(row[0])).convert("L")
     w, h = img.size
     px = max(0, min(w - 1, int(px)))
     py = max(0, min(h - 1, int(py)))
     return img.getpixel((px, py))
+
 
 def sample_cost(cost_path, lon, lat):
     cmd = ["gdallocationinfo", "-valonly", "-wgs84", cost_path, str(lon), str(lat)]
@@ -52,11 +68,16 @@ def sample_cost(cost_path, lon, lat):
     except ValueError:
         return float("nan")
 
+
 def scale_cost_to_byte(v, vmin=0.0, vmax=1500.0):
-    if math.isnan(v): return math.nan
-    if v <= vmin: return 1     # matches VRT mapping 0->1
-    if v >= vmax: return 255
+    if math.isnan(v):
+        return math.nan
+    if v <= vmin:
+        return 1  # matches VRT mapping 0->1
+    if v >= vmax:
+        return 255
     return int(round(1 + (v - vmin) * (254.0 / (vmax - vmin))))
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -87,7 +108,6 @@ def main():
         x_idx = random.randint(x_lo, x_hi)
         y_idx = random.randint(y_lo, y_hi)
 
-
         # pad away from edges by 1 tile when possible
         if x_hi - x_lo >= 2:
             x_lo += 1
@@ -95,7 +115,6 @@ def main():
         if y_hi - y_lo >= 2:
             y_lo += 1
             y_hi -= 1
-
 
         # random pixel within the tile
         px = random.uniform(0, 255)
@@ -126,14 +145,13 @@ def main():
         else:
             ok = (not math.isnan(s)) and (abs(int(pix) - int(s)) <= tol)
 
-
-
         rows.append((i, lon, lat, pix, s, "OK" if ok else "FAIL"))
-        if not ok: mismatches += 1
+        if not ok:
+            mismatches += 1
 
     with open(args.out, "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["i","lon","lat","tile_gray","scaled_cost","status"])
+        w.writerow(["i", "lon", "lat", "tile_gray", "scaled_cost", "status"])
         w.writerows(rows)
 
     summary = {
@@ -149,6 +167,7 @@ def main():
         json.dump(summary, f, indent=2)
     print(f"Wrote {args.out}")
     print(f"Summary: {summ_path}")
+
 
 if __name__ == "__main__":
     main()

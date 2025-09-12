@@ -1,22 +1,42 @@
-import json, subprocess, sys, pathlib, textwrap, csv
+import csv
+import pathlib
+import subprocess
+import sys
+import textwrap
+
 
 def test_wind_bias_traces(tmp_path):
     cfg = tmp_path / "sweep.yaml"
-    cfg.write_text(textwrap.dedent("""
+    cfg.write_text(
+        textwrap.dedent(
+            """
     sweep:
       seeds: [7]
       wind_speed_mps: [3.0]
       wind_dir_deg: [90]
       gyro_bias_dps: [0.01]
       gnss_bias_m: [1.0]
-    """).strip()+"\n")
+    """
+        ).strip()
+        + "\n"
+    )
     out_dir = tmp_path / "out"
-    cmd = [sys.executable, "scripts/estimation/log_synthetic_flights.py",
-           "--config", str(cfg),
-           "--out-dir", str(out_dir),
-           "--dataset-id", "sim_test",
-           "--no-mlflow",
-           "--write-traces", "--steps", "10", "--dt", "0.05"]
+    cmd = [
+        sys.executable,
+        "scripts/estimation/log_synthetic_flights.py",
+        "--config",
+        str(cfg),
+        "--out-dir",
+        str(out_dir),
+        "--dataset-id",
+        "sim_test",
+        "--no-mlflow",
+        "--write-traces",
+        "--steps",
+        "10",
+        "--dt",
+        "0.05",
+    ]
     subprocess.run(cmd, check=True, capture_output=True, text=True)
 
     # locate run folder

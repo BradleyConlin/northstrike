@@ -86,7 +86,8 @@ def compute_hover_kpis(
     Compute basic hover KPIs from a DataFrame or CSV.
 
     Returns dict with keys:
-      samples, duration_s, alt_mean, alt_std, alt_rmse, hover_rms_m, max_alt_dev, xy_std, hover_score
+      samples, duration_s, alt_mean, alt_std,
+      alt_rmse, hover_rms_m, max_alt_dev, xy_std, hover_score
     """
     if df is None:
         df = data

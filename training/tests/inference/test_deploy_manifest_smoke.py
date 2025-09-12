@@ -1,7 +1,10 @@
-import json, pathlib
+import json
+import pathlib
+
 import onnxruntime as ort
 
 MAN = "deploy/models/manifest.json"
+
 
 def _iter_model_paths(man):
     # support dict {"name": {...}} or list [{"path": ...}, ...]
@@ -15,6 +18,7 @@ def _iter_model_paths(man):
         p = r.get("dst") or r.get("path")
         if p:
             yield pathlib.Path(p)
+
 
 def test_deploy_manifest_smoke():
     m = json.load(open(MAN))

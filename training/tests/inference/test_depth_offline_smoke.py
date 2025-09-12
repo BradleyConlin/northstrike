@@ -1,8 +1,8 @@
 import csv
-import json
 import os
 import subprocess
 import sys
+
 
 def test_depth_offline_smoke(tmp_path):
     model = "artifacts/onnx/depth_e24.onnx"
@@ -15,10 +15,14 @@ def test_depth_offline_smoke(tmp_path):
         [
             sys.executable,
             "scripts/inference/run_depth_offline.py",
-            "--model", model,
-            "--mode", "rand",
-            "--out-npz", str(out_npz),
-            "--out-csv", str(out_csv),
+            "--model",
+            model,
+            "--mode",
+            "rand",
+            "--out-npz",
+            str(out_npz),
+            "--out-csv",
+            str(out_csv),
         ],
         check=True,
     )
