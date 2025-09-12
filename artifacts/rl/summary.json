@@ -1,7 +1,0 @@
-{
-  "episodes": 250,
-  "train_success_rate": 0.9,
-  "eval_steps": 48,
-  "optimal_steps": 45,
-  "eval_unsafe_steps": 1
-}
