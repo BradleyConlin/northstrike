@@ -11,7 +11,7 @@
   ],
   "input_dtype": 1,
   "outputs": [
-    "y"
+    "output"
   ],
   "pass": true
 }

@@ -1,40 +1,48 @@
 #!/usr/bin/env python3
 import argparse
+from pathlib import Path
 
-import numpy as np
 import onnx
 from onnx import TensorProto, helper
 
-ap = argparse.ArgumentParser()
-ap.add_argument("--in-dim", type=int, default=64)
-ap.add_argument("--hidden", type=int, default=32)
-ap.add_argument("--out-dim", type=int, default=4)
-ap.add_argument("--out", type=str, required=True)
-args = ap.parse_args()
+
+def build_model(in_dim: int, out_dim: int) -> onnx.ModelProto:
+    x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [1, in_dim])
+    y = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1, out_dim])
+
+    W = helper.make_tensor("W", TensorProto.FLOAT, [in_dim, out_dim], [0.0] * (in_dim * out_dim))
+    b = helper.make_tensor("b", TensorProto.FLOAT, [out_dim], [0.0] * out_dim)
+
+    node = helper.make_node("Gemm", ["x", "W", "b"], ["y"], alpha=1.0, beta=1.0, transA=0, transB=0)
+    graph = helper.make_graph([node], "policy_dummy_gemm", [x], [y], [W, b])
+
+    # IR=10 and opset 13 to satisfy older ORT builds
+    opset = helper.make_operatorsetid("", 13)
+    return helper.make_model(graph, opset_imports=[opset], ir_version=10)
 
 
-def const(name, arr):
-    return helper.make_tensor(name, TensorProto.FLOAT, arr.shape, arr.flatten().tolist())
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--in-dim", type=int, required=True)
+    ap.add_argument("--out-dim", type=int, required=True)
+    ap.add_argument("--out", required=True)
+    args = ap.parse_args()
+
+    model = build_model(args.in_dim, args.out_dim)
+
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    # Important: if a dangling symlink exists at the target, unlink it first
+    try:
+        if out.is_symlink() or out.exists():
+            out.unlink()
+    except FileNotFoundError:
+        pass
+
+    onnx.save_model(model, str(out))
+    print(f"wrote {out} (IR={model.ir_version}, opset=[{[i.version for i in model.opset_import]}])")
 
 
-X = helper.make_tensor_value_info("input", TensorProto.FLOAT, [1, args.in_dim])
-Y = helper.make_tensor_value_info("output", TensorProto.FLOAT, [1, args.out_dim])
-
-W1 = np.random.randn(args.in_dim, args.hidden).astype("float32") * 0.1
-b1 = np.zeros((args.hidden,), "float32")
-W2 = np.random.randn(args.hidden, args.out_dim).astype("float32") * 0.1
-b2 = np.zeros((args.out_dim,), "float32")
-
-n1 = helper.make_node("Gemm", ["input", "W1", "b1"], ["h"], alpha=1.0, beta=1.0, transB=0)
-n2 = helper.make_node("Relu", ["h"], ["h2"])
-n3 = helper.make_node("Gemm", ["h2", "W2", "b2"], ["output"], alpha=1.0, beta=1.0, transB=0)
-
-graph = helper.make_graph(
-    [n1, n2, n3],
-    "mlp",
-    [X],
-    [Y],
-    initializer=[const("W1", W1), const("b1", b1), const("W2", W2), const("b2", b2)],
-)
-onnx.save(helper.make_model(graph, producer_name="dummy_policy"), args.out)
-print(f"wrote {args.out}")
+if __name__ == "__main__":
+    main()

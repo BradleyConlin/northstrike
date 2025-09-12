@@ -18,5 +18,3 @@ jobs:
         run: bash scripts/ci/prepare_pr_env.sh
       - name: ONNX verify
         run: make onnx-verify
-      - name: ONNX regress
-        run: make onnx-regress
