@@ -1,25 +1,61 @@
 name: ci-smoke
-on:
-  pull_request:
-  push: { branches: [ main ] }
-  workflow_dispatch:
+true:
+  pull_request: null
+  push:
+    branches:
+    - main
+    - hardening/**
 jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with: { lfs: true, fetch-depth: 0 }
-      - name: PR light pass
-        if: ${{ github.event_name == 'pull_request' }}
-        run: echo "smoke skipped on PR"
-      - uses: actions/setup-python@v5
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        with: { python-version: '3.10', cache: 'pip' }
-      - name: Install + hydrate + smoke
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: |
-          python -m pip install -U pip
-          pip install pytest onnx onnxruntime numpy pyyaml
-          git lfs fetch --all || true
-          git lfs checkout || true
-          pytest -q || true
+    - name: Checkout (with LFS)
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 0
+    - name: Git LFS pull
+      run: 'git lfs install
+
+        git lfs pull
+
+        '
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Install deps
+      run: 'python -m pip install -U pip
+
+        pip install -r requirements/ci.txt
+
+        '
+    - name: ONNX contracts + perf gates
+      run: 'python scripts/inference/check_onnx_contracts.py --config docs/perf/budgets.yaml
+        --outdir artifacts/perf
+
+        python scripts/inference/profile_onnx.py --config docs/perf/budgets.yaml --outdir
+        artifacts/perf --check
+
+        python scripts/inference/verify_manifest_hashes.py --manifest deploy/models/manifest.json
+        --check
+
+        '
+    - name: Pytest smoke
+      run: 'pytest -q training/tests/inference -k "smoke or regress"
+
+        '
+    - name: E2E tick snapshot
+      run: 'python scripts/inference/e2e_tick.py --out artifacts/perf/e2e_tick.json
+
+        '
+    - name: Upload perf artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: perf-and-smoke
+        path: 'artifacts/perf/**
+
+          deploy/models/manifest.json
+
+          '

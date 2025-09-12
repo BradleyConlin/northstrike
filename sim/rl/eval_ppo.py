@@ -24,7 +24,14 @@ def main():
     args = p.parse_args()
 
     env = make_env()
-    model = PPO.load(args.model)
+    model_path = args.model
+if not model_path:
+    raise SystemExit('Please provide --model /path/to/model.zip')
+if model_path.endswith('.zip.zip'):
+    model_path = model_path[:-4]
+elif not model_path.endswith('.zip'):
+    model_path += '.zip'
+model = PPO.load(model_path)
 
     for ep in range(args.episodes):
         obs, info = env.reset()
