@@ -284,3 +284,10 @@ estimation-sweep:
 >   --out-dir artifacts/logs/estimation \
 >   --dataset-id sim_$(shell date +%F) \
 >   --no-mlflow
+.PHONY: estimation-sweep-mlflow
+estimation-sweep-mlflow:
+> .venv/bin/python scripts/estimation/log_synthetic_flights.py \
+>   --config configs/estimation/wind_bias_sweep.yaml \
+>   --out-dir artifacts/logs/estimation \
+>   --dataset-id sim_$(shell date +%F) \
+>   --experiment northstrike
