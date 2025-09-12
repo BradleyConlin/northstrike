@@ -1,8 +1,8 @@
 name: ci-smoke
 on:
   pull_request:
-  push:
-    branches: [ "main", "hardening/**" ]
+  workflow_dispatch:
+
 jobs:
   smoke:
   smoke:
