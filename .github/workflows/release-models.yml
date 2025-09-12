@@ -1,7 +1,10 @@
 name: release-models
 on:
   push:
-    tags: ['models-*']
+    tags:
+      - 'models-*'
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,6 +23,9 @@ jobs:
         python -m pip install -U pip
         pip install -r requirements.txt || true
         pip install pytest
+        python -m pip install -U pip
+        pip install -r requirements.txt || true
+        pip install pytest onnx onnxruntime numpy pyyaml
         pytest -q training/tests/inference/test_depth_offline_smoke.py training/tests/inference/test_policy_offline_smoke.py training/tests/inference/test_e2e_tick_smoke.py training/tests/inference/test_promote_model_smoke.py
     - name: Pack models
       run: |
