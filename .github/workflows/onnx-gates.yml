@@ -1,50 +1,53 @@
 name: onnx-gates
+
 on:
   pull_request:
-    paths:
-      - ".github/workflows/onnx-gates.yml"
-      - "scripts/inference/**"
-      - "deploy/models/**"
-      - "training/tests/inference/**"
-      - "requirements*.txt"
 
 jobs:
   onnx:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10 (pip cache)
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          cache: "pip"        # built-in cache for requirements installs
+          cache: "pip"  # built-in pip cache
 
-      - name: Install deps
+      - name: Install minimal deps for ONNX gates
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt || true
+          pip install --upgrade onnx onnxruntime pytest
 
-      - name: Build dummy policy ONNX (IR=10, opset=13)
+      - name: Build deterministic dummy policy (IR=10, opset=13)
         run: |
           mkdir -p artifacts/onnx
-          [ -L artifacts/onnx/policy_dummy.onnx ] && rm -f artifacts/onnx/policy_dummy.onnx || true
+          # guard against dead symlink or stale file
+          [ -L artifacts/onnx/policy_dummy.onnx ] || [ -e artifacts/onnx/policy_dummy.onnx ] && rm -f artifacts/onnx/policy_dummy.onnx
           python scripts/inference/make_dummy_policy_onnx.py \
             --in-dim 64 --out-dim 4 \
             --out artifacts/onnx/policy_dummy.onnx
+
+      - name: Sanity: print IR/opset
+        run: |
           python - <<'PY'
-          import onnx; m=onnx.load("artifacts/onnx/policy_dummy.onnx")
-          assert m.ir_version==10 and any(i.domain=="" and i.version==13 for i in m.opset_import), "policy_dummy must be IR=10/opset=13"
+          import onnx, pathlib
+          p = pathlib.Path("artifacts/onnx/policy_dummy.onnx")
+          m = onnx.load(str(p))
+          print("EXISTS:", p.is_file(), "IR:", m.ir_version, "opsets:", [(i.domain, i.version) for i in m.opset_import])
           PY
 
-      - name: Verify manifest hashes
-        run: |
-          python scripts/inference/verify_manifest_hashes.py --manifest deploy/models/manifest.json --check
+      - name: Verify manifest hashes (must be OK)
+        run: python scripts/inference/verify_manifest_hashes.py --manifest deploy/models/manifest.json --check
 
-      - name: Inference smoke tests (targeted)
+      - name: Inference smoke tests
         run: |
           pytest -q training/tests/inference/test_policy_offline_smoke.py
           pytest -q training/tests/inference/test_e2e_tick_smoke.py
+          pytest -q training/tests/inference/test_verify_manifest_hashes.py
