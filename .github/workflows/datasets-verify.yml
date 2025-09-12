@@ -8,9 +8,11 @@ on:
 jobs:
   verify:
   verify:
+  if: ${{ github.event_name == "push" && github.ref == "refs/heads/main" }}
+  verify:
   if: ${{ github.event_name != "pull_request" }}
   verify:  if: ${{ github.event_name != "pull_request" }}
-  if: ${{ github.event_name != 'pull_request' }}
+  if: ${{ github.event_name == "push" if: ${{ github.event_name == "push" if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }}if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }} github.ref == "refs/heads/main" }}if: ${{ github.event_name == "push" if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }}if: ${{ github.event_name == "push" if: ${{ github.event_name != 'pull_request' }}if: ${{ github.event_name != 'pull_request' }} github.ref == "refs/heads/main" }} github.ref == "refs/heads/main" }} github.ref == "refs/heads/main" }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

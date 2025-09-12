@@ -6,6 +6,8 @@ on:
 jobs:
   gate:
   gate:
+  if: ${{ github.event_name == "push" && github.ref == "refs/heads/main" }}
+  gate:
   if: ${{ github.event_name != "pull_request" }}
   gate:  if: ${{ github.event_name != "pull_request" }}
   gate:  if: ${{ github.event_name != "pull_request" }}
