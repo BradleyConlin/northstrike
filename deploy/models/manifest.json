@@ -8,6 +8,6 @@
   },
   "perception.depth": {
     "path": "artifacts/onnx/depth_e24.onnx",
-    "sha256": "0640401e7588a323972cb03e0c9901985c74a529f9018fbf5ea2016ec947fcb7"
+    "sha256": "9b86ffed000f1035e7938952e9a266617748231399a1284b7799513a7d55b185"
   }
 }
