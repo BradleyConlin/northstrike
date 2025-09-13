@@ -74,3 +74,9 @@ datasets/public/*/processed/**
 !datasets/public/*/README.md
 !training/scripts/data/**
 mlruns/
+# Keep most build artifacts out of Git
+artifacts/**
+
+# Re-include the ONNX test asset used by inference smoke tests
+!artifacts/onnx/
+!artifacts/onnx/policy_dummy.onnx
