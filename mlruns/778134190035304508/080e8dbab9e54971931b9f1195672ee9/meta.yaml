@@ -1,0 +1,14 @@
+artifact_uri: file:///home/brad/dev/northstrike/mlruns/778134190035304508/080e8dbab9e54971931b9f1195672ee9/artifacts
+end_time: 1757732465924
+entry_point_name: ''
+experiment_id: '778134190035304508'
+lifecycle_stage: active
+run_id: 080e8dbab9e54971931b9f1195672ee9
+run_name: blushing-panda-798
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757732465912
+status: 3
+tags: []
+user_id: brad

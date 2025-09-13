@@ -233,3 +233,17 @@ tiles-parity:
 >   --mbtiles artifacts/maps/mbtiles/$(AREA)_cost_gray.mbtiles \
 >   --raster  maps/costmaps/$(AREA)_cost_8bit.vrt \
 >   --json-out artifacts/perf/tiles_parity_$(AREA).json || true
+# --- Sim with domain randomization (Task 2) ---
+CONFIG ?= configs/sim/randomization/default.yaml
+SEED   ?= 12345
+
+.PHONY: sim-run-rand
+sim-run-rand:
+> CONFIG="$(CONFIG)" SEED="$(SEED)" scripts/sim/run_rand.sh
+
+.PHONY: sim-run-rand-free
+sim-run-rand-free:
+> CONFIG="$(CONFIG)" scripts/sim/run_rand.sh
+.PHONY: sim-rand-smoke
+sim-rand-smoke:
+> pytest -q training/tests/sim_randomization
