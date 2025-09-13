@@ -1,0 +1,19 @@
+seed: null  # set int to reproduce
+textures:
+  albedo_jitter: 0.15
+  roughness_jitter: 0.10
+lighting:
+  sun_elevation_deg: [10, 70]
+  sun_azimuth_deg: [0, 360]
+  intensity_scale: [0.7, 1.2]
+  ambient_scale: [0.5, 1.0]
+wind:
+  speed_mps: [0.0, 8.0]
+  direction_deg: [0, 360]
+  gust_prob: 0.2
+sensor_noise:
+  imu_gyro_std: [0.001, 0.01]
+  imu_accel_std: [0.01, 0.05]
+  gnss_bias_m: [0.1, 1.5]
+  cam_brightness: [0.8, 1.2]
+  depth_noise_m: [0.0, 0.05]
