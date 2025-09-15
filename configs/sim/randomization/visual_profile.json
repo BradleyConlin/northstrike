@@ -1,0 +1,14 @@
+{
+  "wind": { "speed_mps": 3.0, "direction_deg": 45.0 },
+  "sun":  { "elevation_deg": 50.0, "azimuth_deg": 135.0, "intensity": 1.0 },
+  "scene": {
+    "ambient_rgba":   [0.35, 0.35, 0.38, 1.0],
+    "background_rgba":[0.52, 0.70, 0.90, 1.0]
+  },
+  "ground_pbr": {
+    "albedo_texture":   "textures/flat_albedo.png",
+    "normal_texture":   "textures/flat_normal.png",
+    "metalness": 0.1,
+    "roughness": 0.8
+  }
+}
