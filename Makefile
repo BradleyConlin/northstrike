@@ -247,3 +247,21 @@ sim-run-rand-free:
 .PHONY: sim-rand-smoke
 sim-rand-smoke:
 > pytest -q training/tests/sim_randomization
+
+# --- Domain Randomization → Gazebo world (SDF wind) ---
+STAMP ?= $(shell date +%Y%m%d_%H%M%S)
+RANDDIR := artifacts/sim/randomization/$(STAMP)
+MIN_WIND_MPS ?= 2.0
+
+.PHONY: sim-rand-world
+sim-rand-world:
+> mkdir -p $(RANDDIR) artifacts/sim/tmp
+> python simulation/domain_randomization/scripts/apply_randomization.py --seed "$(SEED)" --out "$(RANDDIR)"
+> # Mirror legacy last_profile.json into this run dir if generator wrote it to artifacts/randomization/
+> test -f "$(RANDDIR)/last_profile.json" || cp artifacts/randomization/last_profile.json "$(RANDDIR)/last_profile.json"
+> python scripts/sim/apply_dr_to_gz.py \
+>   --profile "$(RANDDIR)/last_profile.json" \
+>   --template simulation/domain_randomization/assets/base_airfield.sdf.tmpl \
+>   --min-wind-mps "$(MIN_WIND_MPS)" \
+>   --out artifacts/sim/tmp/world_dr.sdf
+> @echo "World with DR wind -> artifacts/sim/tmp/world_dr.sdf"
