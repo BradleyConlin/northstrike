@@ -1,1 +1,2 @@
 2025-09-12 — Task 20 — wind/bias MLP baseline + logs + CI smoke — paths: scripts/estimation/*, configs/estimation/wind_bias_sweep.yaml — cmds: log_synthetic_flights.py → train_wind_bias_mlp.py → onnx_normalize_stable.py — MLflow: experiment=northstrike — notes: opset13/IR10
+2025-09-14 — Task 2 — SITL DR wiring prep; restored manifests/ONNX/datasets to main; staged only sim scripts/assets/tests/Makefile — cmds: rebase, restore-to-main, pytest sim_randomization, onnx-verify — notes: PR scope is sim-only.
