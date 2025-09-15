@@ -265,3 +265,21 @@ sim-rand-world:
 >   --min-wind-mps "$(MIN_WIND_MPS)" \
 >   --out artifacts/sim/tmp/world_dr.sdf
 > @echo "World with DR wind -> artifacts/sim/tmp/world_dr.sdf"
+
+# --- SITL DR acceptance smoke (headless) ---
+sim-acceptance:
+	@mkdir -p artifacts/sim
+	@echo "[sim-acceptance] starting DR world + PX4 (headless)..."
+	@set -o pipefail; \
+	 ( SEED=$${SEED:-123} MIN_WIND_MPS=$${MIN_WIND_MPS:-2} LAUNCH_QGC=0 \
+	   scripts/sim/ns_px4_bootstrap.sh ) \
+	   > artifacts/sim/acceptance_smoke.log 2>&1 & PID=$$!; \
+	 sleep $${SMOKE_SECS:-20}; \
+	 if grep -q "Ready for takeoff!" artifacts/sim/acceptance_smoke.log; then \
+	   echo "[sim-acceptance] ✓ PX4 reported Ready for takeoff!"; \
+	 else \
+	   echo "[sim-acceptance] ⚠ did not see 'Ready for takeoff!' (check log)"; \
+	 fi; \
+	 kill $$PID >/dev/null 2>&1 || true; \
+	 pkill -f "gz sim" >/dev/null 2>&1 || true; \
+	 echo "[sim-acceptance] log: artifacts/sim/acceptance_smoke.log"
